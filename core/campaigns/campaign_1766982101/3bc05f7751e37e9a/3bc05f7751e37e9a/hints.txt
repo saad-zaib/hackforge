@@ -1,0 +1,11 @@
+Machine: 3bc05f7751e37e9a
+Variant: NoSQL Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: search_function
+  • MongoDB NoSQL database
+  • Parameter: category
+  • 💡 Try NoSQL operators: $ne, $gt, $regex
+  • 💡 JSON injection possible in POST body
+  • Flag stored in 'secrets' collection

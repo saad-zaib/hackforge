@@ -1,0 +1,56 @@
+{
+  "machine_id": "309e53bb106b062d",
+  "blueprint_id": "inj_001",
+  "variant": "Command Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767360749_inj_001_1767360749_1",
+  "application": {
+    "context": "file_processor",
+    "variant": "Command Injection",
+    "base_command": "nslookup",
+    "entry_point": "file_upload_name",
+    "param_name": "hostname",
+    "sink": "exec"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "shell": "sh",
+    "command_structure": "backgrounded_process"
+  },
+  "flag": {
+    "content": "HACKFORGE{37db93fa106a3fee43daa0b5a6bc0204}",
+    "location": "/opt/app/flag.txt"
+  },
+  "behavior": {
+    "output": "stored_in_db",
+    "shell_features": [
+      "command_substitution",
+      "basic_redirection"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: file_processor",
+      "Shell: sh",
+      "Command structure: backgrounded_process",
+      "\u26a0\ufe0f Filters: space, semicolon",
+      "\ud83d\udca1 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}",
+      "\ud83d\udca1 Bypass semicolon: Use && or || or newline"
+    ],
+    "vulnerability_type": "Command Injection",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

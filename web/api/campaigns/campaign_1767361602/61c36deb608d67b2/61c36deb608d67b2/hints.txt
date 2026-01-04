@@ -1,0 +1,11 @@
+Machine: 61c36deb608d67b2
+Variant: Command Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: export_tool
+  • Shell: zsh
+  • Command structure: command_grouping
+  • ⚠️ Filters: space, semicolon
+  • 💡 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}
+  • 💡 Bypass semicolon: Use && or || or newline

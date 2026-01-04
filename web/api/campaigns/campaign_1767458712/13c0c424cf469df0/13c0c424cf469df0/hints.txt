@@ -1,0 +1,11 @@
+Machine: 13c0c424cf469df0
+Variant: Command Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: whois_lookup
+  • Shell: dash
+  • Command structure: command_substitution
+  • ⚠️ Filters: space, semicolon
+  • 💡 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}
+  • 💡 Bypass semicolon: Use && or || or newline

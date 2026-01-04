@@ -1,0 +1,8 @@
+Machine: 1adf41a2a1245c21
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: predictable_token
+  • Resource ID type: predictable_pattern
+  • Authentication: jwt_token

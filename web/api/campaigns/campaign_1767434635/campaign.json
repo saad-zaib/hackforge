@@ -1,0 +1,110 @@
+{
+  "campaign_id": "campaign_1767434635",
+  "created_at": "2026-01-03 15:03:55",
+  "machines": [
+    {
+      "machine_id": "d8b87546abb4409e",
+      "blueprint_id": "inj_001",
+      "variant": "NoSQL Injection",
+      "difficulty": 1,
+      "seed": "user_27a9q8la6_inj_001_1767434635_1",
+      "application": {
+        "context": "search_function",
+        "variant": "NoSQL Injection",
+        "entry_point": "http_post_param",
+        "param_name": "category",
+        "sink": "where"
+      },
+      "constraints": {
+        "database": "mongodb",
+        "base_query": "db.products.find({category: input})",
+        "operators_allowed": [
+          "$ne",
+          "$gt",
+          "$regex",
+          "$where"
+        ]
+      },
+      "flag": {
+        "content": "HACKFORGE{d808ca2af8809bd9359b83ce99c98aa0}",
+        "location": "mongodb:secrets.flag",
+        "collection": "secrets"
+      },
+      "behavior": {
+        "output": "direct_echo",
+        "json_parsing": true
+      },
+      "metadata": {
+        "exploit_hints": [
+          "Context: search_function",
+          "MongoDB NoSQL database",
+          "Parameter: category",
+          "\ud83d\udca1 Try NoSQL operators: $ne, $gt, $regex",
+          "\ud83d\udca1 JSON injection possible in POST body",
+          "Flag stored in 'secrets' collection"
+        ],
+        "vulnerability_type": "NoSQL Injection",
+        "estimated_solve_time": "10-15 minutes"
+      }
+    },
+    {
+      "machine_id": "464535d036bd59ea",
+      "blueprint_id": "bac_001",
+      "variant": "Missing Function Level Access Control",
+      "difficulty": 1,
+      "seed": "user_27a9q8la6_bac_001_1767434635_2",
+      "application": {
+        "context": "banking_transaction",
+        "variant": "Missing Function Level Access Control",
+        "entry_point": "api_endpoint"
+      },
+      "constraints": {
+        "protected_functions": [
+          {
+            "name": "delete_user",
+            "endpoint": "/api/admin/users/delete"
+          },
+          {
+            "name": "view_all_data",
+            "endpoint": "/api/admin/data/all"
+          },
+          {
+            "name": "modify_settings",
+            "endpoint": "/api/admin/settings"
+          },
+          {
+            "name": "export_database",
+            "endpoint": "/api/admin/export"
+          }
+        ],
+        "target_function": {
+          "name": "modify_settings",
+          "endpoint": "/api/admin/settings"
+        }
+      },
+      "flag": {
+        "content": "HACKFORGE{6dc596d5aa4b44a9a59611414625fc50}",
+        "location": "/api/admin/settings/flag",
+        "access_method": "direct_api_call"
+      },
+      "behavior": {
+        "authorization_method": "session_cookie",
+        "missing_checks_on": [
+          "modify_settings"
+        ]
+      },
+      "metadata": {
+        "exploit_hints": [
+          "Context: banking_transaction",
+          "Regular user has limited access",
+          "\ud83d\udca1 Admin functions might not check authorization properly",
+          "Try accessing: /api/admin/settings",
+          "\u26a0\ufe0f Some endpoints may not validate user role"
+        ],
+        "vulnerability_type": "Missing Function Level Access Control",
+        "estimated_solve_time": "5-10 minutes"
+      }
+    }
+  ],
+  "total_machines": 2
+}

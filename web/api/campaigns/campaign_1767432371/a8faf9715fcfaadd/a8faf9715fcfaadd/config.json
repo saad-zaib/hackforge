@@ -1,0 +1,56 @@
+{
+  "machine_id": "a8faf9715fcfaadd",
+  "blueprint_id": "inj_001",
+  "variant": "Command Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767432371_inj_001_1767432371_1",
+  "application": {
+    "context": "login_form",
+    "variant": "Command Injection",
+    "base_command": "nslookup",
+    "entry_point": "http_header",
+    "param_name": "hostname",
+    "sink": "shell_exec"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "shell": "sh",
+    "command_structure": "redirection_chain"
+  },
+  "flag": {
+    "content": "HACKFORGE{bc52da6cee443806aee8e40e18e8f254}",
+    "location": "/tmp/flag.txt"
+  },
+  "behavior": {
+    "output": "base64_encoded",
+    "shell_features": [
+      "command_substitution",
+      "basic_redirection"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: login_form",
+      "Shell: sh",
+      "Command structure: redirection_chain",
+      "\u26a0\ufe0f Filters: space, semicolon",
+      "\ud83d\udca1 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}",
+      "\ud83d\udca1 Bypass semicolon: Use && or || or newline"
+    ],
+    "vulnerability_type": "Command Injection",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

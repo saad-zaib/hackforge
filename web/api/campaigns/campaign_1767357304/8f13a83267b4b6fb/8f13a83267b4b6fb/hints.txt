@@ -1,0 +1,9 @@
+Machine: 8f13a83267b4b6fb
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: client_side_only
+  • Resource ID type: md5_hash
+  • Authentication: jwt_token
+  • ⚠️ Access checks are client-side only

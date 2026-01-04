@@ -1,0 +1,11 @@
+Machine: 9dfeceec2453b211
+Variant: SQL Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: login_form
+  • Database: sqlite
+  • Output behavior: direct_echo
+  • ⚠️ Filters active: space, semicolon
+  • 💡 Try: ' OR '1'='1
+  • Flag stored in 'secrets' table

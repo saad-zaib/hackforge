@@ -1,0 +1,11 @@
+Machine: 0df2ca73e33eb636
+Variant: Command Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: file_processor
+  • Shell: dash
+  • Command structure: piped_commands
+  • ⚠️ Filters: space, semicolon
+  • 💡 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}
+  • 💡 Bypass semicolon: Use && or || or newline

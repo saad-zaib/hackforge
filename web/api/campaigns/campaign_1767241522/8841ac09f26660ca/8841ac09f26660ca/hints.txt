@@ -1,0 +1,11 @@
+Machine: 8841ac09f26660ca
+Variant: NoSQL Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: login_form
+  • MongoDB NoSQL database
+  • Parameter: username
+  • 💡 Try NoSQL operators: $ne, $gt, $regex
+  • 💡 JSON injection possible in POST body
+  • Flag stored in 'secrets' collection

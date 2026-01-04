@@ -1,0 +1,9 @@
+Machine: 056b7a4a4de8c9ba
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: none
+  • Resource ID type: predictable_pattern
+  • Authentication: none
+  • ✓ No access control - direct ID manipulation possible

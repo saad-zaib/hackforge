@@ -1,0 +1,57 @@
+{
+  "machine_id": "963e7614f1ace7b6",
+  "blueprint_id": "inj_001",
+  "variant": "Command Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767356976_inj_001_1767356976_1",
+  "application": {
+    "context": "ping_utility",
+    "variant": "Command Injection",
+    "base_command": "ping -c 1",
+    "entry_point": "http_get_param",
+    "param_name": "host",
+    "sink": "popen"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "shell": "zsh",
+    "command_structure": "redirection_chain"
+  },
+  "flag": {
+    "content": "HACKFORGE{c368f300cf1c4f16a2259c953238f946}",
+    "location": "/tmp/flag.txt"
+  },
+  "behavior": {
+    "output": "logged_to_file",
+    "shell_features": [
+      "process_substitution",
+      "brace_expansion",
+      "glob_expansion"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: ping_utility",
+      "Shell: zsh",
+      "Command structure: redirection_chain",
+      "\u26a0\ufe0f Filters: space, semicolon",
+      "\ud83d\udca1 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}",
+      "\ud83d\udca1 Bypass semicolon: Use && or || or newline"
+    ],
+    "vulnerability_type": "Command Injection",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

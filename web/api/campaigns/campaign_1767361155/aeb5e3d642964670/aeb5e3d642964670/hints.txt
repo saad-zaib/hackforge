@@ -1,0 +1,8 @@
+Machine: aeb5e3d642964670
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: timing_vulnerable
+  • Resource ID type: md5_hash
+  • Authentication: session_cookie

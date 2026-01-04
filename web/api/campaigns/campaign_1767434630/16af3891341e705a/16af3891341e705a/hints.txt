@@ -1,0 +1,8 @@
+Machine: 16af3891341e705a
+Variant: Template Injection
+Difficulty: 3
+
+Exploitation Hints:
+  • Template engine: freemarker
+  • Report generation with user input
+  • 💡 Try template injection syntax

@@ -1,0 +1,45 @@
+{
+  "machine_id": "e0a51b1cd5cf502c",
+  "blueprint_id": "inj_001",
+  "variant": "SQL Injection",
+  "difficulty": 1,
+  "seed": "user_iqwmpspym_inj_001_1767433526_1",
+  "application": {
+    "context": "search_function",
+    "variant": "SQL Injection",
+    "entry_point": "cookie_value",
+    "param_name": "search",
+    "sink": "raw_query"
+  },
+  "constraints": {
+    "filters": [],
+    "database": "mongodb",
+    "base_query": "SELECT * FROM products WHERE name LIKE '%{input}%'",
+    "injectable_param": "search"
+  },
+  "flag": {
+    "content": "HACKFORGE{67a9a707e12bef6fb6eef8d9d992d85c}",
+    "location": "database:secrets_collection.flag",
+    "table_name": "secrets_collection",
+    "column_name": "flag"
+  },
+  "behavior": {
+    "output": "blind",
+    "error_disclosure": true,
+    "union_based": true,
+    "blind": false
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: search_function",
+      "Database: mongodb",
+      "Output behavior: blind",
+      "\u2713 No input filtering - direct injection possible",
+      "\ud83d\udca1 Try: ' OR '1'='1",
+      "\ud83d\udca1 Blind SQLi - use time-based or boolean techniques",
+      "Flag stored in 'secrets' table"
+    ],
+    "vulnerability_type": "SQL Injection",
+    "estimated_solve_time": "10-15 minutes"
+  }
+}

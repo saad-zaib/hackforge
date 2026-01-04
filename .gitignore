@@ -1,0 +1,19 @@
+# Node
+/web/frontend/node_modules/
+
+# Build
+dist/
+build/
+logs/
+.frontend.pid
+.api.pid
+# Env / secrets
+.env
+.env.*
+*.key
+*.pem
+token
+
+# Cache
+.cache/
+

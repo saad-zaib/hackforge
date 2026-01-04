@@ -1,0 +1,122 @@
+blueprint_id: inj_001
+name: Injection Attacks
+category: injection
+difficulty_range: [1, 5]
+description: |
+  Injection flaws occur when untrusted data is sent to an interpreter as part
+  of a command or query. This includes SQL, Command, NoSQL, LDAP, and XPath injection.
+
+variants:
+  - SQL Injection
+  - Command Injection
+  - NoSQL Injection
+  - LDAP Injection
+  - Template Injection
+
+entry_points:
+  - http_get_param
+  - http_post_param
+  - http_header
+  - file_upload_name
+  - cookie_value
+  - json_body
+
+mutation_axes:
+  filters:
+    none: []
+    basic:
+      - space
+      - semicolon
+    medium:
+      - space
+      - semicolon
+      - pipe
+      - quote
+    advanced:
+      - space
+      - semicolon
+      - pipe
+      - quote
+      - comment
+      - union
+      - ampersand
+    extreme:
+      - alphanumeric_only
+      - length_limit
+      - regex_whitelist
+  
+  sinks:
+    sql:
+      - mysql_query
+      - mysqli_query
+      - execute
+      - raw_query
+      - PDO_query
+    command:
+      - system
+      - exec
+      - shell_exec
+      - popen
+      - subprocess_run
+      - os_system
+    nosql:
+      - find
+      - aggregate
+      - where
+      - eval
+  
+  contexts:
+    - search_function
+    - login_form
+    - export_tool
+    - report_generator
+    - ping_utility
+    - whois_lookup
+    - log_analyzer
+    - file_processor
+  
+  databases:
+    - mysql
+    - postgresql
+    - sqlite
+    - mongodb
+    - mariadb
+  
+  command_structures:
+    - single_command
+    - piped_commands
+    - command_substitution
+    - redirection_chain
+    - backgrounded_process
+    - command_grouping
+  
+  shells:
+    - bash
+    - sh
+    - dash
+    - zsh
+  
+  encoding:
+    - none
+    - url_encoding
+    - base64
+    - hex_encoding
+    - unicode_escape
+    - double_encoding
+  
+  output_behavior:
+    - direct_echo
+    - logged_to_file
+    - base64_encoded
+    - stored_in_db
+    - error_based
+    - blind
+  
+  flag_locations:
+    - /var/www/html/flag.txt
+    - /tmp/flag.txt
+    - /home/user/.flag
+    - /opt/app/flag.txt
+    - /root/flag.txt
+    - env:FLAG
+    - database_table

@@ -1,0 +1,57 @@
+{
+  "machine_id": "9dfeceec2453b211",
+  "blueprint_id": "inj_001",
+  "variant": "SQL Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767240185_inj_001_1767240185_1",
+  "application": {
+    "context": "login_form",
+    "variant": "SQL Injection",
+    "entry_point": "http_get_param",
+    "param_name": "username",
+    "sink": "mysqli_query"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "database": "sqlite",
+    "base_query": "SELECT * FROM users WHERE username='{input}' AND password='{password}'",
+    "injectable_param": "username"
+  },
+  "flag": {
+    "content": "HACKFORGE{c3474415a7cf8f7fa03a2d547b131720}",
+    "location": "database:secrets.flag",
+    "table_name": "secrets",
+    "column_name": "flag"
+  },
+  "behavior": {
+    "output": "direct_echo",
+    "error_disclosure": true,
+    "union_based": true,
+    "blind": false
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: login_form",
+      "Database: sqlite",
+      "Output behavior: direct_echo",
+      "\u26a0\ufe0f Filters active: space, semicolon",
+      "\ud83d\udca1 Try: ' OR '1'='1",
+      "Flag stored in 'secrets' table"
+    ],
+    "vulnerability_type": "SQL Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

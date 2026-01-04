@@ -1,0 +1,56 @@
+{
+  "machine_id": "d71f2e7025560228",
+  "blueprint_id": "inj_001",
+  "variant": "Command Injection",
+  "difficulty": 2,
+  "seed": "e2e_test_1767361249_inj_001_1767361249_1",
+  "application": {
+    "context": "log_analyzer",
+    "variant": "Command Injection",
+    "base_command": "grep",
+    "entry_point": "http_post_param",
+    "param_name": "pattern",
+    "sink": "exec"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "shell": "dash",
+    "command_structure": "command_substitution"
+  },
+  "flag": {
+    "content": "HACKFORGE{7a99b2fea29b22eca8103ffd4a038c5d}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "logged_to_file",
+    "shell_features": [
+      "command_substitution",
+      "basic_redirection"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: log_analyzer",
+      "Shell: dash",
+      "Command structure: command_substitution",
+      "\u26a0\ufe0f Filters: space, semicolon",
+      "\ud83d\udca1 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}",
+      "\ud83d\udca1 Bypass semicolon: Use && or || or newline"
+    ],
+    "vulnerability_type": "Command Injection",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

@@ -1,0 +1,9 @@
+Machine: f16e3508768865d9
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 1
+
+Exploitation Hints:
+  • Access control: timing_vulnerable
+  • Resource ID type: uuid_v4
+  • Authentication: jwt_token
+  • 💡 UUIDs are used but might be predictable or leaked

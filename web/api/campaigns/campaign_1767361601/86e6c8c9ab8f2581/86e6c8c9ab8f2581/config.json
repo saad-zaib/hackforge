@@ -1,0 +1,58 @@
+{
+  "machine_id": "86e6c8c9ab8f2581",
+  "blueprint_id": "inj_001",
+  "variant": "SQL Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767361601_inj_001_1767361601_1",
+  "application": {
+    "context": "whois_lookup",
+    "variant": "SQL Injection",
+    "entry_point": "http_post_param",
+    "param_name": "id",
+    "sink": "PDO_query"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "database": "sqlite",
+    "base_query": "SELECT * FROM items WHERE id={input}",
+    "injectable_param": "id"
+  },
+  "flag": {
+    "content": "HACKFORGE{9e6d197fe06d9134db66d7bee9b5e6bd}",
+    "location": "database:secrets.flag",
+    "table_name": "secrets",
+    "column_name": "flag"
+  },
+  "behavior": {
+    "output": "error_based",
+    "error_disclosure": true,
+    "union_based": true,
+    "blind": false
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: whois_lookup",
+      "Database: sqlite",
+      "Output behavior: error_based",
+      "\u26a0\ufe0f Filters active: space, semicolon",
+      "\ud83d\udca1 Try: ' OR '1'='1",
+      "\ud83d\udca1 Use error-based extraction",
+      "Flag stored in 'secrets' table"
+    ],
+    "vulnerability_type": "SQL Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

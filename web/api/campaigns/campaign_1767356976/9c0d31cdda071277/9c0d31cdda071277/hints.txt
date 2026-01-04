@@ -1,0 +1,10 @@
+Machine: 9c0d31cdda071277
+Variant: Missing Function Level Access Control
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: banking_transaction
+  • Regular user has limited access
+  • 💡 Admin functions might not check authorization properly
+  • Try accessing: /api/admin/users/delete
+  • ⚠️ Some endpoints may not validate user role

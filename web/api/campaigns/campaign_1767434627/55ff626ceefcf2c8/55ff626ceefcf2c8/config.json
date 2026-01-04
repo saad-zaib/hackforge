@@ -1,0 +1,40 @@
+{
+  "machine_id": "55ff626ceefcf2c8",
+  "blueprint_id": "bac_001",
+  "variant": "Path Traversal",
+  "difficulty": 3,
+  "seed": "user_27a9q8la6_bac_001_1767434627_2",
+  "application": {
+    "context": "document_management",
+    "variant": "Path Traversal",
+    "entry_point": "file_path",
+    "param_name": "file"
+  },
+  "constraints": {
+    "filters": [
+      "double_encoding_needed",
+      "null_byte_possible"
+    ],
+    "allowed_directory": "/var/www/html/uploads"
+  },
+  "flag": {
+    "content": "HACKFORGE{72b3faab375b0c8b82c8eb38fbae4cab}",
+    "location": "/var/www/flag.txt",
+    "access_method": "file_read"
+  },
+  "behavior": {
+    "base_path_check": true,
+    "encoding_bypasses": true
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: document_management",
+      "File viewing/download functionality present",
+      "Flag location: /var/www/flag.txt",
+      "\ud83d\udca1 Try path traversal: ../ or ..\\ sequences",
+      "\u26a0\ufe0f Filters active: double_encoding_needed, null_byte_possible"
+    ],
+    "vulnerability_type": "Path Traversal",
+    "estimated_solve_time": "15-30 minutes"
+  }
+}

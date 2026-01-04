@@ -1,0 +1,10 @@
+Machine: ddd66645e72efb21
+Variant: Command Injection
+Difficulty: 1
+
+Exploitation Hints:
+  • Context: ping_utility
+  • Shell: sh
+  • Command structure: piped_commands
+  • ✓ No filtering - direct command injection possible
+  • 💡 Try: ; cat /flag.txt

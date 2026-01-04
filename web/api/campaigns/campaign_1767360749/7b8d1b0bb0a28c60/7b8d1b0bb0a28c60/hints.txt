@@ -1,0 +1,10 @@
+Machine: 7b8d1b0bb0a28c60
+Variant: Missing Function Level Access Control
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: social_media_profile
+  • Regular user has limited access
+  • 💡 Admin functions might not check authorization properly
+  • Try accessing: /api/admin/export
+  • ⚠️ Some endpoints may not validate user role

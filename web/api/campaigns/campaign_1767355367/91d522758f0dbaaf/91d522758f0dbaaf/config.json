@@ -1,0 +1,58 @@
+{
+  "machine_id": "91d522758f0dbaaf",
+  "blueprint_id": "bac_001",
+  "variant": "Missing Function Level Access Control",
+  "difficulty": 2,
+  "seed": "test_api_1767355367_bac_001_1767355367_2",
+  "application": {
+    "context": "document_management",
+    "variant": "Missing Function Level Access Control",
+    "entry_point": "api_endpoint"
+  },
+  "constraints": {
+    "protected_functions": [
+      {
+        "name": "delete_user",
+        "endpoint": "/api/admin/users/delete"
+      },
+      {
+        "name": "view_all_data",
+        "endpoint": "/api/admin/data/all"
+      },
+      {
+        "name": "modify_settings",
+        "endpoint": "/api/admin/settings"
+      },
+      {
+        "name": "export_database",
+        "endpoint": "/api/admin/export"
+      }
+    ],
+    "target_function": {
+      "name": "modify_settings",
+      "endpoint": "/api/admin/settings"
+    }
+  },
+  "flag": {
+    "content": "HACKFORGE{d52b422d55949f1d9352c0b43d707c73}",
+    "location": "/api/admin/settings/flag",
+    "access_method": "direct_api_call"
+  },
+  "behavior": {
+    "authorization_method": "session_cookie",
+    "missing_checks_on": [
+      "modify_settings"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: document_management",
+      "Regular user has limited access",
+      "\ud83d\udca1 Admin functions might not check authorization properly",
+      "Try accessing: /api/admin/settings",
+      "\u26a0\ufe0f Some endpoints may not validate user role"
+    ],
+    "vulnerability_type": "Missing Function Level Access Control",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "machine_id": "6d0d5dbf81245a0e",
+  "blueprint_id": "inj_001",
+  "variant": "NoSQL Injection",
+  "difficulty": 2,
+  "seed": "user_default_inj_001_1767459873_1",
+  "application": {
+    "context": "export_tool",
+    "variant": "NoSQL Injection",
+    "entry_point": "json_body",
+    "param_name": "category",
+    "sink": "eval"
+  },
+  "constraints": {
+    "database": "mongodb",
+    "base_query": "db.products.find({category: input})",
+    "operators_allowed": [
+      "$ne",
+      "$gt",
+      "$regex",
+      "$where"
+    ]
+  },
+  "flag": {
+    "content": "HACKFORGE{38fb1f7bfbee0f94a21268825e4309a9}",
+    "location": "mongodb:secrets.flag",
+    "collection": "secrets"
+  },
+  "behavior": {
+    "output": "direct_echo",
+    "json_parsing": true
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: export_tool",
+      "MongoDB NoSQL database",
+      "Parameter: category",
+      "\ud83d\udca1 Try NoSQL operators: $ne, $gt, $regex",
+      "\ud83d\udca1 JSON injection possible in POST body",
+      "Flag stored in 'secrets' collection"
+    ],
+    "vulnerability_type": "NoSQL Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

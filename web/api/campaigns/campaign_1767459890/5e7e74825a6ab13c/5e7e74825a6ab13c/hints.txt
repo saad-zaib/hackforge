@@ -1,0 +1,11 @@
+Machine: 5e7e74825a6ab13c
+Variant: SQL Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: search_function
+  • Database: mariadb
+  • Output behavior: stored_in_db
+  • ⚠️ Filters active: space, semicolon
+  • 💡 Try: ' OR '1'='1
+  • Flag stored in 'secrets' table

@@ -1,0 +1,10 @@
+Machine: b08006419f1313ca
+Variant: Missing Function Level Access Control
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: e_commerce_order
+  • Regular user has limited access
+  • 💡 Admin functions might not check authorization properly
+  • Try accessing: /api/admin/settings
+  • ⚠️ Some endpoints may not validate user role

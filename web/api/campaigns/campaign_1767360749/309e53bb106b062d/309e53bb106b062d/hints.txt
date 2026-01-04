@@ -1,0 +1,11 @@
+Machine: 309e53bb106b062d
+Variant: Command Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: file_processor
+  • Shell: sh
+  • Command structure: backgrounded_process
+  • ⚠️ Filters: space, semicolon
+  • 💡 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}
+  • 💡 Bypass semicolon: Use && or || or newline

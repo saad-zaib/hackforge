@@ -1,0 +1,93 @@
+{
+  "campaign_id": "campaign_1767434627",
+  "created_at": "2026-01-03 15:03:47",
+  "machines": [
+    {
+      "machine_id": "8bb44835085b9e79",
+      "blueprint_id": "inj_001",
+      "variant": "NoSQL Injection",
+      "difficulty": 3,
+      "seed": "user_27a9q8la6_inj_001_1767434627_1",
+      "application": {
+        "context": "export_tool",
+        "variant": "NoSQL Injection",
+        "entry_point": "http_post_param",
+        "param_name": "category",
+        "sink": "aggregate"
+      },
+      "constraints": {
+        "database": "mongodb",
+        "base_query": "db.products.find({category: input})",
+        "operators_allowed": [
+          "$ne",
+          "$gt",
+          "$regex",
+          "$where"
+        ]
+      },
+      "flag": {
+        "content": "HACKFORGE{680b342859e82b17b3959c71f0fad9a0}",
+        "location": "mongodb:secrets.flag",
+        "collection": "secrets"
+      },
+      "behavior": {
+        "output": "direct_echo",
+        "json_parsing": true
+      },
+      "metadata": {
+        "exploit_hints": [
+          "Context: export_tool",
+          "MongoDB NoSQL database",
+          "Parameter: category",
+          "\ud83d\udca1 Try NoSQL operators: $ne, $gt, $regex",
+          "\ud83d\udca1 JSON injection possible in POST body",
+          "Flag stored in 'secrets' collection",
+          "\u26a0\ufe0f Input validation present - bypass needed"
+        ],
+        "vulnerability_type": "NoSQL Injection",
+        "estimated_solve_time": "30-45 minutes"
+      }
+    },
+    {
+      "machine_id": "55ff626ceefcf2c8",
+      "blueprint_id": "bac_001",
+      "variant": "Path Traversal",
+      "difficulty": 3,
+      "seed": "user_27a9q8la6_bac_001_1767434627_2",
+      "application": {
+        "context": "document_management",
+        "variant": "Path Traversal",
+        "entry_point": "file_path",
+        "param_name": "file"
+      },
+      "constraints": {
+        "filters": [
+          "double_encoding_needed",
+          "null_byte_possible"
+        ],
+        "allowed_directory": "/var/www/html/uploads"
+      },
+      "flag": {
+        "content": "HACKFORGE{72b3faab375b0c8b82c8eb38fbae4cab}",
+        "location": "/var/www/flag.txt",
+        "access_method": "file_read"
+      },
+      "behavior": {
+        "base_path_check": true,
+        "encoding_bypasses": true
+      },
+      "metadata": {
+        "exploit_hints": [
+          "Context: document_management",
+          "File viewing/download functionality present",
+          "Flag location: /var/www/flag.txt",
+          "\ud83d\udca1 Try path traversal: ../ or ..\\ sequences",
+          "\u26a0\ufe0f Filters active: double_encoding_needed, null_byte_possible"
+        ],
+        "vulnerability_type": "Path Traversal",
+        "estimated_solve_time": "15-30 minutes"
+      }
+    }
+  ],
+  "total_machines": 2
+}

@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+
+  machine_1:
+    build: ./a482f0c52af84feb
+    container_name: hackforge_machine_1
+    ports:
+      - "8080:80"
+    volumes:
+      - ./a482f0c52af84feb/app:/var/www/html
+      - ./a482f0c52af84feb/flag.txt:/api/api_endpoint/ca8abc37-adc2-43d5-b9d9-1ad2082f8f7a/secret:ro
+    environment:
+      - MACHINE_ID=a482f0c52af84feb
+
+  machine_2:
+    build: ./7898514abe3f6988
+    container_name: hackforge_machine_2
+    ports:
+      - "8081:80"
+    volumes:
+      - ./7898514abe3f6988/app:/var/www/html
+      - ./7898514abe3f6988/flag.txt:/home/user/.flag:ro
+    environment:
+      - MACHINE_ID=7898514abe3f6988

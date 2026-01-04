@@ -1,0 +1,58 @@
+{
+  "machine_id": "9e69299f295880c8",
+  "blueprint_id": "inj_001",
+  "variant": "Command Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767327199_inj_001_1767327199_1",
+  "application": {
+    "context": "report_generator",
+    "variant": "Command Injection",
+    "base_command": "nslookup",
+    "entry_point": "http_get_param",
+    "param_name": "hostname",
+    "sink": "popen"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "shell": "bash",
+    "command_structure": "command_substitution"
+  },
+  "flag": {
+    "content": "HACKFORGE{f31f0b0990dba56bd4e98f17cb649ca9}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "error_based",
+    "shell_features": [
+      "process_substitution",
+      "brace_expansion",
+      "command_substitution"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: report_generator",
+      "Shell: bash",
+      "Command structure: command_substitution",
+      "\u26a0\ufe0f Filters: space, semicolon",
+      "\ud83d\udca1 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}",
+      "\ud83d\udca1 Bypass semicolon: Use && or || or newline",
+      "\ud83d\udca1 Bash features available: process substitution, brace expansion"
+    ],
+    "vulnerability_type": "Command Injection",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

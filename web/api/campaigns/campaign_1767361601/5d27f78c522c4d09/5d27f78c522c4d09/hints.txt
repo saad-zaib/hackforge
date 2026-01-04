@@ -1,0 +1,10 @@
+Machine: 5d27f78c522c4d09
+Variant: Missing Function Level Access Control
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: document_management
+  • Regular user has limited access
+  • 💡 Admin functions might not check authorization properly
+  • Try accessing: /api/admin/users/delete
+  • ⚠️ Some endpoints may not validate user role

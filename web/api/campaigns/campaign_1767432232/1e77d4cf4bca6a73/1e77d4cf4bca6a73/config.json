@@ -1,0 +1,45 @@
+{
+  "machine_id": "1e77d4cf4bca6a73",
+  "blueprint_id": "inj_001",
+  "variant": "NoSQL Injection",
+  "difficulty": 2,
+  "seed": "e2e_test_1767432232_inj_001_1767432232_1",
+  "application": {
+    "context": "login_form",
+    "variant": "NoSQL Injection",
+    "entry_point": "json_body",
+    "param_name": "username",
+    "sink": "eval"
+  },
+  "constraints": {
+    "database": "mongodb",
+    "base_query": "db.users.find({username: input, password: input2})",
+    "operators_allowed": [
+      "$ne",
+      "$gt",
+      "$regex",
+      "$where"
+    ]
+  },
+  "flag": {
+    "content": "HACKFORGE{dc3a06885d00f763424e46f2f3946cf0}",
+    "location": "mongodb:secrets.flag",
+    "collection": "secrets"
+  },
+  "behavior": {
+    "output": "direct_echo",
+    "json_parsing": true
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: login_form",
+      "MongoDB NoSQL database",
+      "Parameter: username",
+      "\ud83d\udca1 Try NoSQL operators: $ne, $gt, $regex",
+      "\ud83d\udca1 JSON injection possible in POST body",
+      "Flag stored in 'secrets' collection"
+    ],
+    "vulnerability_type": "NoSQL Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

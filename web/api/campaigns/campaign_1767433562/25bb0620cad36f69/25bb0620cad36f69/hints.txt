@@ -1,0 +1,10 @@
+Machine: 25bb0620cad36f69
+Variant: Missing Function Level Access Control
+Difficulty: 1
+
+Exploitation Hints:
+  • Context: banking_transaction
+  • Regular user has limited access
+  • 💡 Admin functions might not check authorization properly
+  • Try accessing: /api/admin/data/all
+  • ⚠️ Some endpoints may not validate user role

@@ -1,0 +1,12 @@
+Machine: 9e69299f295880c8
+Variant: Command Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: report_generator
+  • Shell: bash
+  • Command structure: command_substitution
+  • ⚠️ Filters: space, semicolon
+  • 💡 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}
+  • 💡 Bypass semicolon: Use && or || or newline
+  • 💡 Bash features available: process substitution, brace expansion

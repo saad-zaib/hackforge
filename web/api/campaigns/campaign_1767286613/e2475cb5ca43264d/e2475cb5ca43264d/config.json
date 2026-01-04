@@ -1,0 +1,57 @@
+{
+  "machine_id": "e2475cb5ca43264d",
+  "blueprint_id": "inj_001",
+  "variant": "Command Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767286613_inj_001_1767286613_1",
+  "application": {
+    "context": "file_processor",
+    "variant": "Command Injection",
+    "base_command": "nslookup",
+    "entry_point": "http_header",
+    "param_name": "hostname",
+    "sink": "exec"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "shell": "zsh",
+    "command_structure": "backgrounded_process"
+  },
+  "flag": {
+    "content": "HACKFORGE{00e0f5f666f57387dbf05434b8d01e3c}",
+    "location": "/root/flag.txt"
+  },
+  "behavior": {
+    "output": "blind",
+    "shell_features": [
+      "process_substitution",
+      "brace_expansion",
+      "glob_expansion"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: file_processor",
+      "Shell: zsh",
+      "Command structure: backgrounded_process",
+      "\u26a0\ufe0f Filters: space, semicolon",
+      "\ud83d\udca1 Bypass spaces: Use ${IFS} or $IFS$ or {cat,/flag.txt}",
+      "\ud83d\udca1 Bypass semicolon: Use && or || or newline"
+    ],
+    "vulnerability_type": "Command Injection",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

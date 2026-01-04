@@ -1,0 +1,9 @@
+Machine: 6dc3abac1f9a914c
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: predictable_token
+  • Resource ID type: base64_encoded
+  • Authentication: api_key
+  • 💡 IDs are base64 encoded - try decoding and modifying

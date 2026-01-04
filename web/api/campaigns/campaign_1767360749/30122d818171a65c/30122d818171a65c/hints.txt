@@ -1,0 +1,11 @@
+Machine: 30122d818171a65c
+Variant: NoSQL Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: export_tool
+  • MongoDB NoSQL database
+  • Parameter: category
+  • 💡 Try NoSQL operators: $ne, $gt, $regex
+  • 💡 JSON injection possible in POST body
+  • Flag stored in 'secrets' collection

@@ -1,0 +1,42 @@
+{
+  "machine_id": "ddd66645e72efb21",
+  "blueprint_id": "inj_001",
+  "variant": "Command Injection",
+  "difficulty": 1,
+  "seed": "user_igusszu4o_inj_001_1767434613_1",
+  "application": {
+    "context": "ping_utility",
+    "variant": "Command Injection",
+    "base_command": "ping -c 1",
+    "entry_point": "http_post_param",
+    "param_name": "host",
+    "sink": "subprocess_run"
+  },
+  "constraints": {
+    "filters": [],
+    "shell": "sh",
+    "command_structure": "piped_commands"
+  },
+  "flag": {
+    "content": "HACKFORGE{7246bd9f2601cbfeb9cbd5203330be6a}",
+    "location": "/opt/app/flag.txt"
+  },
+  "behavior": {
+    "output": "logged_to_file",
+    "shell_features": [
+      "command_substitution",
+      "basic_redirection"
+    ]
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: ping_utility",
+      "Shell: sh",
+      "Command structure: piped_commands",
+      "\u2713 No filtering - direct command injection possible",
+      "\ud83d\udca1 Try: ; cat /flag.txt"
+    ],
+    "vulnerability_type": "Command Injection",
+    "estimated_solve_time": "5-10 minutes"
+  }
+}

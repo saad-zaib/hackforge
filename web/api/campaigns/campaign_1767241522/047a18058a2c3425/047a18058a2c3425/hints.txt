@@ -1,0 +1,11 @@
+Machine: 047a18058a2c3425
+Variant: SQL Injection
+Difficulty: 2
+
+Exploitation Hints:
+  • Context: whois_lookup
+  • Database: mariadb
+  • Output behavior: logged_to_file
+  • ⚠️ Filters active: space, semicolon
+  • 💡 Try: ' OR '1'='1
+  • Flag stored in 'secrets' table

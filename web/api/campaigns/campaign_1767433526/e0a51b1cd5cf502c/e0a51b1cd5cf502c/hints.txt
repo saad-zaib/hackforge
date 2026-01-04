@@ -1,0 +1,12 @@
+Machine: e0a51b1cd5cf502c
+Variant: SQL Injection
+Difficulty: 1
+
+Exploitation Hints:
+  • Context: search_function
+  • Database: mongodb
+  • Output behavior: blind
+  • ✓ No input filtering - direct injection possible
+  • 💡 Try: ' OR '1'='1
+  • 💡 Blind SQLi - use time-based or boolean techniques
+  • Flag stored in 'secrets' table

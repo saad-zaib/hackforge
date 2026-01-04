@@ -1,0 +1,126 @@
+{
+  "machine_id": "8d3ad14b1b1469b3",
+  "blueprint_id": "bac_001",
+  "variant": "IDOR (Insecure Direct Object Reference)",
+  "difficulty": 2,
+  "seed": "e2e_test_1767361602_bac_001_1767361602_2",
+  "application": {
+    "context": "document_management",
+    "variant": "IDOR",
+    "resource_type": "transaction",
+    "entry_point": "jwt_claim",
+    "param_name": "user_id"
+  },
+  "constraints": {
+    "access_check": "none",
+    "resource_id_type": "uuid_v4",
+    "target_id": "d792a9c8-0907-498f-96d9-e4053ee8a42d",
+    "current_id": "470857be-2a4a-4128-b007-d666682f616d"
+  },
+  "flag": {
+    "content": "HACKFORGE{c01bad5849f203c567b9dcdb7d655650}",
+    "location": "/api/transaction/d792a9c8-0907-498f-96d9-e4053ee8a42d/secret",
+    "access_method": "api_endpoint"
+  },
+  "behavior": {
+    "authorization_method": "jwt_token",
+    "response_on_unauthorized": "full_data",
+    "users": [
+      {
+        "id": 1,
+        "username": "user1",
+        "email": "user1@example.com",
+        "role": "user",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 2,
+        "username": "user2",
+        "email": "user2@example.com",
+        "role": "user",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 3,
+        "username": "user3",
+        "email": "user3@example.com",
+        "role": "user",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 4,
+        "username": "user4",
+        "email": "user4@example.com",
+        "role": "moderator",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 5,
+        "username": "user5",
+        "email": "user5@example.com",
+        "role": "admin",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 6,
+        "username": "user6",
+        "email": "user6@example.com",
+        "role": "user",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 7,
+        "username": "user7",
+        "email": "user7@example.com",
+        "role": "user",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 8,
+        "username": "user8",
+        "email": "user8@example.com",
+        "role": "user",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 9,
+        "username": "user9",
+        "email": "user9@example.com",
+        "role": "moderator",
+        "created": "2025-01-01"
+      },
+      {
+        "id": 10,
+        "username": "user10",
+        "email": "user10@example.com",
+        "role": "admin",
+        "created": "2025-01-01"
+      }
+    ],
+    "target_user": {
+      "id": 10,
+      "username": "user10",
+      "email": "user10@example.com",
+      "role": "admin",
+      "created": "2025-01-01"
+    },
+    "current_user": {
+      "id": 2,
+      "username": "user2",
+      "email": "user2@example.com",
+      "role": "user",
+      "created": "2025-01-01"
+    }
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Access control: none",
+      "Resource ID type: uuid_v4",
+      "Authentication: jwt_token",
+      "\u2713 No access control - direct ID manipulation possible",
+      "\ud83d\udca1 UUIDs are used but might be predictable or leaked"
+    ],
+    "vulnerability_type": "IDOR",
+    "estimated_solve_time": "10-20 minutes"
+  }
+}

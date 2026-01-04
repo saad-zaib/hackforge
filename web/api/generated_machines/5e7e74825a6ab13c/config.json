@@ -1,0 +1,57 @@
+{
+  "machine_id": "5e7e74825a6ab13c",
+  "blueprint_id": "inj_001",
+  "variant": "SQL Injection",
+  "difficulty": 2,
+  "seed": "user_default_inj_001_1767459890_1",
+  "application": {
+    "context": "search_function",
+    "variant": "SQL Injection",
+    "entry_point": "file_upload_name",
+    "param_name": "search",
+    "sink": "mysqli_query"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "database": "mariadb",
+    "base_query": "SELECT * FROM products WHERE name LIKE '%{input}%'",
+    "injectable_param": "search"
+  },
+  "flag": {
+    "content": "HACKFORGE{a6fe5c5278bf8033d88576f7ae2ba243}",
+    "location": "database:secrets.flag",
+    "table_name": "secrets",
+    "column_name": "flag"
+  },
+  "behavior": {
+    "output": "stored_in_db",
+    "error_disclosure": true,
+    "union_based": true,
+    "blind": false
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: search_function",
+      "Database: mariadb",
+      "Output behavior: stored_in_db",
+      "\u26a0\ufe0f Filters active: space, semicolon",
+      "\ud83d\udca1 Try: ' OR '1'='1",
+      "Flag stored in 'secrets' table"
+    ],
+    "vulnerability_type": "SQL Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

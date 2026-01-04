@@ -1,0 +1,9 @@
+Machine: 0189c0a526033fe8
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: predictable_token
+  • Resource ID type: uuid_v4
+  • Authentication: api_key
+  • 💡 UUIDs are used but might be predictable or leaked

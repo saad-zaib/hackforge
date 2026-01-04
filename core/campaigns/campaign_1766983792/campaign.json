@@ -1,0 +1,122 @@
+{
+  "campaign_id": "campaign_1766983792",
+  "created_at": "2025-12-29 09:49:52",
+  "machines": [
+    {
+      "machine_id": "cffe83e967363abe",
+      "blueprint_id": "inj_001",
+      "variant": "SQL Injection",
+      "difficulty": 2,
+      "seed": "demo_user_inj_001_1766983792_1",
+      "application": {
+        "context": "log_analyzer",
+        "variant": "SQL Injection",
+        "entry_point": "file_upload_name",
+        "param_name": "id",
+        "sink": "PDO_query"
+      },
+      "constraints": {
+        "filters": [
+          {
+            "type": "space",
+            "description": "Spaces are removed",
+            "php_code": "$input = str_replace(' ', '', $input);",
+            "python_code": "input = input.replace(' ', '')"
+          },
+          {
+            "type": "semicolon",
+            "description": "Semicolons are removed",
+            "php_code": "$input = str_replace(';', '', $input);",
+            "python_code": "input = input.replace(';', '')"
+          }
+        ],
+        "database": "mongodb",
+        "base_query": "SELECT * FROM items WHERE id={input}",
+        "injectable_param": "id"
+      },
+      "flag": {
+        "content": "HACKFORGE{43719b5348da55836fe36c3d6940845b}",
+        "location": "database:secrets_collection.flag",
+        "table_name": "secrets_collection",
+        "column_name": "flag"
+      },
+      "behavior": {
+        "output": "stored_in_db",
+        "error_disclosure": true,
+        "union_based": true,
+        "blind": false
+      },
+      "metadata": {
+        "exploit_hints": [
+          "Context: log_analyzer",
+          "Database: mongodb",
+          "Output behavior: stored_in_db",
+          "\u26a0\ufe0f Filters active: space, semicolon",
+          "\ud83d\udca1 Try: ' OR '1'='1",
+          "Flag stored in 'secrets' table"
+        ],
+        "vulnerability_type": "SQL Injection",
+        "estimated_solve_time": "20-30 minutes"
+      }
+    },
+    {
+      "machine_id": "f8300556ea105720",
+      "blueprint_id": "bac_001",
+      "variant": "Missing Function Level Access Control",
+      "difficulty": 2,
+      "seed": "demo_user_bac_001_1766983792_2",
+      "application": {
+        "context": "document_management",
+        "variant": "Missing Function Level Access Control",
+        "entry_point": "api_endpoint"
+      },
+      "constraints": {
+        "protected_functions": [
+          {
+            "name": "delete_user",
+            "endpoint": "/api/admin/users/delete"
+          },
+          {
+            "name": "view_all_data",
+            "endpoint": "/api/admin/data/all"
+          },
+          {
+            "name": "modify_settings",
+            "endpoint": "/api/admin/settings"
+          },
+          {
+            "name": "export_database",
+            "endpoint": "/api/admin/export"
+          }
+        ],
+        "target_function": {
+          "name": "delete_user",
+          "endpoint": "/api/admin/users/delete"
+        }
+      },
+      "flag": {
+        "content": "HACKFORGE{abce71c3a7d3b93ba8b04c34367fb969}",
+        "location": "/api/admin/users/delete/flag",
+        "access_method": "direct_api_call"
+      },
+      "behavior": {
+        "authorization_method": "session_cookie",
+        "missing_checks_on": [
+          "delete_user"
+        ]
+      },
+      "metadata": {
+        "exploit_hints": [
+          "Context: document_management",
+          "Regular user has limited access",
+          "\ud83d\udca1 Admin functions might not check authorization properly",
+          "Try accessing: /api/admin/users/delete",
+          "\u26a0\ufe0f Some endpoints may not validate user role"
+        ],
+        "vulnerability_type": "Missing Function Level Access Control",
+        "estimated_solve_time": "10-20 minutes"
+      }
+    }
+  ],
+  "total_machines": 2
+}

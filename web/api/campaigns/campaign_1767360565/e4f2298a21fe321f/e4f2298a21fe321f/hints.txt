@@ -1,0 +1,8 @@
+Machine: e4f2298a21fe321f
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: timing_vulnerable
+  • Resource ID type: predictable_pattern
+  • Authentication: session_cookie

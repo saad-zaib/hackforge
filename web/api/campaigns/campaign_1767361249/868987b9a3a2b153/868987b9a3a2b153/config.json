@@ -1,0 +1,57 @@
+{
+  "machine_id": "868987b9a3a2b153",
+  "blueprint_id": "inj_001",
+  "variant": "SQL Injection",
+  "difficulty": 2,
+  "seed": "test_api_1767361249_inj_001_1767361249_1",
+  "application": {
+    "context": "ping_utility",
+    "variant": "SQL Injection",
+    "entry_point": "json_body",
+    "param_name": "id",
+    "sink": "mysqli_query"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "database": "mongodb",
+    "base_query": "SELECT * FROM items WHERE id={input}",
+    "injectable_param": "id"
+  },
+  "flag": {
+    "content": "HACKFORGE{1ff59abb6b673911a3079e719dd17106}",
+    "location": "database:secrets_collection.flag",
+    "table_name": "secrets_collection",
+    "column_name": "flag"
+  },
+  "behavior": {
+    "output": "base64_encoded",
+    "error_disclosure": true,
+    "union_based": true,
+    "blind": false
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: ping_utility",
+      "Database: mongodb",
+      "Output behavior: base64_encoded",
+      "\u26a0\ufe0f Filters active: space, semicolon",
+      "\ud83d\udca1 Try: ' OR '1'='1",
+      "Flag stored in 'secrets' table"
+    ],
+    "vulnerability_type": "SQL Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

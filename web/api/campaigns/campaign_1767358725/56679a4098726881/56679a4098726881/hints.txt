@@ -1,0 +1,10 @@
+Machine: 56679a4098726881
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: client_side_only
+  • Resource ID type: sequential_numeric
+  • Authentication: basic_auth
+  • ⚠️ Access checks are client-side only
+  • 💡 Try incrementing/decrementing the ID parameter
