@@ -1,9 +1,0 @@
-Machine: 90b8f67ccc3016cc
-Variant: IDOR (Insecure Direct Object Reference)
-Difficulty: 3
-
-Exploitation Hints:
-  • Access control: weak_session_check
-  • Resource ID type: predictable_pattern
-  • Authentication: basic_auth
-  • ⚠️ Session validation is weak

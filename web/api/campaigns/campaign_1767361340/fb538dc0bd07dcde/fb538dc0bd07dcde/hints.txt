@@ -1,9 +1,0 @@
-Machine: fb538dc0bd07dcde
-Variant: IDOR (Insecure Direct Object Reference)
-Difficulty: 2
-
-Exploitation Hints:
-  • Access control: client_side_only
-  • Resource ID type: predictable_pattern
-  • Authentication: jwt_token
-  • ⚠️ Access checks are client-side only

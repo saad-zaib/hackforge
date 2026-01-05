@@ -1,9 +1,0 @@
-Machine: 589260d4528fb15d
-Variant: IDOR (Insecure Direct Object Reference)
-Difficulty: 2
-
-Exploitation Hints:
-  • Access control: weak_session_check
-  • Resource ID type: md5_hash
-  • Authentication: basic_auth
-  • ⚠️ Session validation is weak

@@ -1,9 +1,0 @@
-Machine: 04671a30f41fa419
-Variant: IDOR (Insecure Direct Object Reference)
-Difficulty: 2
-
-Exploitation Hints:
-  • Access control: client_side_only
-  • Resource ID type: md5_hash
-  • Authentication: api_key
-  • ⚠️ Access checks are client-side only

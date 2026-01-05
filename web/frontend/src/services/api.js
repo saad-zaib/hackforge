@@ -1,4 +1,4 @@
-// src/services/api.js
+// src/services/api.js - Enhanced API Service
 const API_BASE_URL = 'http://localhost:8000';
 
 class APIService {
@@ -14,7 +14,7 @@ class APIService {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ detail: 'API request failed' }));
         throw new Error(error.detail || 'API request failed');
       }
 
@@ -43,16 +43,32 @@ class APIService {
     return this.request(`/api/blueprints/${blueprintId}`);
   }
 
-  // Campaigns
-  async createCampaign(userId, difficulty, count = null) {
+  // Campaigns - ENHANCED
+  async createCampaign(userId, campaignName, difficulty, count = null) {
     return this.request('/api/campaigns', {
       method: 'POST',
       body: JSON.stringify({
         user_id: userId,
+        campaign_name: campaignName,
         difficulty: difficulty,
         count: count
       }),
     });
+  }
+
+  // NEW: Get user's campaigns
+  async getUserCampaigns(userId) {
+    return this.request(`/api/users/${userId}/campaigns`);
+  }
+
+  // NEW: Get specific campaign details
+  async getCampaign(campaignId) {
+    return this.request(`/api/campaigns/${campaignId}`);
+  }
+
+  // NEW: Get machines for a campaign
+  async getCampaignMachines(campaignId) {
+    return this.request(`/api/campaigns/${campaignId}/machines`);
   }
 
   async getCampaignProgress(campaignId, userId) {
@@ -84,7 +100,7 @@ class APIService {
     });
   }
 
-  // Docker Management
+  // Docker Management - ALL CONTAINERS
   async startContainers() {
     return this.request('/api/docker/start', {
       method: 'POST',
@@ -111,6 +127,45 @@ class APIService {
 
   async getDockerStatus() {
     return this.request('/api/docker/status');
+  }
+
+  // NEW: Get containers by campaign
+  async getCampaignContainers(campaignId) {
+    return this.request(`/api/docker/campaign/${campaignId}/containers`);
+  }
+
+  // Docker Management - INDIVIDUAL CONTAINERS
+  async startContainer(containerId) {
+    console.log('Starting container:', containerId);
+    return this.request(`/api/docker/container/${containerId}/start`, {
+      method: 'POST',
+    });
+  }
+
+  async stopContainer(containerId) {
+    console.log('Stopping container:', containerId);
+    return this.request(`/api/docker/container/${containerId}/stop`, {
+      method: 'POST',
+    });
+  }
+
+  async restartContainer(containerId) {
+    console.log('Restarting container:', containerId);
+    return this.request(`/api/docker/container/${containerId}/restart`, {
+      method: 'POST',
+    });
+  }
+
+  async removeContainer(containerId) {
+    console.log('Removing container:', containerId);
+    return this.request(`/api/docker/container/${containerId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getContainerLogs(containerId, tail = 100) {
+    console.log('Getting logs for container:', containerId);
+    return this.request(`/api/docker/container/${containerId}/logs?tail=${tail}`);
   }
 
   // Users
@@ -144,4 +199,6 @@ class APIService {
   }
 }
 
-export default new APIService();
+// Export as default (singleton pattern)
+const apiService = new APIService();
+export default apiService;

@@ -1,0 +1,9 @@
+Machine: d0c890e41e738bef
+Variant: IDOR (Insecure Direct Object Reference)
+Difficulty: 2
+
+Exploitation Hints:
+  • Access control: timing_vulnerable
+  • Resource ID type: base64_encoded
+  • Authentication: basic_auth
+  • 💡 IDs are base64 encoded - try decoding and modifying

@@ -1,23 +1,57 @@
-import React, { useState } from 'react';
-import { Zap, Plus, Target, AlertCircle, CheckCircle, Loader, ChevronRight, Shield } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Zap, Plus, Target, AlertCircle, CheckCircle, Loader, ChevronRight, Shield, List, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const Campaigns = () => {
-  const [userId] = useState('user_default'); // Replace with actual auth
+  const navigate = useNavigate();
+  const [userId] = useState('user_default');
   const [isCreating, setIsCreating] = useState(false);
   const [difficulty, setDifficulty] = useState(2);
   const [machineCount, setMachineCount] = useState(5);
+  const [campaignName, setCampaignName] = useState(''); // NEW
   const [createdCampaign, setCreatedCampaign] = useState(null);
   const [error, setError] = useState(null);
+  
+  // NEW: Campaign list
+  const [myCampaigns, setMyCampaigns] = useState([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+
+  useEffect(() => {
+    fetchMyCampaigns();
+  }, []);
+
+  const fetchMyCampaigns = async () => {
+    try {
+      setLoadingCampaigns(true);
+      const campaigns = await api.getUserCampaigns(userId);
+      setMyCampaigns(campaigns);
+      setLoadingCampaigns(false);
+    } catch (err) {
+      console.error('Error fetching campaigns:', err);
+      setLoadingCampaigns(false);
+    }
+  };
 
   const handleCreateCampaign = async () => {
+    if (!campaignName.trim()) {
+      setError('Please enter a campaign name');
+      return;
+    }
+
     try {
       setIsCreating(true);
       setError(null);
       
-      const campaign = await api.createCampaign(userId, difficulty, machineCount);
+      const campaign = await api.createCampaign(userId, campaignName, difficulty, machineCount);
       setCreatedCampaign(campaign);
       setIsCreating(false);
+      
+      // Refresh campaigns list
+      fetchMyCampaigns();
+      
+      // Reset form
+      setCampaignName('');
     } catch (err) {
       setError(err.message);
       setIsCreating(false);
@@ -26,11 +60,11 @@ const Campaigns = () => {
 
   const getDifficultyColor = (level) => {
     const colors = {
-      1: '#10b981', // green
-      2: '#3b82f6', // blue
-      3: '#f59e0b', // amber
-      4: '#f97316', // orange
-      5: '#ef4444'  // red
+      1: '#10b981',
+      2: '#3b82f6',
+      3: '#f59e0b',
+      4: '#f97316',
+      5: '#ef4444'
     };
     return colors[level] || '#ff7300';
   };
@@ -52,11 +86,95 @@ const Campaigns = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white via-orange-500 to-orange-600 bg-clip-text text-transparent">
-            Campaign Creator
+            Campaign Manager
           </h1>
-          <p className="text-gray-400">Generate custom cybersecurity challenges</p>
+          <p className="text-gray-400">Create and manage your cybersecurity training campaigns</p>
         </div>
 
+        {/* My Campaigns Section */}
+        <div className="mb-8">
+          <div className="rounded-2xl border border-gray-900 bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur p-6">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/20">
+                <List className="w-6 h-6 text-blue-500" />
+              </div>
+              My Campaigns
+            </h2>
+
+            {loadingCampaigns ? (
+              <div className="text-center py-8">
+                <Loader className="w-8 h-8 text-orange-500 animate-spin mx-auto mb-3" />
+                <p className="text-gray-400 text-sm">Loading campaigns...</p>
+              </div>
+            ) : myCampaigns.length === 0 ? (
+              <div className="text-center py-8">
+                <Target className="w-16 h-16 text-gray-700 mx-auto mb-4 opacity-50" />
+                <p className="text-gray-500">No campaigns yet. Create your first one below!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {myCampaigns.map((campaign) => (
+                  <div
+                    key={campaign.campaign_id}
+                    className="p-4 rounded-xl bg-black/30 border border-gray-800 hover:border-orange-500/50 transition-all duration-300 group cursor-pointer"
+                    onClick={() => navigate(`/campaigns/${campaign.campaign_id}`)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-bold text-white group-hover:text-orange-500 transition-colors">
+                            {campaign.campaign_name || 'Unnamed Campaign'}
+                          </h3>
+                          <div
+                            className="px-2 py-1 rounded-lg text-xs font-semibold"
+                            style={{
+                              backgroundColor: `${getDifficultyColor(campaign.difficulty)}20`,
+                              color: getDifficultyColor(campaign.difficulty)
+                            }}
+                          >
+                            Level {campaign.difficulty}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                          <span>{campaign.machine_count} machines</span>
+                          <span>•</span>
+                          <span>
+                            {campaign.machines_solved || 0}/{campaign.machine_count} solved
+                          </span>
+                          <span>•</span>
+                          <span>
+                            {Math.round(campaign.progress_percentage || 0)}% complete
+                          </span>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="mt-3 h-2 bg-gray-900 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-500"
+                            style={{ width: `${campaign.progress_percentage || 0}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/campaigns/${campaign.campaign_id}`);
+                        }}
+                        className="ml-4 p-3 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 transition-all group/btn"
+                      >
+                        <Eye className="w-5 h-5 text-orange-500 group-hover/btn:scale-110 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Create New Campaign Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Creation Form */}
           <div className="rounded-2xl border border-gray-900 bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur p-8">
@@ -66,6 +184,20 @@ const Campaigns = () => {
               </div>
               Create New Campaign
             </h2>
+
+            {/* Campaign Name Input - NEW */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-400 mb-3">
+                Campaign Name *
+              </label>
+              <input
+                type="text"
+                value={campaignName}
+                onChange={(e) => setCampaignName(e.target.value)}
+                placeholder="e.g., Web Security Training, SQL Injection Course"
+                className="w-full px-4 py-3 bg-black/50 border border-gray-800 rounded-xl text-white focus:outline-none focus:border-orange-500 transition-colors placeholder-gray-600"
+              />
+            </div>
 
             {/* Difficulty Selector */}
             <div className="mb-6">
@@ -161,7 +293,7 @@ const Campaigns = () => {
                   <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
                   <div>
                     <h3 className="text-lg font-bold text-green-400">Campaign Created!</h3>
-                    <p className="text-sm text-gray-400">Your machines are ready to deploy</p>
+                    <p className="text-sm text-gray-400">{createdCampaign.campaign_name}</p>
                   </div>
                 </div>
 
@@ -186,7 +318,7 @@ const Campaigns = () => {
                 {/* Machines List */}
                 <div>
                   <h4 className="text-sm font-semibold text-gray-400 mb-3">Your Machines</h4>
-                  <div className="space-y-2">
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
                     {createdCampaign.machines.map((machine, index) => (
                       <div
                         key={machine.machine_id}
@@ -221,35 +353,12 @@ const Campaigns = () => {
                   </div>
                 </div>
 
-                {/* Next Steps */}
-                <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-500/30">
-                  <h4 className="text-sm font-semibold text-blue-400 mb-2">Next Steps</h4>
-                  <ol className="space-y-2 text-sm text-gray-400">
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-500 font-bold">1.</span>
-                      <span>Go to Docker Control panel</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-500 font-bold">2.</span>
-                      <span>Start your containers</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-500 font-bold">3.</span>
-                      <span>Access machines via the URLs above</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-500 font-bold">4.</span>
-                      <span>Find vulnerabilities and capture flags!</span>
-                    </li>
-                  </ol>
-                </div>
-
                 {/* Action Button */}
                 <button
-                  onClick={() => window.location.href = '/docker'}
+                  onClick={() => navigate(`/campaigns/${createdCampaign.campaign_id}`)}
                   className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
                 >
-                  Go to Docker Control
+                  View Campaign Details
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>

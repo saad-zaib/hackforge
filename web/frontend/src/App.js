@@ -1,20 +1,22 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Target, Home, Zap, Server, Terminal, User, Trophy } from 'lucide-react';
 
-// Import components (you'll create these)
+// Import components
 import Dashboard from './components/Dashboard';
 import Campaigns from './components/Campaigns';
+import CampaignDetail from './components/CampaignDetail'; // NEW
 import Machines from './components/Machines';
 import DockerControl from './components/DockerControl';
 import Leaderboard from './components/Leaderboard';
 import Profile from './components/Profile';
+import ContainerDebug from './components/ContainerDebug';
 
 // Navigation Component
 const Navigation = () => {
   const location = useLocation();
-  const [currentUserId] = useState('user_default'); // You can replace with actual auth
+  const [currentUserId] = useState('user_default');
 
   const isActive = (path) => location.pathname === path;
 
@@ -91,10 +93,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/campaigns" element={<Campaigns />} />
+          <Route path="/campaigns/:campaignId" element={<CampaignDetail />} /> {/* NEW */}
           <Route path="/machines" element={<Machines />} />
           <Route path="/docker" element={<DockerControl />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/debug" element={<ContainerDebug />} />
         </Routes>
       </div>
     </Router>

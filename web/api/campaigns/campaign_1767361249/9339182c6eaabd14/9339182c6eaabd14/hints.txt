@@ -1,9 +1,0 @@
-Machine: 9339182c6eaabd14
-Variant: IDOR (Insecure Direct Object Reference)
-Difficulty: 2
-
-Exploitation Hints:
-  • Access control: predictable_token
-  • Resource ID type: sequential_numeric
-  • Authentication: session_cookie
-  • 💡 Try incrementing/decrementing the ID parameter

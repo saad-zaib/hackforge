@@ -1,21 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Play, Square, RefreshCw, Trash2, Activity, Loader, CheckCircle, AlertCircle, Server } from 'lucide-react';
+import { Terminal, Play, Square, RefreshCw, Trash2, Activity, Loader, CheckCircle, AlertCircle, Server, FileText, Filter } from 'lucide-react';
 import api from '../services/api';
 
 const DockerControl = () => {
+  const [userId] = useState('user_default');
   const [containers, setContainers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(null);
+  const [actionLoading, setActionLoading] = useState({});
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [stats, setStats] = useState({ total: 0, running: 0 });
+  const [containerLogs, setContainerLogs] = useState(null);
+  
+  // NEW: Campaign filtering
+  const [myCampaigns, setMyCampaigns] = useState([]);
+  const [selectedCampaign, setSelectedCampaign] = useState('all');
+  const [filteredContainers, setFilteredContainers] = useState([]);
 
   useEffect(() => {
+    fetchMyCampaigns();
     fetchDockerStatus();
-    // Poll status every 3 seconds
     const interval = setInterval(fetchDockerStatus, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    filterContainers();
+  }, [containers, selectedCampaign]);
+
+  const fetchMyCampaigns = async () => {
+    try {
+      const campaigns = await api.getUserCampaigns(userId);
+      setMyCampaigns(campaigns);
+    } catch (err) {
+      console.error('Error fetching campaigns:', err);
+    }
+  };
 
   const fetchDockerStatus = async () => {
     try {
@@ -34,38 +54,87 @@ const DockerControl = () => {
     }
   };
 
-  const handleAction = async (action, actionName) => {
-    try {
-      setActionLoading(actionName);
-      setError(null);
-      setSuccess(null);
-
-      const result = await action();
-      setSuccess(result.message || `${actionName} completed successfully`);
-      
-      // Wait a bit then refresh
-      setTimeout(() => {
-        fetchDockerStatus();
-        setActionLoading(null);
-      }, 1000);
-    } catch (err) {
-      setError(err.message);
-      setActionLoading(null);
+  const filterContainers = async () => {
+    if (selectedCampaign === 'all') {
+      setFilteredContainers(containers);
+    } else {
+      try {
+        const data = await api.getCampaignContainers(selectedCampaign);
+        setFilteredContainers(data.containers || []);
+      } catch (err) {
+        console.error('Error filtering containers:', err);
+        setFilteredContainers([]);
+      }
     }
   };
 
-  const ActionButton = ({ icon: Icon, label, onClick, color, disabled }) => (
+  const handleBulkAction = async (actionFunc, actionName) => {
+    try {
+      setActionLoading(prev => ({ ...prev, [actionName]: true }));
+      setError(null);
+      setSuccess(null);
+
+      const result = await actionFunc();
+      setSuccess(result.message || `${actionName} completed successfully`);
+      
+      setTimeout(() => {
+        fetchDockerStatus();
+        setActionLoading(prev => ({ ...prev, [actionName]: false }));
+        setSuccess(null);
+      }, 2000);
+    } catch (err) {
+      setError(err.message);
+      setActionLoading(prev => ({ ...prev, [actionName]: false }));
+    }
+  };
+
+  const handleContainerAction = async (containerId, actionFunc, actionName) => {
+    const key = `${actionName}-${containerId}`;
+    try {
+      setActionLoading(prev => ({ ...prev, [key]: true }));
+      setError(null);
+      setSuccess(null);
+
+      const result = await actionFunc(containerId);
+      setSuccess(`${actionName} completed successfully`);
+      
+      setTimeout(() => {
+        fetchDockerStatus();
+        setActionLoading(prev => ({ ...prev, [key]: false }));
+        setSuccess(null);
+      }, 1500);
+    } catch (err) {
+      setError(`Failed to ${actionName.toLowerCase()}: ${err.message}`);
+      setActionLoading(prev => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const handleViewLogs = async (containerId, containerName) => {
+    try {
+      setError(null);
+      const logs = await api.getContainerLogs(containerId);
+      setContainerLogs({ 
+        containerId, 
+        containerName,
+        logs: logs.logs || 'No logs available' 
+      });
+    } catch (err) {
+      setError(`Failed to fetch logs: ${err.message}`);
+    }
+  };
+
+  const BulkActionButton = ({ icon: Icon, label, onClick, color }) => (
     <button
       onClick={onClick}
-      disabled={disabled || actionLoading}
-      className={`flex-1 p-4 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group`}
+      disabled={actionLoading[label]}
+      className="flex-1 p-4 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
       style={{
         backgroundColor: `${color}10`,
         borderColor: `${color}40`,
       }}
     >
       <div className="flex flex-col items-center gap-2">
-        {actionLoading === label ? (
+        {actionLoading[label] ? (
           <Loader className="w-6 h-6 animate-spin" style={{ color }} />
         ) : (
           <Icon className="w-6 h-6 group-hover:scale-110 transition-transform" style={{ color }} />
@@ -77,16 +146,24 @@ const DockerControl = () => {
 
   const ContainerCard = ({ container }) => {
     const isRunning = container.State === 'running';
+    const containerId = container.Id || container.ID || '';
+    const containerName = container.Names?.[0]?.replace('/', '') || container.Name || 'Unknown';
+    
+    const startKey = `Start-${containerId}`;
+    const stopKey = `Stop-${containerId}`;
+    const restartKey = `Restart-${containerId}`;
+    const removeKey = `Remove-${containerId}`;
     
     return (
-      <div className="p-4 rounded-xl bg-black/30 border border-gray-800 hover:border-orange-500/50 transition-all duration-300">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <div className="p-5 rounded-xl bg-black/30 border border-gray-800 hover:border-orange-500/50 transition-all duration-300">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3 flex-1">
             <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500 animate-pulse' : 'bg-gray-600'}`} />
-            <div>
-              <h4 className="text-white font-semibold">{container.Name || container.Names?.[0] || 'Unknown'}</h4>
-              <p className="text-xs text-gray-500">
-                {container.Image || 'No image info'}
+            <div className="flex-1">
+              <h4 className="text-white font-semibold text-lg">{containerName}</h4>
+              <p className="text-xs text-gray-500 font-mono">
+                {containerId.substring(0, 12)}
               </p>
             </div>
           </div>
@@ -97,6 +174,102 @@ const DockerControl = () => {
           }`}>
             {container.State || 'unknown'}
           </div>
+        </div>
+
+        {/* Container Info */}
+        <div className="mb-4 p-3 rounded-lg bg-gray-900/50">
+          <p className="text-xs text-gray-400">
+            <span className="text-gray-500 font-semibold">Image:</span>
+          </p>
+          <p className="text-xs text-white font-mono truncate mt-1">
+            {container.Image || 'N/A'}
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            {/* Start Button */}
+            <button
+              onClick={() => handleContainerAction(containerId, api.startContainer, 'Start')}
+              disabled={isRunning || actionLoading[startKey]}
+              className="p-3 rounded-lg bg-green-500/20 hover:bg-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed border border-green-500/40 transition-all group"
+            >
+              <div className="flex items-center justify-center gap-2">
+                {actionLoading[startKey] ? (
+                  <Loader className="w-4 h-4 text-green-500 animate-spin" />
+                ) : (
+                  <Play className="w-4 h-4 text-green-500 group-hover:scale-110 transition-transform" />
+                )}
+                <span className="text-sm font-semibold text-green-500">Start</span>
+              </div>
+            </button>
+            
+            {/* Stop Button */}
+            <button
+              onClick={() => handleContainerAction(containerId, api.stopContainer, 'Stop')}
+              disabled={!isRunning || actionLoading[stopKey]}
+              className="p-3 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed border border-orange-500/40 transition-all group"
+            >
+              <div className="flex items-center justify-center gap-2">
+                {actionLoading[stopKey] ? (
+                  <Loader className="w-4 h-4 text-orange-500 animate-spin" />
+                ) : (
+                  <Square className="w-4 h-4 text-orange-500 group-hover:scale-110 transition-transform" />
+                )}
+                <span className="text-sm font-semibold text-orange-500">Stop</span>
+              </div>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {/* Restart Button */}
+            <button
+              onClick={() => handleContainerAction(containerId, api.restartContainer, 'Restart')}
+              disabled={!isRunning || actionLoading[restartKey]}
+              className="p-3 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed border border-blue-500/40 transition-all group"
+            >
+              <div className="flex items-center justify-center gap-2">
+                {actionLoading[restartKey] ? (
+                  <Loader className="w-4 h-4 text-blue-500 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
+                )}
+                <span className="text-sm font-semibold text-blue-500">Restart</span>
+              </div>
+            </button>
+            
+            {/* Logs Button */}
+            <button
+              onClick={() => handleViewLogs(containerId, containerName)}
+              className="p-3 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 transition-all group"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <FileText className="w-4 h-4 text-purple-500 group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-semibold text-purple-500">Logs</span>
+              </div>
+            </button>
+          </div>
+
+          {/* Remove Button - Separate and More Dangerous */}
+          <button
+            onClick={() => {
+              if (window.confirm(`⚠️ Remove container "${containerName}"? This cannot be undone!`)) {
+                handleContainerAction(containerId, api.removeContainer, 'Remove');
+              }
+            }}
+            disabled={actionLoading[removeKey]}
+            className="w-full p-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 disabled:opacity-50 border border-red-500/40 transition-all group"
+          >
+            <div className="flex items-center justify-center gap-2">
+              {actionLoading[removeKey] ? (
+                <Loader className="w-4 h-4 text-red-500 animate-spin" />
+              ) : (
+                <Trash2 className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
+              )}
+              <span className="text-sm font-semibold text-red-500">Remove Container</span>
+            </div>
+          </button>
         </div>
       </div>
     );
@@ -122,6 +295,31 @@ const DockerControl = () => {
             Docker Control Panel
           </h1>
           <p className="text-gray-400">Manage your container infrastructure</p>
+        </div>
+
+        {/* Campaign Filter - NEW */}
+        <div className="mb-6 rounded-2xl border border-gray-900 bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur p-6">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-blue-500" />
+              <span className="text-sm font-semibold text-gray-400">Filter by Campaign:</span>
+            </div>
+            <select
+              value={selectedCampaign}
+              onChange={(e) => setSelectedCampaign(e.target.value)}
+              className="flex-1 max-w-md px-4 py-2 bg-black/50 border border-gray-800 rounded-lg text-white focus:outline-none focus:border-orange-500 transition-colors"
+            >
+              <option value="all">All Containers</option>
+              {myCampaigns.map((campaign) => (
+                <option key={campaign.campaign_id} value={campaign.campaign_id}>
+                  {campaign.campaign_name || 'Unnamed Campaign'} ({campaign.machine_count} machines)
+                </option>
+              ))}
+            </select>
+            <div className="text-sm text-gray-400">
+              Showing: <span className="text-white font-semibold">{filteredContainers.length}</span> containers
+            </div>
+          </div>
         </div>
 
         {/* Status Cards */}
@@ -150,38 +348,38 @@ const DockerControl = () => {
             </div>
           </div>
 
-          {/* Action Controls */}
+          {/* Bulk Action Controls */}
           <div className="rounded-2xl border border-gray-900 bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">Actions</h3>
+              <h3 className="text-lg font-bold text-white">Bulk Actions</h3>
               <Terminal className="w-5 h-5 text-blue-500" />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <ActionButton
+              <BulkActionButton
                 icon={Play}
                 label="Start All"
                 color="#10b981"
-                onClick={() => handleAction(api.startContainers, 'Start All')}
+                onClick={() => handleBulkAction(() => api.startContainers(), 'Start All')}
               />
-              <ActionButton
+              <BulkActionButton
                 icon={Square}
                 label="Stop All"
                 color="#f97316"
-                onClick={() => handleAction(api.stopContainers, 'Stop All')}
+                onClick={() => handleBulkAction(() => api.stopContainers(), 'Stop All')}
               />
-              <ActionButton
+              <BulkActionButton
                 icon={RefreshCw}
                 label="Restart All"
                 color="#3b82f6"
-                onClick={() => handleAction(api.restartContainers, 'Restart All')}
+                onClick={() => handleBulkAction(() => api.restartContainers(), 'Restart All')}
               />
-              <ActionButton
+              <BulkActionButton
                 icon={Trash2}
                 label="Destroy All"
                 color="#ef4444"
                 onClick={() => {
                   if (window.confirm('⚠️ This will permanently delete all containers. Are you sure?')) {
-                    handleAction(api.destroyContainers, 'Destroy All');
+                    handleBulkAction(() => api.destroyContainers(), 'Destroy All');
                   }
                 }}
               />
@@ -191,16 +389,47 @@ const DockerControl = () => {
 
         {/* Messages */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-950/20 border border-red-500/50 flex items-center gap-3">
+          <div className="mb-6 p-4 rounded-xl bg-red-950/20 border border-red-500/50 flex items-center gap-3 animate-pulse">
             <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-            <p className="text-red-400">{error}</p>
+            <p className="text-red-400 flex-1">{error}</p>
+            <button 
+              onClick={() => setError(null)} 
+              className="text-red-400 hover:text-red-300 text-xl font-bold"
+            >
+              ×
+            </button>
           </div>
         )}
 
         {success && (
-          <div className="mb-6 p-4 rounded-xl bg-green-950/20 border border-green-500/50 flex items-center gap-3">
+          <div className="mb-6 p-4 rounded-xl bg-green-950/20 border border-green-500/50 flex items-center gap-3 animate-pulse">
             <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
             <p className="text-green-400">{success}</p>
+          </div>
+        )}
+
+        {/* Container Logs Modal */}
+        {containerLogs && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div className="bg-gray-900 rounded-2xl border border-gray-800 max-w-4xl w-full max-h-[80vh] overflow-hidden">
+              <div className="p-6 border-b border-gray-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Container Logs</h3>
+                  <p className="text-sm text-gray-400">{containerLogs.containerName}</p>
+                </div>
+                <button 
+                  onClick={() => setContainerLogs(null)}
+                  className="text-gray-400 hover:text-white text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-6 overflow-auto max-h-[calc(80vh-100px)]">
+                <pre className="text-xs text-green-400 font-mono bg-black/50 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+                  {containerLogs.logs}
+                </pre>
+              </div>
+            </div>
           </div>
         )}
 
@@ -209,33 +438,37 @@ const DockerControl = () => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Server className="w-5 h-5 text-blue-500" />
-              Containers
+              Containers ({filteredContainers.length})
             </h3>
             <button
               onClick={fetchDockerStatus}
-              disabled={actionLoading}
-              className="p-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition-colors"
+              disabled={Object.keys(actionLoading).length > 0}
+              className="p-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition-colors disabled:opacity-50"
             >
-              <RefreshCw className={`w-4 h-4 ${actionLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${Object.keys(actionLoading).length > 0 ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
-          {containers.length === 0 ? (
+          {filteredContainers.length === 0 ? (
             <div className="text-center py-12">
               <Server className="w-16 h-16 text-gray-700 mx-auto mb-4" />
               <h4 className="text-xl font-bold text-gray-600 mb-2">No Containers Found</h4>
-              <p className="text-gray-500 mb-6">Create a campaign to generate containers</p>
+              <p className="text-gray-500 mb-6">
+                {selectedCampaign === 'all' 
+                  ? 'Create a campaign to generate containers'
+                  : 'This campaign has no running containers'}
+              </p>
               <button
                 onClick={() => window.location.href = '/campaigns'}
                 className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
               >
-                Create Campaign
+                Go to Campaigns
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {containers.map((container, index) => (
-                <ContainerCard key={index} container={container} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {filteredContainers.map((container, index) => (
+                <ContainerCard key={container.Id || index} container={container} />
               ))}
             </div>
           )}
@@ -245,13 +478,16 @@ const DockerControl = () => {
         <div className="mt-6 p-4 rounded-xl bg-blue-950/20 border border-blue-500/30">
           <h4 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-2">
             <Activity className="w-4 h-4" />
-            Docker Management Tips
+            Docker Management Guide
           </h4>
           <ul className="space-y-1 text-sm text-gray-400">
-            <li>• <span className="text-blue-400">Start All</span>: Builds and launches all campaign containers</li>
-            <li>• <span className="text-orange-400">Stop All</span>: Stops running containers (data preserved)</li>
-            <li>• <span className="text-blue-400">Restart All</span>: Restarts all containers</li>
-            <li>• <span className="text-red-400">Destroy All</span>: Removes all containers and volumes (permanent)</li>
+            <li>• <span className="text-green-400">Start</span>: Launch individual container</li>
+            <li>• <span className="text-orange-400">Stop</span>: Stop individual container (preserves data)</li>
+            <li>• <span className="text-blue-400">Restart</span>: Restart individual container</li>
+            <li>• <span className="text-purple-400">Logs</span>: View container logs and output</li>
+            <li>• <span className="text-red-400">Remove</span>: Permanently delete container</li>
+            <li>• Use bulk actions to control all containers simultaneously</li>
+            <li>• Filter by campaign to manage specific training sessions</li>
           </ul>
         </div>
       </div>

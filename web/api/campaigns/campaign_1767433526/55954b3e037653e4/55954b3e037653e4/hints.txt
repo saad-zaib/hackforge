@@ -1,9 +1,0 @@
-Machine: 55954b3e037653e4
-Variant: IDOR (Insecure Direct Object Reference)
-Difficulty: 1
-
-Exploitation Hints:
-  • Access control: none
-  • Resource ID type: md5_hash
-  • Authentication: none
-  • ✓ No access control - direct ID manipulation possible

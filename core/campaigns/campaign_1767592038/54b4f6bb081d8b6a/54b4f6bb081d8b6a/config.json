@@ -1,0 +1,57 @@
+{
+  "machine_id": "54b4f6bb081d8b6a",
+  "blueprint_id": "inj_001",
+  "variant": "SQL Injection",
+  "difficulty": 2,
+  "seed": "demo_user_inj_001_1767592038_1",
+  "application": {
+    "context": "log_analyzer",
+    "variant": "SQL Injection",
+    "entry_point": "json_body",
+    "param_name": "id",
+    "sink": "PDO_query"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "space",
+        "description": "Spaces are removed",
+        "php_code": "$input = str_replace(' ', '', $input);",
+        "python_code": "input = input.replace(' ', '')"
+      },
+      {
+        "type": "semicolon",
+        "description": "Semicolons are removed",
+        "php_code": "$input = str_replace(';', '', $input);",
+        "python_code": "input = input.replace(';', '')"
+      }
+    ],
+    "database": "sqlite",
+    "base_query": "SELECT * FROM items WHERE id={input}",
+    "injectable_param": "id"
+  },
+  "flag": {
+    "content": "HACKFORGE{0bb50a5ab599ce95fcdd0a7a3cc06e86}",
+    "location": "database:secrets.flag",
+    "table_name": "secrets",
+    "column_name": "flag"
+  },
+  "behavior": {
+    "output": "stored_in_db",
+    "error_disclosure": true,
+    "union_based": true,
+    "blind": false
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: log_analyzer",
+      "Database: sqlite",
+      "Output behavior: stored_in_db",
+      "\u26a0\ufe0f Filters active: space, semicolon",
+      "\ud83d\udca1 Try: ' OR '1'='1",
+      "Flag stored in 'secrets' table"
+    ],
+    "vulnerability_type": "SQL Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

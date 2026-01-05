@@ -13,29 +13,34 @@ docker-compose logs -f
 
 # Stop all machines
 docker-compose down
+
+# Rebuild specific machine
+docker-compose up -d --build <machine_id>
 ```
 
 ## Machines
 
 ### Machine 1 - http://localhost:8080
 
-- **Variant:** IDOR (Insecure Direct Object Reference)
+- **Variant:** Command Injection
 - **Difficulty:** 2/5
-- **Machine ID:** `a482f0c52af84feb`
-- **Flag:** `HACKFORGE{b12e4c0b801b24eeb45bdb869f66204d}`
+- **Machine ID:** `ff77d2a629131a1b`
+- **Container Name:** `hackforge_ff77d2a629131a1b`
+- **Flag:** `HACKFORGE{af75050b7fe3257787d008a4acb479c0}`
 
-**Hints:** See `a482f0c52af84feb/HINTS.md`
+**Hints:** See `ff77d2a629131a1b/HINTS.md`
 
 ---
 
 ### Machine 2 - http://localhost:8081
 
-- **Variant:** Command Injection
+- **Variant:** IDOR (Insecure Direct Object Reference)
 - **Difficulty:** 2/5
-- **Machine ID:** `7898514abe3f6988`
-- **Flag:** `HACKFORGE{80d0ebc26d58e1029b6e15cb6f7d1328}`
+- **Machine ID:** `d0c890e41e738bef`
+- **Container Name:** `hackforge_d0c890e41e738bef`
+- **Flag:** `HACKFORGE{c6f8f4983a8f099e325589140eb94f34}`
 
-**Hints:** See `7898514abe3f6988/HINTS.md`
+**Hints:** See `d0c890e41e738bef/HINTS.md`
 
 ---
 

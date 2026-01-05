@@ -1,8 +1,0 @@
-Machine: ffb4bbd15ac7a56c
-Variant: IDOR (Insecure Direct Object Reference)
-Difficulty: 1
-
-Exploitation Hints:
-  • Access control: timing_vulnerable
-  • Resource ID type: predictable_pattern
-  • Authentication: basic_auth

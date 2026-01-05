@@ -2,24 +2,28 @@ version: '3.8'
 
 services:
 
-  machine_1:
-    build: ./a482f0c52af84feb
-    container_name: hackforge_machine_1
+  ff77d2a629131a1b:
+    build: ./ff77d2a629131a1b
+    container_name: hackforge_ff77d2a629131a1b
     ports:
       - "8080:80"
     volumes:
-      - ./a482f0c52af84feb/app:/var/www/html
-      - ./a482f0c52af84feb/flag.txt:/api/api_endpoint/ca8abc37-adc2-43d5-b9d9-1ad2082f8f7a/secret:ro
+      - ./ff77d2a629131a1b/app:/var/www/html
+      - ./ff77d2a629131a1b/flag.txt:/tmp/flag.txt:ro
     environment:
-      - MACHINE_ID=a482f0c52af84feb
+      - MACHINE_ID=ff77d2a629131a1b
+      - FLAG_LOCATION=/tmp/flag.txt
+    restart: unless-stopped
 
-  machine_2:
-    build: ./7898514abe3f6988
-    container_name: hackforge_machine_2
+  d0c890e41e738bef:
+    build: ./d0c890e41e738bef
+    container_name: hackforge_d0c890e41e738bef
     ports:
       - "8081:80"
     volumes:
-      - ./7898514abe3f6988/app:/var/www/html
-      - ./7898514abe3f6988/flag.txt:/home/user/.flag:ro
+      - ./d0c890e41e738bef/app:/var/www/html
+      - ./d0c890e41e738bef/flag.txt:/api/transaction/dXNlcl81/secret:ro
     environment:
-      - MACHINE_ID=7898514abe3f6988
+      - MACHINE_ID=d0c890e41e738bef
+      - FLAG_LOCATION=/api/transaction/dXNlcl81/secret
+    restart: unless-stopped
