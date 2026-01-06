@@ -76,7 +76,10 @@ template_engine = TemplateEngine()
 
 # FIXED: Point orchestrator to correct machines directory
 # Campaigns are stored in: forge/core/campaigns/campaign_XXX/
-orchestrator = DockerOrchestrator(machines_dir=str(CORE_PATH / "campaigns"))
+GENERATED_MACHINES_DIR = CORE_PATH / "generated_machines"
+orchestrator = DockerOrchestrator(machines_dir=str(GENERATED_MACHINES_DIR))
+
+logger.info(f"Orchestrator watching: {GENERATED_MACHINES_DIR}")
 
 db = get_db()
 
@@ -587,35 +590,155 @@ async def get_statistics():
 # Machine Endpoints
 # ============================================================================
 
+
 @app.get("/api/machines")
 async def list_machines():
-    """List all generated machines"""
-    machines = orchestrator.list_machines()
+    """
+    List all machines with enhanced metadata
+    Combines Docker container info + Database campaign info
+    """
+    try:
+        # Get machines from filesystem
+        machines = orchestrator.list_machines()
+        
+        # Enrich with database information
+        enriched_machines = []
+        
+        for machine in machines:
+            machine_id = machine['machine_id']
+            
+            # Try to find campaign this machine belongs to
+            campaign = db.campaigns.find_one({
+                'machines.machine_id': machine_id
+            })
+            
+            # Get progress if exists
+            progress = db.progress.find_one({
+                'machine_id': machine_id
+            })
+            
+            # Find Docker container
+            try:
+                import docker
+                client = docker.from_env()
+                containers = client.containers.list(all=True)
+                
+                container_info = None
+                for container in containers:
+                    if machine_id[:12] in container.name or machine_id in container.name:
+                        container_info = {
+                            'container_id': container.id,
+                            'container_name': container.name,
+                            'status': container.status,
+                            'ports': container.ports
+                        }
+                        break
+            except Exception as e:
+                logger.warning(f"Could not get Docker info for {machine_id}: {e}")
+                container_info = None
+            
+            enriched_machine = {
+                'machine_id': machine['machine_id'],
+                'variant': machine['variant'],
+                'difficulty': machine['difficulty'],
+                'blueprint_id': machine['blueprint_id'],
+                'flag': machine['flag'],
+                'directory': machine['directory'],
+                # Additional database info
+                'campaign_id': campaign['campaign_id'] if campaign else None,
+                'campaign_name': campaign.get('campaign_name', 'Unknown') if campaign else None,
+                # Progress info
+                'solved': progress.get('solved', False) if progress else False,
+                'attempts': progress.get('attempts', 0) if progress else 0,
+                'points_earned': progress.get('points_earned', 0) if progress else 0,
+                # Docker info
+                'container': container_info,
+                'is_running': container_info['status'] == 'running' if container_info else False,
+                'url': None  # Will be populated if running
+            }
+            
+            # Extract URL from container ports
+            if container_info and container_info['status'] == 'running':
+                ports = container_info.get('ports', {})
+                for container_port, host_bindings in ports.items():
+                    if host_bindings:
+                        host_port = host_bindings[0]['HostPort']
+                        enriched_machine['url'] = f"http://localhost:{host_port}"
+                        break
+            
+            enriched_machines.append(enriched_machine)
+        
+        logger.info(f"Returning {len(enriched_machines)} machines")
+        return enriched_machines
+        
+    except Exception as e:
+        logger.error(f"Error listing machines: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to list machines: {str(e)}")
 
-    return [
-        {
-            'machine_id': m['machine_id'],
-            'variant': m['variant'],
-            'difficulty': m['difficulty'],
-            'blueprint_id': m['blueprint_id'],
-            'flag': m['flag']
-        }
-        for m in machines
-    ]
 
 @app.get("/api/machines/{machine_id}")
 async def get_machine(machine_id: str):
-    """Get specific machine details"""
-    machines = orchestrator.list_machines()
-
-    for machine in machines:
-        if machine['machine_id'] == machine_id:
-            config_file = Path(machine['directory']) / "config.json"
-            with open(config_file, 'r') as f:
-                config = json.load(f)
-            return config
-
-    raise HTTPException(status_code=404, detail="Machine not found")
+    """Get specific machine details with full context"""
+    try:
+        # Get from orchestrator
+        machines = orchestrator.list_machines()
+        machine = next((m for m in machines if m['machine_id'] == machine_id), None)
+        
+        if not machine:
+            raise HTTPException(status_code=404, detail="Machine not found")
+        
+        # Load full config
+        config_file = Path(machine['directory']) / "config.json"
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+        
+        # Get campaign info
+        campaign = db.campaigns.find_one({
+            'machines.machine_id': machine_id
+        })
+        
+        # Get progress
+        progress = db.progress.find_one({
+            'machine_id': machine_id
+        })
+        
+        # Get Docker status
+        try:
+            import docker
+            client = docker.from_env()
+            containers = client.containers.list(all=True)
+            
+            container_info = None
+            for container in containers:
+                if machine_id[:12] in container.name or machine_id in container.name:
+                    container_info = {
+                        'container_id': container.id,
+                        'container_name': container.name,
+                        'status': container.status,
+                        'ports': container.ports,
+                        'created': container.attrs['Created'],
+                        'image': container.image.tags[0] if container.image.tags else 'unknown'
+                    }
+                    break
+        except Exception as e:
+            logger.warning(f"Could not get Docker info: {e}")
+            container_info = None
+        
+        return {
+            **config,
+            'campaign_id': campaign['campaign_id'] if campaign else None,
+            'campaign_name': campaign.get('campaign_name') if campaign else None,
+            'progress': progress,
+            'container': container_info
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting machine: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/machines/{machine_id}/stats")
 async def get_machine_statistics(machine_id: str):
