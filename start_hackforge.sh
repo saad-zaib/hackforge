@@ -24,38 +24,39 @@ echo ""
 # Check if machines are generated
 check_and_generate_machines() {
     echo -e "${YELLOW}[0/5] Checking for generated machines...${NC}"
-    
+
     if [ ! -d "$SCRIPT_DIR/core/generated_machines" ] || [ -z "$(ls -A "$SCRIPT_DIR/core/generated_machines" 2>/dev/null)" ]; then
         echo -e "${YELLOW}⚠️  No machines found${NC}"
         echo ""
         read -p "Generate vulnerable machines now? (y/n): " -n 1 -r
         echo
-        
+
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo -e "${BLUE}🎲 Generating vulnerable machines...${NC}"
             cd "$SCRIPT_DIR/core"
-            
+
             if python3 generator.py; then
                 echo -e "${GREEN}✓ Machines generated successfully${NC}"
-                
+
                 # Also run template engine if it exists
-                if [ -f "$SCRIPT_DIR/core/template_engine.py" ]; then
-                    echo -e "${BLUE}🔨 Converting configs to applications...${NC}"
-                    python3 template_engine.py
-                    echo -e "${GREEN}✓ Templates processed${NC}"
-                fi
-                
+		if [ -f "$SCRIPT_DIR/core/template_engine.py" ]; then
+    			echo -e "${BLUE}🔨 Converting configs to applications...${NC}"
+    			cd "$SCRIPT_DIR/core"
+    			python3 template_engine.py --machines-dir generated_machines
+    			echo -e "${GREEN}✓ Templates processed${NC}"
+		fi
+
                 # Automatically start Docker machines after generation
                 echo ""
                 echo -e "${BLUE}🐳 Starting generated Docker machines...${NC}"
                 sleep 2
-                
+
                 cd "$SCRIPT_DIR/core/generated_machines"
                 if [ -f "docker-compose.yml" ]; then
                     docker-compose up -d --build
                     if [ $? -eq 0 ]; then
                         echo -e "${GREEN}✓ Docker machines built and started${NC}"
-                        
+
                         # Show machine URLs
                         echo ""
                         echo -e "${GREEN}Available Machines:${NC}"
@@ -71,7 +72,7 @@ check_and_generate_machines() {
                 else
                     echo -e "${RED}❌ No docker-compose.yml found${NC}"
                 fi
-                
+
                 cd "$SCRIPT_DIR"
             else
                 echo -e "${RED}❌ Machine generation failed${NC}"
@@ -84,7 +85,7 @@ check_and_generate_machines() {
     else
         machine_count=$(find "$SCRIPT_DIR/core/generated_machines" -maxdepth 1 -type d ! -name "." ! -name ".." ! -name "app" 2>/dev/null | wc -l)
         echo -e "${GREEN}✓ Found $machine_count generated machine(s)${NC}"
-        
+
         # Check if machines are already running
         cd "$SCRIPT_DIR/core/generated_machines"
         if [ -f "docker-compose.yml" ]; then
@@ -136,11 +137,12 @@ start_api() {
 
     # Kill existing API process if running
     lsof -ti:8000 | xargs kill -9 2>/dev/null || true
-    pkill -9 -f "main_with_db.py" 2>/dev/null || true
+    pkill -9 -f "web.api.main_with_db" 2>/dev/null || true
     sleep 1
 
-    cd "$SCRIPT_DIR/web/api"
-    python3 main_with_db.py > "$SCRIPT_DIR/logs/api.log" 2>&1 &
+    # FIXED: Run from project root with correct module path
+    cd "$SCRIPT_DIR"
+    python3 -m web.api.main_with_db > "$SCRIPT_DIR/logs/api.log" 2>&1 &
     API_PID=$!
 
     echo $API_PID > "$SCRIPT_DIR/.api.pid"
@@ -154,6 +156,7 @@ start_api() {
         echo "  Docs: http://localhost:8000/docs"
     else
         echo -e "${RED}❌ API failed to start. Check logs/api.log${NC}"
+        tail -20 "$SCRIPT_DIR/logs/api.log"
         exit 1
     fi
 }
@@ -164,14 +167,14 @@ start_frontend() {
 
     # Kill existing frontend processes thoroughly
     echo "Cleaning up any existing frontend processes..."
-    
+
     # Kill by port (most reliable)
     lsof -ti:3000 | xargs kill -9 2>/dev/null || true
-    
+
     # Kill by process name
     pkill -9 -f "react-scripts start" 2>/dev/null || true
     pkill -9 -f "node.*frontend" 2>/dev/null || true
-    
+
     # Wait for ports to be released
     sleep 2
 
@@ -198,6 +201,7 @@ start_frontend() {
         echo "  URL: http://localhost:3000"
     else
         echo -e "${RED}❌ Frontend failed to start. Check logs/frontend.log${NC}"
+        tail -20 "$SCRIPT_DIR/logs/frontend.log"
         exit 1
     fi
 }
@@ -205,12 +209,12 @@ start_frontend() {
 # Show Docker status
 show_docker_status() {
     echo -e "\n${YELLOW}[4/5] Docker Machines Status...${NC}"
-    
+
     if [ -d "$SCRIPT_DIR/core/generated_machines" ] && [ -f "$SCRIPT_DIR/core/generated_machines/docker-compose.yml" ]; then
         cd "$SCRIPT_DIR/core/generated_machines"
-        
+
         running=$(docker-compose ps -q 2>/dev/null | wc -l)
-        
+
         if [ "$running" -gt 0 ]; then
             echo -e "${GREEN}✓ $running Docker machine(s) running${NC}"
             echo ""
@@ -219,7 +223,7 @@ show_docker_status() {
             echo -e "${YELLOW}⚠️  No Docker machines running${NC}"
             echo "Start them with: cd core/generated_machines && docker-compose up -d"
         fi
-        
+
         cd "$SCRIPT_DIR"
     else
         echo -e "${YELLOW}⚠️  No machines available${NC}"
@@ -229,7 +233,7 @@ show_docker_status() {
 # Final summary
 show_summary() {
     echo -e "\n${YELLOW}[5/5] System Summary${NC}"
-    
+
     echo ""
     echo "╔═══════════════════════════════════════════════════════════╗"
     echo "║              HACKFORGE IS NOW RUNNING!                    ║"
@@ -241,13 +245,13 @@ show_summary() {
     echo "  • API Docs:  http://localhost:8000/docs"
     echo "  • MongoDB:   mongodb://localhost:27017"
     echo ""
-    
+
     # Show vulnerable machines
     if [ -d "$SCRIPT_DIR/core/generated_machines" ]; then
         cd "$SCRIPT_DIR/core/generated_machines"
         machine_dirs=$(find . -maxdepth 1 -type d ! -name "." ! -name ".." ! -name "app" 2>/dev/null)
         machine_count=$(echo "$machine_dirs" | grep -v "^$" | wc -l)
-        
+
         if [ "$machine_count" -gt 0 ]; then
             echo -e "${GREEN}🎯 Vulnerable Machines:${NC}"
             i=0
@@ -255,21 +259,21 @@ show_summary() {
                 if [ ! -z "$dir" ] && [ "$dir" != "." ]; then
                     port=$((8080 + i))
                     machine_id=$(basename "$dir")
-                    
+
                     # Check if container is running
                     if docker-compose ps -q "$machine_id" 2>/dev/null | grep -q .; then
                         echo -e "  • Machine $((i + 1)) [${GREEN}RUNNING${NC}]: http://localhost:$port"
                     else
                         echo -e "  • Machine $((i + 1)) [${RED}STOPPED${NC}]: http://localhost:$port"
                     fi
-                    
+
                     i=$((i + 1))
                 fi
             done
         fi
         cd "$SCRIPT_DIR"
     fi
-    
+
     echo ""
     echo -e "${YELLOW}📋 Logs:${NC}"
     echo "  • API:       tail -f logs/api.log"
@@ -282,6 +286,8 @@ show_summary() {
     echo "  • Docker up:     cd core/generated_machines && docker-compose up -d"
     echo "  • Docker down:   cd core/generated_machines && docker-compose down"
     echo "  • Docker logs:   cd core/generated_machines && docker-compose logs -f"
+    echo ""
+    echo -e "${BLUE}💡 Tip: If API fails to start, check the logs and ensure MongoDB is running${NC}"
     echo ""
 }
 

@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 """
-Hackforge Main Generator
-Orchestrates blueprint loading and machine generation
+Hackforge Dynamic Generator
+Automatically discovers and loads all mutation engines and blueprints
 """
 
 import os
@@ -8,101 +9,169 @@ import sys
 import yaml
 import json
 import time
+import importlib
 from pathlib import Path
 from typing import Dict, List, Optional
 
 # Import base classes
 from base import VulnerabilityBlueprint, MachineConfig, BlueprintLoader
 
-# Import mutation engines
-from mutations.broken_access_control import BrokenAccessControlMutation
-from mutations.injection import InjectionMutation
 
+class DynamicHackforgeGenerator:
+    """
+    Generator that automatically discovers mutations and blueprints
+    No hardcoded imports needed!
+    """
 
-class HackforgeGenerator:
-    """
-    Main generator class that orchestrates machine creation
-    """
-    
-    def __init__(self, blueprints_dir: str = "blueprints"):
-        self.blueprints_dir = Path(__file__).parent / blueprints_dir
+    def __init__(self, core_dir: str = None):
+        import os
+        
+        if core_dir is None:
+            # FIXED: Find core directory based on generator.py location
+            # generator.py is in forge/core/generator.py
+            generator_file = os.path.abspath(__file__)
+            core_dir = os.path.dirname(generator_file)
+        
+        self.core_dir = Path(core_dir)
+        self.blueprints_dir = self.core_dir / "blueprints"
+        self.mutations_dir = self.core_dir / "mutations"
+
+        print(f"\n{'='*60}")
+        print(f"GENERATOR INITIALIZATION")
+        print(f"{'='*60}")
+        print(f"Core directory: {self.core_dir}")
+        print(f"Blueprints directory: {self.blueprints_dir}")
+        print(f"Mutations directory: {self.mutations_dir}")
+        print(f"Blueprints exists: {self.blueprints_dir.exists()}")
+        print(f"Mutations exists: {self.mutations_dir.exists()}")
+        print(f"{'='*60}\n")
+
         self.blueprints: Dict[str, VulnerabilityBlueprint] = {}
-        self.mutation_engines = {
-            'broken_access_control': BrokenAccessControlMutation,
-            'injection': InjectionMutation,
-        }
+        self.mutation_engines: Dict[str, type] = {}
+
+        # Auto-discover everything
+        self._discover_blueprints()
+        self._discover_mutations()
+
+        print(f"✓ Loaded {len(self.blueprints)} blueprints")
+        print(f"✓ Loaded {len(self.mutation_engines)} mutation engines\n")
         
-        # Load all blueprints
-        self._load_blueprints()
-    
-    def _load_blueprints(self):
-        """Load all blueprint YAML files"""
-        print(f"Loading blueprints from: {self.blueprints_dir}")
-        
+        # DIAGNOSTIC: Print what was loaded
+        if self.blueprints:
+            print("Blueprints loaded:")
+            for bp_id, bp in self.blueprints.items():
+                print(f"  - {bp_id}: {bp.name} (category: {bp.category})")
+        else:
+            print("⚠️  WARNING: No blueprints loaded!")
+            
+        if self.mutation_engines:
+            print("\nMutation engines loaded:")
+            for cat, eng in self.mutation_engines.items():
+                print(f"  - {cat}: {eng.__name__}")
+        else:
+            print("⚠️  WARNING: No mutation engines loaded!")
+        print()
+    def _discover_blueprints(self):
+        """Automatically discover all blueprint YAML files"""
+
         if not self.blueprints_dir.exists():
-            print(f"⚠️ Blueprints directory not found: {self.blueprints_dir}")
+            print(f"⚠️  Blueprints directory not found: {self.blueprints_dir}")
             return
-        
-        for yaml_file in self.blueprints_dir.glob("*.yaml"):
+
+        for yaml_file in self.blueprints_dir.glob("*_blueprint.yaml"):
             try:
                 with open(yaml_file, 'r') as f:
                     data = yaml.safe_load(f)
-                
+
                 blueprint = BlueprintLoader.load_from_dict(data)
-                
+
                 if BlueprintLoader.validate_blueprint(blueprint):
                     self.blueprints[blueprint.blueprint_id] = blueprint
-                    print(f"  ✓ Loaded: {blueprint.name} ({blueprint.blueprint_id})")
-                else:
-                    print(f"  ✗ Invalid blueprint: {yaml_file.name}")
-                    
+                    print(f"  ✓ Loaded blueprint: {blueprint.name} (category: {blueprint.category})")
+
             except Exception as e:
                 print(f"  ✗ Error loading {yaml_file.name}: {e}")
-    
-    def list_blueprints(self) -> List[VulnerabilityBlueprint]:
-        """Get all loaded blueprints"""
-        return list(self.blueprints.values())
-    
+
+    def _discover_mutations(self):
+        """Automatically discover all mutation engine Python files"""
+
+        if not self.mutations_dir.exists():
+            print(f"⚠️  Mutations directory not found: {self.mutations_dir}")
+            return
+
+        # Add mutations directory to Python path
+        sys.path.insert(0, str(self.mutations_dir.parent))
+
+        for py_file in self.mutations_dir.glob("*_mutation.py"):
+            try:
+                # Import the module dynamically
+                module_name = f"mutations.{py_file.stem}"
+                module = importlib.import_module(module_name)
+
+                # Find the mutation class (should end with "Mutation")
+                for attr_name in dir(module):
+                    attr = getattr(module, attr_name)
+
+                    # Check if it's a class and ends with "Mutation"
+                    if (isinstance(attr, type) and
+                        attr_name.endswith("Mutation") and
+                        attr_name != "MutationEngine"):
+
+                        # FIXED: Extract category from filename instead of class name
+                        # Filename: cross_site_scripting_mutation.py -> cross_site_scripting
+                        category = py_file.stem.replace('_mutation', '')
+
+                        self.mutation_engines[category] = attr
+                        print(f"  ✓ Loaded mutation: {attr_name} (category: {category})")
+                        break
+
+            except Exception as e:
+                print(f"  ✗ Error loading {py_file.name}: {e}")
+                import traceback
+                traceback.print_exc()
+
+    def _camel_to_snake(self, name: str) -> str:
+        """Convert CamelCase to snake_case"""
+        import re
+        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
+    def list_all_blueprints(self) -> List[Dict]:
+        """List all available blueprints"""
+        result = []
+
+        for bp in self.blueprints.values():
+            result.append({
+                'blueprint_id': bp.blueprint_id,
+                'name': bp.name,
+                'category': bp.category,
+                'difficulty_range': bp.difficulty_range,
+                'variants': bp.variants,
+                'description': bp.description,
+            })
+
+        return result
+
     def get_blueprint(self, blueprint_id: str) -> Optional[VulnerabilityBlueprint]:
         """Get specific blueprint by ID"""
         return self.blueprints.get(blueprint_id)
-    
-    def generate_machine(
-        self, 
-        blueprint_id: str, 
-        seed: str, 
-        difficulty: int = 2
-    ) -> Optional[MachineConfig]:
-        """
-        Generate a single vulnerable machine
-        
-        Args:
-            blueprint_id: ID of the blueprint to use
-            seed: Seed for deterministic generation
-            difficulty: Difficulty level (1-5)
-            
-        Returns:
-            MachineConfig object or None if failed
-        """
-        
-        # Get blueprint
-        blueprint = self.get_blueprint(blueprint_id)
+
+    def generate_machine(self, blueprint_id: str, seed: str, difficulty: int) -> Optional[MachineConfig]:
+        """Generate a machine from blueprint"""
+
+        blueprint = self.blueprints.get(blueprint_id)
         if not blueprint:
             print(f"✗ Blueprint not found: {blueprint_id}")
             return None
-        
-        # Validate difficulty
-        min_diff, max_diff = blueprint.difficulty_range
-        if not (min_diff <= difficulty <= max_diff):
-            print(f"⚠️ Difficulty {difficulty} outside range {blueprint.difficulty_range}, adjusting...")
-            difficulty = max(min_diff, min(difficulty, max_diff))
-        
-        # Get mutation engine
+
+        # Get mutation engine for this category
         engine_class = self.mutation_engines.get(blueprint.category)
         if not engine_class:
             print(f"✗ No mutation engine for category: {blueprint.category}")
+            print(f"  Available engines: {list(self.mutation_engines.keys())}")
+            print(f"  Blueprint category: '{blueprint.category}'")
             return None
-        
+
         # Generate machine
         try:
             engine = engine_class(seed)
@@ -113,223 +182,171 @@ class HackforgeGenerator:
             import traceback
             traceback.print_exc()
             return None
-    
-    def generate_campaign(
-        self, 
-        user_id: str, 
-        difficulty: int = 2,
-        count: int = None
-    ) -> List[MachineConfig]:
-        """
-        Generate a campaign of multiple machines
-        
-        Args:
-            user_id: User identifier for seed generation
-            difficulty: Difficulty level for all machines
-            count: Number of machines (default: one per blueprint)
-            
-        Returns:
-            List of MachineConfig objects
-        """
-        
-        blueprints = list(self.blueprints.values())
-        if count:
-            blueprints = blueprints[:count]
-        
+
+    def generate_campaign(self, user_id: str, difficulty: int = 2, count: int = None) -> List[MachineConfig]:
+        """Generate a campaign with multiple machines"""
+
+        if not self.blueprints:
+            print("✗ No blueprints available!")
+            return []
+
+        if count is None:
+            count = min(len(self.blueprints), 5)
+
         machines = []
         timestamp = int(time.time())
-        
-        print(f"\nGenerating campaign for user: {user_id}")
-        print(f"Difficulty: {difficulty}")
-        print(f"Machines: {len(blueprints)}")
-        print("=" * 60)
-        
-        for i, blueprint in enumerate(blueprints, 1):
-            seed = f"{user_id}_{blueprint.blueprint_id}_{timestamp}_{i}"
-            
-            print(f"\n[{i}/{len(blueprints)}] Generating: {blueprint.name}")
-            
-            machine = self.generate_machine(blueprint.blueprint_id, seed, difficulty)
-            
+
+        print(f"\n{'='*60}")
+        print(f"Generating Campaign")
+        print(f"{'='*60}")
+        print(f"User ID: {user_id}")
+        print(f"Difficulty: {difficulty}/5")
+        print(f"Machines: {count}")
+        print()
+
+        # Select random blueprints
+        import random
+        selected_ids = random.sample(list(self.blueprints.keys()),
+                                     min(count, len(self.blueprints)))
+
+        for i, blueprint_id in enumerate(selected_ids, 1):
+            seed = f"{user_id}_{blueprint_id}_{timestamp}_{i}"
+
+            blueprint = self.blueprints[blueprint_id]
+            print(f"[{i}/{count}] Generating: {blueprint.name}")
+
+            machine = self.generate_machine(blueprint_id, seed, difficulty)
+
             if machine:
                 machines.append(machine)
                 print(f"  ✓ Machine ID: {machine.machine_id}")
                 print(f"  ✓ Variant: {machine.variant}")
                 print(f"  ✓ Flag: {machine.flag['content'][:30]}...")
             else:
-                print(f"  ✗ Failed to generate machine")
-        
-        print("\n" + "=" * 60)
-        print(f"✓ Campaign generated: {len(machines)} machines")
-        
+                print(f"  ✗ Failed to generate")
+
+            print()
+
+        print(f"{'='*60}")
+        print(f"✓ Generated {len(machines)}/{count} machines")
+        print(f"{'='*60}\n")
+
         return machines
-    
-    def export_machine(self, machine: MachineConfig, output_dir: str = "output") -> Dict[str, str]:
-        """
-        Export machine configuration to files
-        
-        Args:
-            machine: MachineConfig to export
-            output_dir: Directory to save files
-            
-        Returns:
-            Dictionary with file paths
-        """
-        
-        output_path = Path(output_dir) / machine.machine_id
-        output_path.mkdir(parents=True, exist_ok=True)
-        
-        # Export config as JSON
-        config_file = output_path / "config.json"
-        with open(config_file, 'w') as f:
-            json.dump(machine.to_dict(), f, indent=2)
-        
-        # Export flag
-        flag_file = output_path / "flag.txt"
-        with open(flag_file, 'w') as f:
-            f.write(machine.flag['content'])
-        
-        # Export hints
-        hints_file = output_path / "hints.txt"
-        with open(hints_file, 'w') as f:
-            f.write(f"Machine: {machine.machine_id}\n")
-            f.write(f"Variant: {machine.variant}\n")
-            f.write(f"Difficulty: {machine.difficulty}\n\n")
-            f.write("Exploitation Hints:\n")
-            for hint in machine.metadata.get('exploit_hints', []):
-                f.write(f"  • {hint}\n")
-        
-        return {
-            'config': str(config_file),
-            'flag': str(flag_file),
-            'hints': str(hints_file),
-        }
-    
-    def export_campaign(self, machines: List[MachineConfig], output_dir: str = "campaigns") -> str:
-        """
-        Export entire campaign to directory
-        
-        Args:
-            machines: List of MachineConfig objects
-            output_dir: Base directory for campaigns
-            
-        Returns:
-            Path to campaign directory
-        """
-        
+    def export_campaign(self, machines: List[MachineConfig], output_dir: str = None) -> str:
+        """Export campaign to directory"""
+
         if not machines:
+            print("✗ No machines to export!")
             return None
+
+        # FIXED: Create campaign-specific directory
+        if output_dir is None:
+            campaign_id = f"campaign_{int(time.time())}"
+            output_dir = f"campaigns/{campaign_id}"
         
-        # Use first machine's seed as campaign ID
-        campaign_id = f"campaign_{int(time.time())}"
-        campaign_path = Path(output_dir) / campaign_id
-        campaign_path.mkdir(parents=True, exist_ok=True)
-        
+        output_path = self.core_dir / output_dir
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        print(f"\nExporting to: {output_path}")
+        print("="*60)
+
         # Export each machine
         for machine in machines:
-            machine_dir = campaign_path / machine.machine_id
-            self.export_machine(machine, str(machine_dir))
-        
-        # Export campaign manifest
+            machine_dir = output_path / machine.machine_id
+            machine_dir.mkdir(parents=True, exist_ok=True)
+
+            # Export config
+            config_file = machine_dir / "config.json"
+            with open(config_file, 'w') as f:
+                json.dump(machine.to_dict(), f, indent=2)
+
+            # Export flag
+            flag_file = machine_dir / "flag.txt"
+            with open(flag_file, 'w') as f:
+                f.write(machine.flag['content'])
+
+            # Export hints
+            hints_file = machine_dir / "hints.txt"
+            with open(hints_file, 'w') as f:
+                hints = machine.metadata.get('exploit_hints', [])
+                f.write(f"Machine: {machine.machine_id}\n")
+                f.write(f"Variant: {machine.variant}\n")
+                f.write(f"Difficulty: {machine.difficulty}/5\n\n")
+                f.write("Hints:\n")
+                for hint in hints:
+                    f.write(f"  • {hint}\n")
+
+            print(f"  ✓ {machine.machine_id}")
+
+        # Export manifest with campaign_id
+        campaign_id = output_path.name  # Get campaign_id from directory name
         manifest = {
             'campaign_id': campaign_id,
             'created_at': time.strftime('%Y-%m-%d %H:%M:%S'),
             'machines': [m.to_dict() for m in machines],
-            'total_machines': len(machines),
+            'total': len(machines),
         }
-        
-        manifest_file = campaign_path / "campaign.json"
+
+        manifest_file = output_path / "manifest.json"
         with open(manifest_file, 'w') as f:
             json.dump(manifest, f, indent=2)
-        
-        # Export README
-        readme = self._generate_campaign_readme(machines, campaign_id)
-        readme_file = campaign_path / "README.md"
-        with open(readme_file, 'w') as f:
-            f.write(readme)
-        
-        return str(campaign_path)
-    
-    def _generate_campaign_readme(self, machines: List[MachineConfig], campaign_id: str) -> str:
-        """Generate campaign README"""
-        
-        readme = f"""# Hackforge Campaign: {campaign_id}
 
-Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
-Total Machines: {len(machines)}
+        print(f"\n✓ Manifest: {manifest_file}")
+        print(f"✓ Exported {len(machines)} machines")
 
-## Machines Overview
-
-"""
-        
-        for i, machine in enumerate(machines, 1):
-            readme += f"""### Machine {i}: {machine.variant}
-- **Machine ID**: `{machine.machine_id}`
-- **Category**: {machine.blueprint_id}
-- **Difficulty**: {machine.difficulty}/5
-- **Flag**: `{machine.flag['content']}`
-
-**Exploitation Hints**:
-"""
-            for hint in machine.metadata.get('exploit_hints', []):
-                readme += f"- {hint}\n"
-            
-            readme += "\n---\n\n"
-        
-        readme += """
-## How to Use
-
-Each machine directory contains:
-- `config.json` - Complete machine configuration
-- `flag.txt` - The flag to capture
-- `hints.txt` - Exploitation hints
-
-Use the template engine (Component 2) to generate actual vulnerable applications from these configs.
-"""
-        
-        return readme
+        return str(output_path)
 
 
 def main():
-    """Demo usage of the generator"""
-    
-    print("=" * 60)
-    print("HACKFORGE - Core System Demo")
-    print("Component 1: Blueprints + Mutations")
-    print("=" * 60)
-    print()
-    
+    """Main entry point"""
+
+    print("\n" + "="*60)
+    print("HACKFORGE DYNAMIC GENERATOR")
+    print("="*60 + "\n")
+
     # Initialize generator
-    generator = HackforgeGenerator()
-    
-    print("\n" + "=" * 60)
-    print("Available Blueprints:")
-    print("=" * 60)
-    
-    for blueprint in generator.list_blueprints():
-        print(f"\n{blueprint.name}")
-        print(f"  ID: {blueprint.blueprint_id}")
-        print(f"  Category: {blueprint.category}")
-        print(f"  Variants: {len(blueprint.variants)}")
-        print(f"  Difficulty Range: {blueprint.difficulty_range}")
-    
-    # Generate test campaign
-    print("\n" + "=" * 60)
-    print("Generating Test Campaign")
-    print("=" * 60)
-    
+    generator = DynamicHackforgeGenerator()
+
+    if not generator.blueprints:
+        print("\n✗ No blueprints found!")
+        print("  Make sure you have .yaml files in blueprints/")
+        print("  Generate them with: python3 vuln_generator.py <config.json>")
+        return
+
+    if not generator.mutation_engines:
+        print("\n✗ No mutation engines found!")
+        print("  Make sure you have *_mutation.py files in mutations/")
+        print("  Generate them with: python3 vuln_generator.py <config.json>")
+        return
+
+    # List available vulnerabilities
+    print("\nAvailable Vulnerabilities:")
+    print("-"*60)
+    for i, bp in enumerate(generator.list_all_blueprints(), 1):
+        print(f"{i}. {bp['name']} ({bp['category']})")
+        print(f"   Variants: {', '.join(bp['variants'])}")
+        print()
+
+    # Generate campaign
     machines = generator.generate_campaign(
         user_id="demo_user",
         difficulty=2,
-        count=2  # Generate 2 machines (one per blueprint)
+        count=3
     )
-    
-    # Export campaign
+
     if machines:
-        campaign_path = generator.export_campaign(machines)
-        print(f"\n✓ Campaign exported to: {campaign_path}")
-        print("\nYou can now inspect the generated configs and use them")
-        print("in Component 2 (Template Engine) to generate actual vulnerable apps!")
+        # Export campaign
+        output_path = generator.export_campaign(machines)
+
+        print("\n" + "="*60)
+        print("NEXT STEPS")
+        print("="*60)
+        print(f"\n1. Machines exported to: {output_path}")
+        print(f"2. Generate vulnerable apps:")
+        print(f"   python3 template_engine.py")
+        print(f"\n3. Start Docker containers:")
+        print(f"   cd {output_path} && docker-compose up -d")
+        print()
 
 
 if __name__ == "__main__":

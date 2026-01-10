@@ -1,0 +1,52 @@
+{
+  "campaign_id": "campaign_1768043078",
+  "created_at": "2026-01-10 16:04:38",
+  "machines": [
+    {
+      "machine_id": "97cba4405ebdcf35",
+      "blueprint_id": "xss_001",
+      "variant": "Reflected XSS",
+      "difficulty": 2,
+      "seed": "demo_user_xss_001_1768043078_1",
+      "application": {
+        "context": "feedback_form",
+        "variant": "Reflected XSS",
+        "entry_point": "http_post_param"
+      },
+      "constraints": {
+        "filters": [
+          {
+            "type": "script_tag",
+            "description": "Script_tag filtering",
+            "php_code": "$input = str_replace('s', '', $input);",
+            "python_code": "input = input.replace('s', '')"
+          },
+          {
+            "type": "onerror",
+            "description": "Onerror filtering",
+            "php_code": "$input = str_replace('o', '', $input);",
+            "python_code": "input = input.replace('o', '')"
+          }
+        ]
+      },
+      "flag": {
+        "content": "HACKFORGE{b1d8c4217238a2dc8f39f03e68b1e649}",
+        "location": "/var/www/html/flag.txt"
+      },
+      "behavior": {
+        "output": "direct_echo"
+      },
+      "metadata": {
+        "exploit_hints": [
+          "Context: feedback_form",
+          "Difficulty: 2/5",
+          "\u26a0\ufe0f Filters active: script_tag, onerror",
+          "\ud83d\udca1 Try basic payloads first"
+        ],
+        "vulnerability_type": "Reflected XSS",
+        "estimated_solve_time": "20-30 minutes"
+      }
+    }
+  ],
+  "total": 1
+}

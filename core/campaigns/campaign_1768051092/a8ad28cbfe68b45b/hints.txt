@@ -1,0 +1,9 @@
+Machine: a8ad28cbfe68b45b
+Variant: Reflected XSS
+Difficulty: 2/5
+
+Hints:
+  • Context: search_box
+  • Difficulty: 2/5
+  • ⚠️ Filters active: script_tag, onerror
+  • 💡 Try basic payloads first

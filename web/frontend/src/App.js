@@ -29,6 +29,7 @@ const Navigation = () => {
     { path: '/profile', icon: User, label: 'Profile' },
   ];
 
+
   return (
     <header className="border-b border-gray-900 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -99,7 +100,7 @@ function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/debug" element={<ContainerDebug />} />
-        </Routes>
+      </Routes>
       </div>
     </Router>
   );

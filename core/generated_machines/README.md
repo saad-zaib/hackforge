@@ -1,6 +1,6 @@
 # Hackforge Generated Machines
 
-Generated: 2 machines
+Generated: 1 machine(s)
 
 ## Quick Start
 
@@ -22,25 +22,13 @@ docker-compose up -d --build <machine_id>
 
 ### Machine 1 - http://localhost:8080
 
-- **Variant:** Command Injection
+- **Variant:** Reflected XSS
 - **Difficulty:** 2/5
-- **Machine ID:** `ff77d2a629131a1b`
-- **Container Name:** `hackforge_ff77d2a629131a1b`
-- **Flag:** `HACKFORGE{af75050b7fe3257787d008a4acb479c0}`
+- **Machine ID:** `97cba4405ebdcf35`
+- **Container Name:** `hackforge_97cba4405ebdcf35`
+- **Flag:** `HACKFORGE{b1d8c4217238a2dc8f39f03e68b1e649}`
 
-**Hints:** See `ff77d2a629131a1b/HINTS.md`
-
----
-
-### Machine 2 - http://localhost:8081
-
-- **Variant:** IDOR (Insecure Direct Object Reference)
-- **Difficulty:** 2/5
-- **Machine ID:** `d0c890e41e738bef`
-- **Container Name:** `hackforge_d0c890e41e738bef`
-- **Flag:** `HACKFORGE{c6f8f4983a8f099e325589140eb94f34}`
-
-**Hints:** See `d0c890e41e738bef/HINTS.md`
+**Hints:** See `97cba4405ebdcf35/HINTS.md`
 
 ---
 

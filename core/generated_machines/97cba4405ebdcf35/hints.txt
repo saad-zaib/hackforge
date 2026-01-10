@@ -1,0 +1,9 @@
+Machine: 97cba4405ebdcf35
+Variant: Reflected XSS
+Difficulty: 2/5
+
+Hints:
+  • Context: feedback_form
+  • Difficulty: 2/5
+  • ⚠️ Filters active: script_tag, onerror
+  • 💡 Try basic payloads first

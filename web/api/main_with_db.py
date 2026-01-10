@@ -15,6 +15,7 @@ import json
 import time
 import uuid
 import logging
+import yaml
 
 # Configure logging
 logging.basicConfig(
@@ -41,7 +42,7 @@ sys.path.insert(0, str(CORE_PATH))
 sys.path.insert(0, str(DOCKER_PATH))
 sys.path.insert(0, str(DATABASE_PATH))
 
-from generator import HackforgeGenerator
+from generator import DynamicHackforgeGenerator
 from template_engine import TemplateEngine
 from orchestrator import DockerOrchestrator
 from base import MachineConfig
@@ -71,7 +72,7 @@ app.add_middleware(
 )
 
 # Initialize with correct paths
-generator = HackforgeGenerator(blueprints_dir=str(CORE_PATH / "blueprints"))
+generator = DynamicHackforgeGenerator(core_dir=str(CORE_PATH))
 template_engine = TemplateEngine()
 
 # FIXED: Point orchestrator to correct machines directory
@@ -199,10 +200,11 @@ async def get_user_campaigns_list(user_id: str):
 # Campaign Endpoints with Database
 # ============================================================================
 
+
 @app.post("/api/campaigns")
 async def create_campaign(request: CampaignCreateRequest, background_tasks: BackgroundTasks):
     """Create a new campaign with database tracking"""
-    
+
     logger.info("=" * 60)
     logger.info(f"CREATING CAMPAIGN: {request.campaign_name}")
     logger.info(f"User: {request.user_id}, Difficulty: {request.difficulty}, Count: {request.count}")
@@ -210,7 +212,7 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
     # Validate difficulty
     if not 1 <= request.difficulty <= 5:
         raise HTTPException(status_code=400, detail="Difficulty must be between 1 and 5")
-    
+
     # Validate campaign name
     if not request.campaign_name or len(request.campaign_name.strip()) == 0:
         raise HTTPException(status_code=400, detail="Campaign name is required")
@@ -238,16 +240,29 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
         logger.info(f"✓ Generated {len(machines)} machines")
     except Exception as e:
         logger.error(f"Generation failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Failed to generate campaign: {str(e)}")
 
     if not machines:
-        raise HTTPException(status_code=500, detail="Failed to generate campaign")
+        raise HTTPException(status_code=500, detail="No machines were generated")
 
-    # Export campaign - this creates the campaign folder in forge/core/campaigns/
+    # FIXED: Create campaign-specific directory
+    campaign_id = f"campaign_{int(time.time())}"
+    campaign_output_dir = f"campaigns/{campaign_id}"
+    
+    logger.info(f"Campaign ID: {campaign_id}")
     logger.info("Exporting campaign...")
-    campaign_path = generator.export_campaign(machines)
-    campaign_id = Path(campaign_path).name
-    logger.info(f"✓ Campaign exported to: {campaign_path}")
+    
+    try:
+        # Export with specific campaign directory
+        campaign_path = generator.export_campaign(machines, output_dir=campaign_output_dir)
+        logger.info(f"✓ Campaign exported to: {campaign_path}")
+    except Exception as e:
+        logger.error(f"Export failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to export campaign: {str(e)}")
 
     # Generate applications
     logger.info("Generating Docker applications...")
@@ -256,6 +271,8 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
         logger.info(f"✓ Generated {len(machine_infos)} apps")
     except Exception as e:
         logger.warning(f"Failed to generate apps: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         machine_infos = []
 
     # Prepare campaign data for database
@@ -312,7 +329,6 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
         'machines': campaign_data['machines'],
         'status': 'created'
     }
-
 @app.get("/api/campaigns/{campaign_id}")
 async def get_campaign_details(campaign_id: str):
     """Get detailed information about a specific campaign"""
@@ -496,17 +512,68 @@ async def validate_flag(request: FlagSubmitRequest, req: Request):
     }
 
 
+def load_blueprints_directly(blueprints_dir: Path):
+    """Load blueprints directly from YAML files"""
+    blueprints = []
+    
+    if not blueprints_dir.exists():
+        logger.warning(f"Blueprints directory not found: {blueprints_dir}")
+        return blueprints
+    
+    yaml_files = list(blueprints_dir.glob("*_blueprint.yaml"))
+    logger.info(f"Loading {len(yaml_files)} blueprint files from {blueprints_dir}")
+    
+    for yaml_file in yaml_files:
+        try:
+            with open(yaml_file, 'r') as f:
+                data = yaml.safe_load(f)
+            
+            # Create a simple blueprint object
+            class BlueprintObj:
+                def __init__(self, data):
+                    self.blueprint_id = data.get('blueprint_id', 'unknown')
+                    self.name = data.get('name', 'Unknown')
+                    self.category = data.get('category', 'unknown')
+                    self.description = data.get('description', '')
+                    self.difficulty_range = data.get('difficulty_range', [1, 5])
+                    self.variants = data.get('variants', [])
+                    self.technologies = data.get('technologies', [])
+                    self.entry_points = data.get('entry_points', [])
+                    self.mutation_axes = data.get('mutation_axes', {})
+            
+            blueprint = BlueprintObj(data)
+            blueprints.append(blueprint)
+            logger.info(f"✓ Loaded blueprint: {blueprint.name} ({blueprint.blueprint_id})")
+            
+        except Exception as e:
+            logger.error(f"✗ Failed to load {yaml_file.name}: {e}")
+    
+    return blueprints
+
+
 # ============================================================================
 # BLUEPRINTS ENDPOINTS
 # ============================================================================
+
 
 @app.get("/api/blueprints")
 async def list_blueprints():
     """List all available blueprints"""
     try:
-        blueprints = generator.list_blueprints()
-
-        return [
+        # Try generator first
+        try:
+            blueprints = generator.list_blueprints()
+            logger.info(f"Generator returned {len(blueprints)} blueprints")
+        except Exception as gen_error:
+            logger.warning(f"Generator failed: {gen_error}, using direct loading")
+            blueprints_dir = CORE_PATH / "blueprints"
+            blueprints = load_blueprints_directly(blueprints_dir)
+        
+        if not blueprints:
+            logger.error("No blueprints found!")
+            return []
+        
+        result = [
             {
                 "blueprint_id": bp.blueprint_id,
                 "name": bp.name,
@@ -518,7 +585,14 @@ async def list_blueprints():
             }
             for bp in blueprints
         ]
+        
+        logger.info(f"Returning {len(result)} blueprints to frontend")
+        return result
+        
     except Exception as e:
+        logger.error(f"Error in list_blueprints: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/blueprints/{blueprint_id}")
@@ -566,25 +640,37 @@ async def get_leaderboard(limit: int = 100, timeframe: str = 'all_time'):
 # Statistics
 # ============================================================================
 
+
 @app.get("/api/stats")
 async def get_statistics():
     """Get platform statistics from database"""
     platform_stats = db.get_platform_stats()
 
+    # Get blueprints count with fallback
     try:
-        blueprints = generator.list_blueprints()
+        try:
+            blueprints = generator.list_blueprints()
+        except Exception:
+            blueprints_dir = CORE_PATH / "blueprints"
+            blueprints = load_blueprints_directly(blueprints_dir)
+        
         platform_stats['total_blueprints'] = len(blueprints)
-    except Exception:
+        logger.info(f"✓ Blueprints count: {len(blueprints)}")
+    except Exception as e:
+        logger.error(f"✗ Failed to count blueprints: {e}")
         platform_stats['total_blueprints'] = 0
 
+    # Get machines count
     try:
         machines = orchestrator.list_machines()
         platform_stats['total_machines'] = len(machines)
-    except Exception:
+        logger.info(f"✓ Machines count: {len(machines)}")
+    except Exception as e:
+        logger.error(f"✗ Failed to count machines: {e}")
         platform_stats['total_machines'] = 0
 
+    logger.info(f"Stats response: {platform_stats}")
     return platform_stats
-
 
 # ============================================================================
 # Machine Endpoints
