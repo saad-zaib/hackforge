@@ -24,11 +24,11 @@ docker-compose up -d --build <machine_id>
 
 - **Variant:** Reflected XSS
 - **Difficulty:** 2/5
-- **Machine ID:** `97cba4405ebdcf35`
-- **Container Name:** `hackforge_97cba4405ebdcf35`
-- **Flag:** `HACKFORGE{b1d8c4217238a2dc8f39f03e68b1e649}`
+- **Machine ID:** `780aa43a613dc202`
+- **Container Name:** `hackforge_780aa43a613dc202`
+- **Flag:** `HACKFORGE{5ee4894ae683172f8f45d8ad05c85e07}`
 
-**Hints:** See `97cba4405ebdcf35/HINTS.md`
+**Hints:** See `780aa43a613dc202/HINTS.md`
 
 ---
 

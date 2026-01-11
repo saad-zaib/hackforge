@@ -1,9 +1,9 @@
+#!/usr/bin/env python3
 """
-UPDATED vuln_generator.py - Now includes theme variety support
-Replace your existing core/vuln_generator.py with this version
+HackForge Vulnerability Generator
+Generates blueprints, mutations, and templates from JSON config
 """
 
-#!/usr/bin/env python3
 import json
 import os
 import sys
@@ -32,7 +32,8 @@ class VulnerabilityGenerator:
         os.makedirs(mutation_dir, exist_ok=True)
         os.makedirs(template_dir, exist_ok=True)
 
-        # Use category for all filenames for consistency
+        # FIXED: Use category for all filenames for consistency
+        # This ensures blueprint.category matches mutation and template filenames
         blueprint_path = os.path.join(blueprint_dir, f"{self.category}_blueprint.yaml")
         mutation_path = os.path.join(mutation_dir, f"{self.category}_mutation.py")
         template_path = os.path.join(template_dir, f"{self.category}_templates.py")
@@ -58,6 +59,8 @@ class VulnerabilityGenerator:
         entry_points = self.config.get('entry_points', [])
         mutation_axes = self.config.get('mutation_axes', {})
 
+        # Use vuln_id for blueprint_id (unique identifier)
+        # But category for file naming (for template lookup)
         blueprint = f"""blueprint_id: {self.vuln_id}
 
 name: {self.vuln_name}
@@ -174,7 +177,7 @@ class {class_name}(MutationEngine):
         return mutation_code
 
     def generate_template(self) -> str:
-        """Generate template Python code WITH THEME SUPPORT"""
+        """Generate template Python code"""
 
         class_name = self._to_class_name(self.vuln_name) + "Template"
         variants = self.config.get('variants', [])
@@ -187,7 +190,7 @@ class {class_name}(MutationEngine):
 
         template_code = f'''"""
 {self.vuln_name} Vulnerability Templates
-Generates vulnerable applications with theme variety
+Generates vulnerable applications for {self.vuln_name.lower()}
 """
 
 import os
@@ -197,7 +200,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
 from templates.base_template import BaseTemplate
-from templates.theme_library import ThemeLibrary  # ← THEME SUPPORT
 from typing import Dict
 
 
@@ -205,12 +207,6 @@ class {class_name}(BaseTemplate):
     """
     Template generator for {self.vuln_name.lower()} vulnerabilities
     """
-    
-    def __init__(self, config):
-        super().__init__(config)
-        # Pick random theme for this machine
-        self.theme_name, self.theme = ThemeLibrary.get_random_theme()
-        print(f"  🎨 Theme: {{self.theme['name']}}")
 
     def generate_code(self) -> str:
         """Generate vulnerable application based on variant"""
@@ -236,18 +232,9 @@ class {class_name}(BaseTemplate):
     def generate_dockerfile(self) -> str:
         """Generate Dockerfile for {self.vuln_name.lower()} vulnerabilities"""
 
-        return \'\'\'FROM php:8.0-apache
+        variant = self.config.variant
 
-RUN apt-get update && apt-get install -y \\\\
-    iputils-ping \\\\
-    whois \\\\
-    dnsutils \\\\
-    && rm -rf /var/lib/apt/lists/*
-
-EXPOSE 80
-
-CMD ["apache2-foreground"]
-\'\'\'
+{self._generate_dockerfile_logic(variants)}
 '''
         return template_code
 
@@ -406,13 +393,15 @@ CMD ["apache2-foreground"]
         }}
 '''
 
-
     def _generate_template_method(self, variant: str, method_name: str) -> str:
-        """Generate a variant template method WITH THEME SUPPORT"""
+        """Generate a variant template method"""
 
-        # This generates themed HTML templates
-        return f'''    def {method_name}(self) -> str:
-        """Generate {variant} vulnerable application with themed UI"""
+        variant_config = next((v for v in self.config.get('variant_configs', []) if v['name'] == variant), None)
+
+        if not variant_config:
+            # Default template
+            return f'''    def {method_name}(self) -> str:
+        """Generate {variant} vulnerable application"""
 
         app = self.config.application
         constraints = self.config.constraints
@@ -422,53 +411,95 @@ CMD ["apache2-foreground"]
 
         filter_code = self._generate_filter_code(filters, 'php')
 
-        # Get theme CSS and properties
-        theme_css = self.theme['css']
-        fonts_import = self.theme.get('fonts_import', '')
-        placeholder = self.theme.get('placeholder', 'Enter input')
-        button_text = self.theme.get('button_text', 'Submit')
-
         php_code = f\'\'\'<?php
 /**
- * Hackforge Machine: {{{{self.machine_id}}}}
+ * Hackforge Machine: {{self.machine_id}}
  * Vulnerability: {variant}
- * Theme: {{{{self.theme['name']}}}}
- * Difficulty: {{{{self.difficulty}}}}/5
+ * Difficulty: {{self.difficulty}}/5
  */
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{variant} Challenge</title>
-    {{{{fonts_import}}}}
+    <title>{variant}</title>
     <style>
-{{{{theme_css}}}}
+        body {{ font-family: monospace; background: #1a1a2e; color: #eee; padding: 20px; }}
+        .container {{ max-width: 900px; margin: 50px auto; background: rgba(15, 32, 39, 0.9);
+                     border-radius: 15px; padding: 40px; }}
+        input {{ width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.4);
+                border: 2px solid #00ff88; color: #fff; }}
+        button {{ background: #00ff88; color: #000; padding: 15px 40px;
+                 border: none; cursor: pointer; }}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>{variant}</h1>
-        <p>Context: {{{{context}}}}</p>
-
         <form method="GET">
-            <input type="text" name="input" placeholder="{{{{placeholder}}}}">
-            <button type="submit">{{{{button_text}}}}</button>
+            <input type="text" name="input" placeholder="Enter input">
+            <button type="submit">Submit</button>
         </form>
 
         <?php
-        if (isset($_GET['input'])) {{{{
+        if (isset($_GET['input'])) {{
             $input = $_GET['input'];
-            {{{{filter_code if filter_code else '// No filters'}}}}
-            echo '<div class="result">';
-            echo '<h3>Results:</h3>';
-            echo '<div>' . $input . '</div>';
-            echo '</div>';
-        }}}}
+            {{filter_code if filter_code else '// No filters'}}
+            // Vulnerable code here
+            echo htmlspecialchars($input);
+        }}
         ?>
+    </div>
+</body>
+</html>\'\'\'
 
-        <div class="hint">
-            <strong>💡 Hint:</strong> This is a {{{{context}}}} context. Can you find the vulnerability?
-        </div>
+        return php_code
+'''
+
+        # Custom template with specific code structure
+        return f'''    def {method_name}(self) -> str:
+        """Generate {variant} vulnerable application"""
+
+        app = self.config.application
+        constraints = self.config.constraints
+
+        context = app.get('context', 'default')
+        filters = constraints.get('filters', [])
+
+        filter_code = self._generate_filter_code(filters, 'php')
+
+        # Custom vulnerable code for {variant}
+        php_code = f\'\'\'<?php
+/**
+ * Hackforge Machine: {{self.machine_id}}
+ * Vulnerability: {variant}
+ * Context: {{context}}
+ */
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{variant}</title>
+    <style>
+        body {{ font-family: monospace; background: #1a1a2e; color: #eee; padding: 20px; }}
+        .container {{ max-width: 900px; margin: 50px auto; background: rgba(15, 32, 39, 0.9);
+                     border-radius: 15px; padding: 40px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{variant}</h1>
+        <form method="GET">
+            <input type="text" name="input">
+            <button type="submit">Submit</button>
+        </form>
+
+        <?php
+        if (isset($_GET['input'])) {{
+            $input = $_GET['input'];
+            {{filter_code}}
+            // Vulnerable processing
+        }}
+        ?>
     </div>
 </body>
 </html>\'\'\'
@@ -494,6 +525,33 @@ CMD ["apache2-foreground"]
 
         return ',\n'.join(filter_entries) if filter_entries else "            # No filters defined"
 
+    def _generate_dockerfile_logic(self, variants: list) -> str:
+        """Generate Dockerfile selection logic"""
+        lines = []
+        for i, variant in enumerate(variants):
+            if i == 0:
+                lines.append(f'        if variant == "{variant}":')
+            else:
+                lines.append(f'        elif variant == "{variant}":')
+            lines.append('''            return \'\'\'FROM php:8.0-apache
+
+RUN apt-get update && apt-get install -y iputils-ping whois dnsutils
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
+\'\'\'''')
+
+        lines.append('        else:')
+        lines.append('''            return \'\'\'FROM php:8.0-apache
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
+\'\'\'''')
+
+        return '\n'.join(lines)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -506,4 +564,4 @@ if __name__ == "__main__":
     generator = VulnerabilityGenerator(config_path)
     generator.generate_all(".")
 
-    print(f"\n✨ Done! Templates will now use random themes for variety!")
+    print(f"\n✨ Done!")

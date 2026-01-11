@@ -1,16 +1,16 @@
 # Exploitation Hints
 
-**Machine ID:** `a8ad28cbfe68b45b`
+**Machine ID:** `780aa43a613dc202`
 **Variant:** Reflected XSS
 **Difficulty:** 2/5
 
 ## Hints
 
-1. Context: search_box
+1. Context: user_profile
 2. Difficulty: 2/5
 3. ⚠️ Filters active: script_tag, onerror
 4. 💡 Try basic payloads first
 
 ## Flag
 
-`HACKFORGE{6a7f6146a4d8eeafe803aa806574654e}`
+`HACKFORGE{5ee4894ae683172f8f45d8ad05c85e07}`

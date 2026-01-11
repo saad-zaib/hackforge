@@ -42,7 +42,7 @@ check_and_generate_machines() {
 		if [ -f "$SCRIPT_DIR/core/template_engine.py" ]; then
     			echo -e "${BLUE}🔨 Converting configs to applications...${NC}"
     			cd "$SCRIPT_DIR/core"
-    			python3 template_engine.py --machines-dir generated_machines
+    			python3 template_engine.py --mode single
     			echo -e "${GREEN}✓ Templates processed${NC}"
 		fi
 

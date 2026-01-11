@@ -1,16 +1,16 @@
 # Exploitation Hints
 
-**Machine ID:** `97cba4405ebdcf35`
+**Machine ID:** `98888280c4a552f7`
 **Variant:** Reflected XSS
 **Difficulty:** 2/5
 
 ## Hints
 
-1. Context: feedback_form
+1. Context: comment_section
 2. Difficulty: 2/5
 3. ⚠️ Filters active: script_tag, onerror
 4. 💡 Try basic payloads first
 
 ## Flag
 
-`HACKFORGE{b1d8c4217238a2dc8f39f03e68b1e649}`
+`HACKFORGE{9fb7a1136586966ed1f73070805e4e57}`

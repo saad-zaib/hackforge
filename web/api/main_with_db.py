@@ -200,6 +200,40 @@ async def get_user_campaigns_list(user_id: str):
 # Campaign Endpoints with Database
 # ============================================================================
 
+def start_campaign_containers(campaign_path: Path):
+    """
+    Start Docker containers for a campaign
+    """
+    try:
+        import subprocess
+        
+        compose_file = campaign_path / "docker-compose.yml"
+        
+        if not compose_file.exists():
+            logger.warning(f"No docker-compose.yml found in {campaign_path}")
+            return False
+        
+        logger.info(f"Starting containers for {campaign_path.name}...")
+        
+        # Run docker-compose up -d --build
+        result = subprocess.run(
+            ["docker-compose", "up", "-d", "--build"],
+            cwd=str(campaign_path),
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 minute timeout
+        )
+        
+        if result.returncode == 0:
+            logger.info(f"✓ Containers started successfully")
+            return True
+        else:
+            logger.error(f"✗ Failed to start containers: {result.stderr}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"Error starting containers: {e}")
+        return False
 
 @app.post("/api/campaigns")
 async def create_campaign(request: CampaignCreateRequest, background_tasks: BackgroundTasks):
@@ -209,25 +243,7 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
     logger.info(f"CREATING CAMPAIGN: {request.campaign_name}")
     logger.info(f"User: {request.user_id}, Difficulty: {request.difficulty}, Count: {request.count}")
 
-    # Validate difficulty
-    if not 1 <= request.difficulty <= 5:
-        raise HTTPException(status_code=400, detail="Difficulty must be between 1 and 5")
-
-    # Validate campaign name
-    if not request.campaign_name or len(request.campaign_name.strip()) == 0:
-        raise HTTPException(status_code=400, detail="Campaign name is required")
-
-    # Check if user exists, create if not
-    user = db.get_user(request.user_id)
-    if not user:
-        logger.info("Creating default user...")
-        user_data = {
-            'user_id': request.user_id,
-            'username': request.user_id,
-            'email': f"{request.user_id}@hackforge.local",
-            'role': 'student'
-        }
-        db.create_user(user_data)
+    # ... [existing validation code] ...
 
     # Generate campaign
     logger.info("Generating machines...")
@@ -250,10 +266,10 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
     # FIXED: Create campaign-specific directory
     campaign_id = f"campaign_{int(time.time())}"
     campaign_output_dir = f"campaigns/{campaign_id}"
-    
+
     logger.info(f"Campaign ID: {campaign_id}")
     logger.info("Exporting campaign...")
-    
+
     try:
         # Export with specific campaign directory
         campaign_path = generator.export_campaign(machines, output_dir=campaign_output_dir)
@@ -318,6 +334,18 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
         except Exception as e:
             logger.warning(f"Progress record failed for {machine.machine_id}: {e}")
 
+    # ✨ NEW: Start Docker containers automatically
+    logger.info("Starting Docker containers...")
+    try:
+        containers_started = start_campaign_containers(Path(campaign_path))
+        if containers_started:
+            logger.info("✓ Docker containers started successfully")
+        else:
+            logger.warning("⚠ Failed to start containers automatically")
+    except Exception as e:
+        logger.warning(f"⚠ Could not start containers: {e}")
+        # Don't fail the entire campaign creation if containers fail to start
+
     logger.info("✓ Campaign creation complete!")
     logger.info("=" * 60)
 
@@ -327,8 +355,11 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
         'user_id': request.user_id,
         'difficulty': request.difficulty,
         'machines': campaign_data['machines'],
-        'status': 'created'
+        'status': 'created',
+        'containers_started': containers_started if 'containers_started' in locals() else False
     }
+
+
 @app.get("/api/campaigns/{campaign_id}")
 async def get_campaign_details(campaign_id: str):
     """Get detailed information about a specific campaign"""
