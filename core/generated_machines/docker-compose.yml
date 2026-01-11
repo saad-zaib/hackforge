@@ -2,15 +2,15 @@ version: '3.8'
 
 services:
 
-  780aa43a613dc202:
-    build: ./780aa43a613dc202
-    container_name: hackforge_780aa43a613dc202
+  ae19872bcbbfb961:
+    build: ./ae19872bcbbfb961
+    container_name: hackforge_ae19872bcbbfb961
     ports:
       - "8080:80"
     volumes:
-      - ./780aa43a613dc202/app:/var/www/html
-      - ./780aa43a613dc202/flag.txt:/var/www/html/flag.txt:ro
+      - ./ae19872bcbbfb961/app:/var/www/html
+      - ./ae19872bcbbfb961/flag.txt:/var/www/html/flag.txt:ro
     environment:
-      - MACHINE_ID=780aa43a613dc202
+      - MACHINE_ID=ae19872bcbbfb961
       - FLAG_LOCATION=/var/www/html/flag.txt
     restart: unless-stopped

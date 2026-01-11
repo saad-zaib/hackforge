@@ -18,7 +18,7 @@ class CrossSiteScriptingTemplate(BaseTemplate):
     """
     Template generator for cross-site scripting vulnerabilities
     """
-    
+
     def __init__(self, config):
         super().__init__(config)
         # Pick random theme for this machine
@@ -58,35 +58,35 @@ class CrossSiteScriptingTemplate(BaseTemplate):
 
         php_code = f'''<?php
 /**
- * Hackforge Machine: {{self.machine_id}}
+ * Hackforge Machine: {self.machine_id}
  * Vulnerability: Reflected XSS
- * Theme: {{self.theme['name']}}
- * Difficulty: {{self.difficulty}}/5
+ * Theme: {self.theme['name']}
+ * Difficulty: {self.difficulty}/5
  */
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Reflected XSS Challenge</title>
-    {{fonts_import}}
+    {fonts_import}
     <style>
-{{theme_css}}
+{theme_css}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Reflected XSS</h1>
-        <p>Context: {{context}}</p>
+        <p>Context: {context}</p>
 
         <form method="GET">
-            <input type="text" name="input" placeholder="{{placeholder}}">
-            <button type="submit">{{button_text}}</button>
+            <input type="text" name="input" placeholder="{placeholder}">
+            <button type="submit">{button_text}</button>
         </form>
 
         <?php
         if (isset($_GET['input'])) {{
             $input = $_GET['input'];
-            {{filter_code if filter_code else '// No filters'}}
+            {filter_code if filter_code else '// No filters'}
             echo '<div class="result">';
             echo '<h3>Results:</h3>';
             echo '<div>' . $input . '</div>';
@@ -95,7 +95,7 @@ class CrossSiteScriptingTemplate(BaseTemplate):
         ?>
 
         <div class="hint">
-            <strong>💡 Hint:</strong> This is a {{context}} context. Can you find the vulnerability?
+            <strong>💡 Hint:</strong> This is a {context} context. Can you find the vulnerability?
         </div>
     </div>
 </body>
@@ -122,35 +122,35 @@ class CrossSiteScriptingTemplate(BaseTemplate):
 
         php_code = f'''<?php
 /**
- * Hackforge Machine: {{self.machine_id}}
+ * Hackforge Machine: {self.machine_id}
  * Vulnerability: Stored XSS
- * Theme: {{self.theme['name']}}
- * Difficulty: {{self.difficulty}}/5
+ * Theme: {self.theme['name']}
+ * Difficulty: {self.difficulty}/5
  */
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Stored XSS Challenge</title>
-    {{fonts_import}}
+    {fonts_import}
     <style>
-{{theme_css}}
+{theme_css}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Stored XSS</h1>
-        <p>Context: {{context}}</p>
+        <p>Context: {context}</p>
 
         <form method="GET">
-            <input type="text" name="input" placeholder="{{placeholder}}">
-            <button type="submit">{{button_text}}</button>
+            <input type="text" name="input" placeholder="{placeholder}">
+            <button type="submit">{button_text}</button>
         </form>
 
         <?php
         if (isset($_GET['input'])) {{
             $input = $_GET['input'];
-            {{filter_code if filter_code else '// No filters'}}
+            {filter_code if filter_code else '// No filters'}
             echo '<div class="result">';
             echo '<h3>Results:</h3>';
             echo '<div>' . $input . '</div>';
@@ -159,7 +159,7 @@ class CrossSiteScriptingTemplate(BaseTemplate):
         ?>
 
         <div class="hint">
-            <strong>💡 Hint:</strong> This is a {{context}} context. Can you find the vulnerability?
+            <strong>💡 Hint:</strong> This is a {context} context. Can you find the vulnerability?
         </div>
     </div>
 </body>
@@ -186,35 +186,35 @@ class CrossSiteScriptingTemplate(BaseTemplate):
 
         php_code = f'''<?php
 /**
- * Hackforge Machine: {{self.machine_id}}
+ * Hackforge Machine: {self.machine_id}
  * Vulnerability: DOM-based XSS
- * Theme: {{self.theme['name']}}
- * Difficulty: {{self.difficulty}}/5
+ * Theme: {self.theme['name']}
+ * Difficulty: {self.difficulty}/5
  */
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>DOM-based XSS Challenge</title>
-    {{fonts_import}}
+    {fonts_import}
     <style>
-{{theme_css}}
+{theme_css}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>DOM-based XSS</h1>
-        <p>Context: {{context}}</p>
+        <p>Context: {context}</p>
 
         <form method="GET">
-            <input type="text" name="input" placeholder="{{placeholder}}">
-            <button type="submit">{{button_text}}</button>
+            <input type="text" name="input" placeholder="{placeholder}">
+            <button type="submit">{button_text}</button>
         </form>
 
         <?php
         if (isset($_GET['input'])) {{
             $input = $_GET['input'];
-            {{filter_code if filter_code else '// No filters'}}
+            {filter_code if filter_code else '// No filters'}
             echo '<div class="result">';
             echo '<h3>Results:</h3>';
             echo '<div>' . $input . '</div>';
@@ -223,7 +223,7 @@ class CrossSiteScriptingTemplate(BaseTemplate):
         ?>
 
         <div class="hint">
-            <strong>💡 Hint:</strong> This is a {{context}} context. Can you find the vulnerability?
+            <strong>💡 Hint:</strong> This is a {context} context. Can you find the vulnerability?
         </div>
     </div>
 </body>

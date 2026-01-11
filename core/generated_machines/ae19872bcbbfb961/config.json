@@ -1,13 +1,13 @@
 {
-  "machine_id": "780aa43a613dc202",
+  "machine_id": "ae19872bcbbfb961",
   "blueprint_id": "xss_001",
   "variant": "Reflected XSS",
   "difficulty": 2,
-  "seed": "demo_user_xss_001_1768124906",
+  "seed": "demo_user_xss_001_1768126788",
   "application": {
-    "context": "user_profile",
+    "context": "message_board",
     "variant": "Reflected XSS",
-    "entry_point": "http_post_param"
+    "entry_point": "cookie_value"
   },
   "constraints": {
     "filters": [
@@ -26,7 +26,7 @@
     ]
   },
   "flag": {
-    "content": "HACKFORGE{5ee4894ae683172f8f45d8ad05c85e07}",
+    "content": "HACKFORGE{620b669bdd5474d5c7823f721238324c}",
     "location": "/var/www/html/flag.txt"
   },
   "behavior": {
@@ -34,7 +34,7 @@
   },
   "metadata": {
     "exploit_hints": [
-      "Context: user_profile",
+      "Context: message_board",
       "Difficulty: 2/5",
       "\u26a0\ufe0f Filters active: script_tag, onerror",
       "\ud83d\udca1 Try basic payloads first"

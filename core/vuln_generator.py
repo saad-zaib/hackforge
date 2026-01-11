@@ -205,7 +205,7 @@ class {class_name}(BaseTemplate):
     """
     Template generator for {self.vuln_name.lower()} vulnerabilities
     """
-    
+
     def __init__(self, config):
         super().__init__(config)
         # Pick random theme for this machine
@@ -411,6 +411,7 @@ CMD ["apache2-foreground"]
         """Generate a variant template method WITH THEME SUPPORT"""
 
         # This generates themed HTML templates
+        # FIXED: Use proper brace escaping for multi-level string generation
         return f'''    def {method_name}(self) -> str:
         """Generate {variant} vulnerable application with themed UI"""
 
@@ -430,35 +431,35 @@ CMD ["apache2-foreground"]
 
         php_code = f\'\'\'<?php
 /**
- * Hackforge Machine: {{{{self.machine_id}}}}
+ * Hackforge Machine: {{self.machine_id}}
  * Vulnerability: {variant}
- * Theme: {{{{self.theme['name']}}}}
- * Difficulty: {{{{self.difficulty}}}}/5
+ * Theme: {{self.theme['name']}}
+ * Difficulty: {{self.difficulty}}/5
  */
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>{variant} Challenge</title>
-    {{{{fonts_import}}}}
+    {{fonts_import}}
     <style>
-{{{{theme_css}}}}
+{{theme_css}}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>{variant}</h1>
-        <p>Context: {{{{context}}}}</p>
+        <p>Context: {{context}}</p>
 
         <form method="GET">
-            <input type="text" name="input" placeholder="{{{{placeholder}}}}">
-            <button type="submit">{{{{button_text}}}}</button>
+            <input type="text" name="input" placeholder="{{placeholder}}">
+            <button type="submit">{{button_text}}</button>
         </form>
 
         <?php
         if (isset($_GET['input'])) {{{{
             $input = $_GET['input'];
-            {{{{filter_code if filter_code else '// No filters'}}}}
+            {{filter_code if filter_code else '// No filters'}}
             echo '<div class="result">';
             echo '<h3>Results:</h3>';
             echo '<div>' . $input . '</div>';
@@ -467,7 +468,7 @@ CMD ["apache2-foreground"]
         ?>
 
         <div class="hint">
-            <strong>💡 Hint:</strong> This is a {{{{context}}}} context. Can you find the vulnerability?
+            <strong>💡 Hint:</strong> This is a {{context}} context. Can you find the vulnerability?
         </div>
     </div>
 </body>

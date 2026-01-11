@@ -1,6 +1,6 @@
 # Unknown
 
-**Machine ID:** `780aa43a613dc202`
+**Machine ID:** `ae19872bcbbfb961`
 **Variant:** Reflected XSS
 **Difficulty:** 2/5
 **Category:** Unknown
