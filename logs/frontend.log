@@ -18,3 +18,204 @@ Note that the development build is not optimized.
 To create a production build, use npm run build.
 
 webpack compiled successfully
+Failed to compile.
+
+Error: Keyword [object Object] is not a valid identifier
+LOG from webpack.FileSystemInfo
+<w> Managed item /root/forge/web/frontend/node_modules/react-router isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
++ 15 hidden lines
+
+ERROR in ./node_modules/@remix-run/router/dist/router.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: Keyword [object Object] is not a valid identifier
+    at Ajv.addKeyword (/root/forge/web/frontend/node_modules/ajv/lib/keyword.js:30:11)
+    at instanceofPlugin (/usr/share/nodejs/ajv-keywords/dist/keywords/instanceof.js:7:39)
+    at ajvKeywords (/usr/share/nodejs/ajv-keywords/dist/index.js:10:19)
+    at Object.<anonymous> (/root/forge/web/frontend/node_modules/babel-loader/node_modules/schema-utils/dist/validate.js:58:1)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+
+ERROR in ./node_modules/react-router/dist/index.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: Keyword [object Object] is not a valid identifier
+    at Ajv.addKeyword (/root/forge/web/frontend/node_modules/ajv/lib/keyword.js:30:11)
+    at instanceofPlugin (/usr/share/nodejs/ajv-keywords/dist/keywords/instanceof.js:7:39)
+    at ajvKeywords (/usr/share/nodejs/ajv-keywords/dist/index.js:10:19)
+    at Object.<anonymous> (/root/forge/web/frontend/node_modules/babel-loader/node_modules/schema-utils/dist/validate.js:58:1)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+
+ERROR in ./node_modules/webpack/hot/emitter.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: Keyword [object Object] is not a valid identifier
+    at Ajv.addKeyword (/root/forge/web/frontend/node_modules/ajv/lib/keyword.js:30:11)
+    at instanceofPlugin (/usr/share/nodejs/ajv-keywords/dist/keywords/instanceof.js:7:39)
+    at ajvKeywords (/usr/share/nodejs/ajv-keywords/dist/index.js:10:19)
+    at Object.<anonymous> (/root/forge/web/frontend/node_modules/babel-loader/node_modules/schema-utils/dist/validate.js:58:1)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+
+ERROR in ./node_modules/webpack/hot/log.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: Keyword [object Object] is not a valid identifier
+    at Ajv.addKeyword (/root/forge/web/frontend/node_modules/ajv/lib/keyword.js:30:11)
+    at instanceofPlugin (/usr/share/nodejs/ajv-keywords/dist/keywords/instanceof.js:7:39)
+    at ajvKeywords (/usr/share/nodejs/ajv-keywords/dist/index.js:10:19)
+    at Object.<anonymous> (/root/forge/web/frontend/node_modules/babel-loader/node_modules/schema-utils/dist/validate.js:58:1)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+
+ERROR in ./src/index.css (./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[2]!./node_modules/source-map-loader/dist/cjs.js!./src/index.css)
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: Cannot find module '/root/forge/web/frontend/node_modules/source-map-loader/dist/cjs.js'
+Require stack:
+- /root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js
+- /root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js
+- /root/forge/web/frontend/node_modules/webpack/lib/NormalModule.js
+- /root/forge/web/frontend/node_modules/webpack-manifest-plugin/dist/index.js
+- /root/forge/web/frontend/node_modules/react-scripts/config/webpack.config.js
+- /root/forge/web/frontend/node_modules/react-scripts/scripts/start.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:59:19)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:305:2)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:301:10)
+    at /root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:312:19
+    at handleResult (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:34:2)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:78:10)
+
+ERROR in Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/webpack/hot/dev-server.js' in '/root/forge/web/frontend'
+
+webpack compiled with 6 errors
+Failed to compile.
+
+Error: ENOENT: no such file or directory, open '/root/forge/web/frontend/node_modules/babel-loader/lib/index.js'
+ERROR in ./node_modules/@remix-run/router/dist/router.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: ENOENT: no such file or directory, open '/root/forge/web/frontend/node_modules/babel-loader/lib/index.js'
+    at Object.openSync (node:fs:596:3)
+    at Object.readFileSync (node:fs:464:35)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1377:18)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:59:19)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:305:2)
+    at runLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:497:2)
+
+ERROR in ./node_modules/react-router/dist/index.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: ENOENT: no such file or directory, open '/root/forge/web/frontend/node_modules/babel-loader/lib/index.js'
+    at Object.openSync (node:fs:596:3)
+    at Object.readFileSync (node:fs:464:35)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1377:18)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:59:19)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:305:2)
+    at runLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:497:2)
+
+ERROR in ./node_modules/webpack/hot/emitter.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: ENOENT: no such file or directory, open '/root/forge/web/frontend/node_modules/babel-loader/lib/index.js'
+    at Object.openSync (node:fs:596:3)
+    at Object.readFileSync (node:fs:464:35)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1377:18)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:59:19)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:305:2)
+    at runLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:497:2)
+
+ERROR in ./node_modules/webpack/hot/log.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+Error: ENOENT: no such file or directory, open '/root/forge/web/frontend/node_modules/babel-loader/lib/index.js'
+    at Object.openSync (node:fs:596:3)
+    at Object.readFileSync (node:fs:464:35)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1377:18)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:59:19)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:305:2)
+    at runLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:497:2)
+
+ERROR in ./src/index.css (./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[2]!./node_modules/source-map-loader/dist/cjs.js!./src/index.css)
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: Cannot find module '/root/forge/web/frontend/node_modules/source-map-loader/dist/cjs.js'
+Require stack:
+- /root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js
+- /root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js
+- /root/forge/web/frontend/node_modules/webpack/lib/NormalModule.js
+- /root/forge/web/frontend/node_modules/webpack-manifest-plugin/dist/index.js
+- /root/forge/web/frontend/node_modules/react-scripts/config/webpack.config.js
+- /root/forge/web/frontend/node_modules/react-scripts/scripts/start.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:59:19)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:305:2)
+    at iteratePitchingLoaders (/root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:301:10)
+    at /root/forge/web/frontend/node_modules/loader-runner/lib/LoaderRunner.js:312:19
+    at handleResult (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:34:2)
+    at loadLoader (/root/forge/web/frontend/node_modules/loader-runner/lib/loadLoader.js:78:10)
+
+ERROR in Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js' in '/root/forge/web/frontend'
+
+ERROR in Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/webpack/hot/dev-server.js' in '/root/forge/web/frontend'
+
+webpack compiled with 7 errors
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js' in '/root/forge/web/frontend'
+ERROR in Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js' in '/root/forge/web/frontend'
+
+ERROR in main
+Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/babel-loader/lib/index.js' in '/root/forge/web/frontend'
+
+ERROR in Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/webpack-dev-server/client/index.js?protocol=ws%3A&hostname=0.0.0.0&port=3000&pathname=%2Fws&logging=none&overlay=%7B%22errors%22%3Atrue%2C%22warnings%22%3Afalse%7D&reconnect=10&hot=true&live-reload=true' in '/root/forge/web/frontend'
+
+ERROR in Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/webpack/hot/dev-server.js' in '/root/forge/web/frontend'
+
+ERROR in Error: Child compilation failed:
+Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/html-webpack-plugin/lib/loader.js' in '/root/forge/web/frontend'
+ModuleNotFoundError: Module not found: Error: Can't resolve '/root/forge/web/frontend/node_modules/html-webpack-plugin/lib/loader.js' in '/root/forge/web/frontend'
+    at /root/forge/web/frontend/node_modules/webpack/lib/Compilation.js:2065:28
+    at /root/forge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:1028:13
+    at eval (eval at create (/root/forge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:10:1)
+    at /root/forge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:429:22
+    at eval (eval at create (/root/forge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:9:1)
+    at /root/forge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:614:22
+    at /root/forge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:180:10
+    at /root/forge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:846:23
+    at /root/forge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:1338:5
+    at /root/forge/web/frontend/node_modules/neo-async/async.js:2830:7
+
+1 ERROR in child compilations (Use 'stats.children: true' resp. '--stats-children' for more details)
+webpack compiled with 6 errors
