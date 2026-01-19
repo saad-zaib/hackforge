@@ -1,0 +1,32 @@
+{
+  "machine_id": "243c352edcf07175",
+  "blueprint_id": "cmdi_002",
+  "variant": "Direct",
+  "difficulty": 1,
+  "seed": "user_default_cmdi_002_1768746569_2",
+  "application": {
+    "context": "ping_utility",
+    "variant": "Direct ",
+    "entry_point": "http_post_param"
+  },
+  "constraints": {
+    "filters": []
+  },
+  "flag": {
+    "content": "HACKFORGE{460462e8a402887265001f79d6ac799e}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: ping_utility",
+      "Difficulty: 1/5",
+      "\u2713 No input filtering - direct attack possible",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Direct ",
+    "estimated_solve_time": "10-15 minutes"
+  }
+}

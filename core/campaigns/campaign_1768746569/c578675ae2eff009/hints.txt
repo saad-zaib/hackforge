@@ -1,0 +1,9 @@
+Machine: c578675ae2eff009
+Variant: Basic Path Traversal
+Difficulty: 1/5
+
+Hints:
+  • Context: log_viewer
+  • Difficulty: 1/5
+  • ✓ No input filtering - direct attack possible
+  • 💡 Try basic payloads first

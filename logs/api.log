@@ -1,16 +1,12 @@
-2026-01-16 17:40:49,092 - INFO - Project root: /root/hackforge
-2026-01-16 17:40:49,092 - INFO - Core path: /root/hackforge/core
-2026-01-16 17:40:49,092 - INFO - Docker path: /root/hackforge/docker/orchestrator
-2026-01-16 17:40:49,263 - INFO - Orchestrator watching: /root/hackforge/core/generated_machines
-2026-01-16 17:40:49,273 - INFO - ✓ All components initialized
-INFO:     Started server process [1222]
+2026-01-19 13:38:30,820 - INFO - Project root: /root/hackforge
+2026-01-19 13:38:30,820 - INFO - Core path: /root/hackforge/core
+2026-01-19 13:38:30,820 - INFO - Docker path: /root/hackforge/docker/orchestrator
+2026-01-19 13:38:30,975 - INFO - Orchestrator watching: /root/hackforge/core/generated_machines
+2026-01-19 13:38:30,985 - INFO - ✓ All components initialized
+INFO:     Started server process [1584]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [1222]
 
 ============================================================
 GENERATOR INITIALIZATION
@@ -56,3 +52,443 @@ Mutation engines loaded:
 
 Starting API server with MongoDB integration...
     
+INFO:     127.0.0.1:35872 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35886 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35900 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+
+============================================================
+📊 Machine Status
+============================================================
+
+❌ No docker-compose.yml found
+INFO:     127.0.0.1:35886 - "GET /api/docker/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35904 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
+2026-01-19 13:39:00,899 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-19 13:39:00,901 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-19 13:39:00,903 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-19 13:39:00,907 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-19 13:39:00,910 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-19 13:39:00,911 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-19 13:39:00,912 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-19 13:39:00,912 - INFO - ✓ Blueprints count: 6
+2026-01-19 13:39:00,915 - INFO - ✓ Machines count: 4
+2026-01-19 13:39:00,915 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
+INFO:     127.0.0.1:35900 - "GET /api/stats HTTP/1.1" 200 OK
+
+============================================================
+📊 Machine Status
+============================================================
+
+❌ No docker-compose.yml found
+INFO:     127.0.0.1:35904 - "GET /api/docker/status HTTP/1.1" 200 OK
+2026-01-19 13:39:00,927 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-19 13:39:00,930 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-19 13:39:00,934 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-19 13:39:00,936 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-19 13:39:00,941 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-19 13:39:00,942 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-19 13:39:00,944 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-19 13:39:00,944 - INFO - ✓ Blueprints count: 6
+2026-01-19 13:39:00,944 - INFO - ✓ Machines count: 4
+2026-01-19 13:39:00,944 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
+INFO:     127.0.0.1:35886 - "GET /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35886 - "OPTIONS /api/configs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35904 - "OPTIONS /api/configs HTTP/1.1" 200 OK
+2026-01-19 13:39:03,299 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-19 13:39:03,301 - INFO - ✓ Loaded config: Command 
+2026-01-19 13:39:03,302 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-19 13:39:03,302 - INFO - ✓ Loaded config: Path Traversal
+2026-01-19 13:39:03,303 - INFO - ✓ Loaded config: Command Injection
+2026-01-19 13:39:03,304 - INFO - ✓ Loaded config: SQL Injection
+2026-01-19 13:39:03,304 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:35904 - "GET /api/configs HTTP/1.1" 200 OK
+2026-01-19 13:39:03,307 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Command 
+2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Path Traversal
+2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Command Injection
+2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: SQL Injection
+2026-01-19 13:39:03,309 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:35886 - "GET /api/configs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35916 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35916 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:39:24,912 - INFO - Returning 4 machines
+INFO:     127.0.0.1:35916 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:39:25,455 - INFO - Returning 4 machines
+INFO:     127.0.0.1:59234 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48988 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48988 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
+2026-01-19 13:39:36,154 - INFO - Returning 4 machines
+INFO:     127.0.0.1:48992 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:39:37,494 - INFO - Returning 4 machines
+INFO:     127.0.0.1:48992 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:39:44,613 - INFO - Returning 4 machines
+INFO:     127.0.0.1:48998 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:39:55,221 - INFO - Returning 4 machines
+INFO:     127.0.0.1:56450 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:40:05,079 - INFO - Returning 4 machines
+INFO:     127.0.0.1:56454 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:40:14,821 - INFO - Returning 4 machines
+INFO:     127.0.0.1:57686 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:40:24,752 - INFO - Returning 4 machines
+INFO:     127.0.0.1:57688 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:40:35,296 - INFO - Returning 4 machines
+INFO:     127.0.0.1:55398 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:40:44,524 - INFO - Returning 4 machines
+INFO:     127.0.0.1:55406 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:40:53,591 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-19 13:40:53,591 - INFO - ✓ Loaded config: Command 
+2026-01-19 13:40:53,591 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-19 13:40:53,592 - INFO - ✓ Loaded config: Path Traversal
+2026-01-19 13:40:53,592 - INFO - ✓ Loaded config: Command Injection
+2026-01-19 13:40:53,592 - INFO - ✓ Loaded config: SQL Injection
+2026-01-19 13:40:53,592 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:39476 - "GET /api/configs HTTP/1.1" 200 OK
+2026-01-19 13:40:53,596 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Command 
+2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Path Traversal
+2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Command Injection
+2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: SQL Injection
+2026-01-19 13:40:53,596 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:39476 - "GET /api/configs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35762 - "OPTIONS /api/configs/cross_site_scripting HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35762 - "DELETE /api/configs/cross_site_scripting HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:35768 - "OPTIONS /api/configs/command_inject HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35768 - "DELETE /api/configs/command_inject HTTP/1.1" 405 Method Not Allowed
+2026-01-19 13:46:37,229 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Command 
+2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Path Traversal
+2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Command Injection
+2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: SQL Injection
+2026-01-19 13:46:37,230 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:35768 - "GET /api/configs HTTP/1.1" 200 OK
+2026-01-19 13:46:37,235 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Command 
+2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Path Traversal
+2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Command Injection
+2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: SQL Injection
+2026-01-19 13:46:37,235 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:35768 - "GET /api/configs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37144 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37160 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:58:07,591 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37160 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:58:08,138 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37144 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37144 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37144 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/start HTTP/1.1" 200 OK
+2026-01-19 13:58:13,230 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37144 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:58:17,857 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46342 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:58:28,096 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46358 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:58:38,157 - INFO - Returning 4 machines
+INFO:     127.0.0.1:57236 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:58:47,931 - INFO - Returning 4 machines
+INFO:     127.0.0.1:57238 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:58:57,593 - INFO - Returning 4 machines
+INFO:     127.0.0.1:51994 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:59:07,835 - INFO - Returning 4 machines
+INFO:     127.0.0.1:52004 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 13:59:42,171 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37182 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:00:41,953 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37190 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:01:42,238 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45384 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:02:41,889 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45732 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:03:41,899 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45746 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:03:44,420 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45746 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:03:44,971 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45746 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:03:53,793 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41488 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:04:04,540 - INFO - Returning 4 machines
+INFO:     127.0.0.1:36334 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:04:14,243 - INFO - Returning 4 machines
+INFO:     127.0.0.1:36336 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:04:24,878 - INFO - Returning 4 machines
+INFO:     127.0.0.1:43792 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:04:35,066 - INFO - Returning 4 machines
+INFO:     127.0.0.1:43800 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:04:45,454 - INFO - Returning 4 machines
+INFO:     127.0.0.1:59592 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:04:55,310 - INFO - Returning 4 machines
+INFO:     127.0.0.1:60620 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:05:42,394 - INFO - Returning 4 machines
+INFO:     127.0.0.1:42114 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:06:42,026 - INFO - Returning 4 machines
+INFO:     127.0.0.1:42122 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:07:42,326 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46262 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59348 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 14:08:41,895 - INFO - Returning 4 machines
+INFO:     127.0.0.1:59348 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60922 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:36:37,972 - INFO - Returning 4 machines
+INFO:     127.0.0.1:60922 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:36:41,346 - INFO - Returning 4 machines
+INFO:     127.0.0.1:60934 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:36:51,636 - INFO - Returning 4 machines
+INFO:     127.0.0.1:36948 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:37:01,254 - INFO - Returning 4 machines
+INFO:     127.0.0.1:38068 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:37:10,935 - INFO - Returning 4 machines
+INFO:     127.0.0.1:38080 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38080 - "OPTIONS /api/users/user_default/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38080 - "OPTIONS /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-19 16:37:15,890 - INFO - Fetching campaigns for user: user_default
+2026-01-19 16:37:15,914 - INFO - Found 5 campaigns
+2026-01-19 16:37:15,921 - INFO - Successfully processed 5 campaigns
+INFO:     127.0.0.1:38080 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-19 16:37:15,927 - INFO - Fetching campaigns for user: user_default
+2026-01-19 16:37:15,929 - INFO - Found 5 campaigns
+2026-01-19 16:37:15,934 - INFO - Successfully processed 5 campaigns
+INFO:     127.0.0.1:38080 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47752 - "OPTIONS /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47752 - "OPTIONS /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47752 - "GET /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47752 - "GET /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47752 - "OPTIONS /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47752 - "OPTIONS /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47752 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46426 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46426 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46426 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
+2026-01-19 16:38:37,953 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46426 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:38:38,469 - INFO - Returning 4 machines
+INFO:     127.0.0.1:42908 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:38:48,359 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45050 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:38:58,062 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45066 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:08,250 - INFO - Returning 4 machines
+INFO:     127.0.0.1:52766 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:17,939 - INFO - Returning 4 machines
+INFO:     127.0.0.1:52772 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:28,252 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41488 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41494 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41494 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
+2026-01-19 16:39:37,223 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:39,088 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45554 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45554 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45554 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
+2026-01-19 16:39:42,063 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:44,069 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41494 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41494 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
+2026-01-19 16:39:47,331 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:48,363 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:49,262 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:55,340 - INFO - Returning 4 machines
+INFO:     127.0.0.1:36938 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:39:55,847 - INFO - Returning 4 machines
+INFO:     127.0.0.1:36938 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:40:05,924 - INFO - Returning 4 machines
+INFO:     127.0.0.1:34444 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:40:16,267 - INFO - Returning 4 machines
+INFO:     127.0.0.1:34458 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:40:26,634 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45260 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:40:35,615 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45266 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:40:46,211 - INFO - Returning 4 machines
+INFO:     127.0.0.1:33386 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:40:56,376 - INFO - Returning 4 machines
+INFO:     127.0.0.1:33398 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:41:38,629 - INFO - Returning 4 machines
+INFO:     127.0.0.1:35582 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:42:38,158 - INFO - Returning 4 machines
+INFO:     127.0.0.1:41254 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:43:38,871 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46016 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:44:38,363 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46020 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:45:38,624 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37198 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52878 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:46:38,966 - INFO - Returning 4 machines
+INFO:     127.0.0.1:52878 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:47:38,538 - INFO - Returning 4 machines
+INFO:     127.0.0.1:59506 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:48:38,581 - INFO - Returning 4 machines
+INFO:     127.0.0.1:59508 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:49:38,587 - INFO - Returning 4 machines
+INFO:     127.0.0.1:38696 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:50:38,328 - INFO - Returning 4 machines
+INFO:     127.0.0.1:38698 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:51:38,629 - INFO - Returning 4 machines
+INFO:     127.0.0.1:56670 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:52:37,580 - INFO - Returning 4 machines
+INFO:     127.0.0.1:56686 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:53:37,796 - INFO - Returning 4 machines
+INFO:     127.0.0.1:57710 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:54:38,380 - INFO - Returning 4 machines
+INFO:     127.0.0.1:57712 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:55:38,659 - INFO - Returning 4 machines
+INFO:     127.0.0.1:48666 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:56:37,637 - INFO - Returning 4 machines
+INFO:     127.0.0.1:48670 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37446 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:57:38,107 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37446 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:58:37,729 - INFO - Returning 4 machines
+INFO:     127.0.0.1:37456 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 16:59:38,816 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45938 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:00:38,732 - INFO - Returning 4 machines
+INFO:     127.0.0.1:47908 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:01:38,840 - INFO - Returning 4 machines
+INFO:     127.0.0.1:60142 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:02:38,669 - INFO - Returning 4 machines
+INFO:     127.0.0.1:51448 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:03:38,652 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46146 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:04:37,975 - INFO - Returning 4 machines
+INFO:     127.0.0.1:54212 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:05:02,646 - INFO - Returning 4 machines
+INFO:     127.0.0.1:51072 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:05:06,287 - INFO - Returning 4 machines
+INFO:     127.0.0.1:51072 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:05:16,839 - INFO - Returning 4 machines
+INFO:     127.0.0.1:42178 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:05:25,595 - INFO - Returning 4 machines
+INFO:     127.0.0.1:42188 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:05:36,360 - INFO - Returning 4 machines
+INFO:     127.0.0.1:38820 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:05:46,392 - INFO - Returning 4 machines
+INFO:     127.0.0.1:38826 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:05:55,959 - INFO - Returning 4 machines
+INFO:     127.0.0.1:46412 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:06:38,626 - INFO - Returning 4 machines
+INFO:     127.0.0.1:38646 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:07:38,347 - INFO - Returning 4 machines
+INFO:     127.0.0.1:49326 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49330 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:08:38,009 - INFO - Returning 4 machines
+INFO:     127.0.0.1:49330 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:09:38,210 - INFO - Returning 4 machines
+INFO:     127.0.0.1:39356 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:10:37,786 - INFO - Returning 4 machines
+INFO:     127.0.0.1:39364 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:11:38,689 - INFO - Returning 4 machines
+INFO:     127.0.0.1:50290 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:12:37,611 - INFO - Returning 4 machines
+INFO:     127.0.0.1:50298 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:13:37,910 - INFO - Returning 4 machines
+INFO:     127.0.0.1:34706 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:14:38,145 - INFO - Returning 4 machines
+INFO:     127.0.0.1:34722 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:15:38,283 - INFO - Returning 4 machines
+INFO:     127.0.0.1:43528 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:16:37,783 - INFO - Returning 4 machines
+INFO:     127.0.0.1:43532 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:17:38,867 - INFO - Returning 4 machines
+INFO:     127.0.0.1:53406 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:18:38,687 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45198 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45200 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:19:38,492 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45200 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:20:38,986 - INFO - Returning 4 machines
+INFO:     127.0.0.1:42602 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:21:38,424 - INFO - Returning 4 machines
+INFO:     127.0.0.1:42604 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:22:38,374 - INFO - Returning 4 machines
+INFO:     127.0.0.1:39318 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:23:38,664 - INFO - Returning 4 machines
+INFO:     127.0.0.1:39334 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:23:49,891 - INFO - Returning 4 machines
+INFO:     127.0.0.1:54436 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:23:56,435 - INFO - Returning 4 machines
+INFO:     127.0.0.1:54440 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54772 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54774 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54790 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+
+============================================================
+📊 Machine Status
+============================================================
+
+❌ No docker-compose.yml found
+INFO:     127.0.0.1:54772 - "GET /api/docker/status HTTP/1.1" 200 OK
+2026-01-19 17:23:57,974 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-19 17:23:57,977 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-19 17:23:57,979 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-19 17:23:57,980 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-19 17:23:57,983 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-19 17:23:57,984 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-19 17:23:57,986 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-19 17:23:57,986 - INFO - ✓ Blueprints count: 6
+2026-01-19 17:23:57,986 - INFO - ✓ Machines count: 4
+2026-01-19 17:23:57,986 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
+INFO:     127.0.0.1:54774 - "GET /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54806 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
+2026-01-19 17:23:57,994 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-19 17:23:57,995 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-19 17:23:57,996 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-19 17:23:57,997 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-19 17:23:57,998 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-19 17:23:57,999 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-19 17:23:58,000 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-19 17:23:58,000 - INFO - ✓ Blueprints count: 6
+2026-01-19 17:23:58,000 - INFO - ✓ Machines count: 4
+2026-01-19 17:23:58,000 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
+INFO:     127.0.0.1:54806 - "GET /api/stats HTTP/1.1" 200 OK
+
+============================================================
+📊 Machine Status
+============================================================
+
+❌ No docker-compose.yml found
+INFO:     127.0.0.1:54774 - "GET /api/docker/status HTTP/1.1" 200 OK
+2026-01-19 17:24:06,697 - INFO - Returning 4 machines
+INFO:     127.0.0.1:55964 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:24:16,355 - INFO - Returning 4 machines
+INFO:     127.0.0.1:55972 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:24:25,928 - INFO - Returning 4 machines
+INFO:     127.0.0.1:54324 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:24:35,609 - INFO - Returning 4 machines
+INFO:     127.0.0.1:54340 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:24:46,011 - INFO - Returning 4 machines
+INFO:     127.0.0.1:57376 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:24:56,458 - INFO - Returning 4 machines
+INFO:     127.0.0.1:53768 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:25:37,770 - INFO - Returning 4 machines
+INFO:     127.0.0.1:53772 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:26:38,053 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45466 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-19 17:27:37,725 - INFO - Returning 4 machines
+INFO:     127.0.0.1:45472 - "GET /api/machines HTTP/1.1" 200 OK

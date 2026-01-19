@@ -1,0 +1,32 @@
+{
+  "machine_id": "5c82b9804f4cb764",
+  "blueprint_id": "sqli_001",
+  "variant": "Error-based SQLi",
+  "difficulty": 1,
+  "seed": "user_default_sqli_001_1768746569_4",
+  "application": {
+    "context": "search_functionality",
+    "variant": "Error-based SQLi",
+    "entry_point": "url_path"
+  },
+  "constraints": {
+    "filters": []
+  },
+  "flag": {
+    "content": "HACKFORGE{5a97e90b352abf2f24939bd9053f11ce}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: search_functionality",
+      "Difficulty: 1/5",
+      "\u2713 No input filtering - direct attack possible",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Error-based SQLi",
+    "estimated_solve_time": "10-15 minutes"
+  }
+}
