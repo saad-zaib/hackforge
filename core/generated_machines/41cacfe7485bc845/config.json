@@ -1,0 +1,39 @@
+{
+  "machine_id": "41cacfe7485bc845",
+  "blueprint_id": "path_001",
+  "variant": "Basic Path Traversal",
+  "difficulty": 2,
+  "seed": "demo_user_path_001_1768967504_2",
+  "application": {
+    "context": "document_portal",
+    "variant": "Basic Path Traversal",
+    "entry_point": "file_view"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "dot_dot_slash",
+        "description": "Dot_dot_slash filtering",
+        "php_code": "$input = str_replace('d', '', $input);",
+        "python_code": "input = input.replace('d', '')"
+      }
+    ]
+  },
+  "flag": {
+    "content": "HACKFORGE{6003342101cc57d655782f4f769ea6f5}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: document_portal",
+      "Difficulty: 2/5",
+      "\u26a0\ufe0f Filters active: dot_dot_slash",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Basic Path Traversal",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}
