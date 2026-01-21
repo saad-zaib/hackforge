@@ -1,9 +1,9 @@
-2026-01-19 13:38:30,820 - INFO - Project root: /root/hackforge
-2026-01-19 13:38:30,820 - INFO - Core path: /root/hackforge/core
-2026-01-19 13:38:30,820 - INFO - Docker path: /root/hackforge/docker/orchestrator
-2026-01-19 13:38:30,975 - INFO - Orchestrator watching: /root/hackforge/core/generated_machines
-2026-01-19 13:38:30,985 - INFO - ✓ All components initialized
-INFO:     Started server process [1584]
+2026-01-21 08:16:58,467 - INFO - Project root: /root/hackforge
+2026-01-21 08:16:58,468 - INFO - Core path: /root/hackforge/core
+2026-01-21 08:16:58,468 - INFO - Docker path: /root/hackforge/docker/orchestrator
+2026-01-21 08:16:58,702 - INFO - Orchestrator watching: /root/hackforge/core/generated_machines
+2026-01-21 08:16:58,713 - INFO - ✓ All components initialized
+INFO:     Started server process [2503]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
@@ -52,443 +52,558 @@ Mutation engines loaded:
 
 Starting API server with MongoDB integration...
     
-INFO:     127.0.0.1:35872 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35886 - "OPTIONS /api/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35900 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37652 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37656 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37658 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37674 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
 
 ============================================================
 📊 Machine Status
 ============================================================
 
 ❌ No docker-compose.yml found
-INFO:     127.0.0.1:35886 - "GET /api/docker/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35904 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
-2026-01-19 13:39:00,899 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
-2026-01-19 13:39:00,901 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
-2026-01-19 13:39:00,903 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
-2026-01-19 13:39:00,907 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
-2026-01-19 13:39:00,910 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
-2026-01-19 13:39:00,911 - INFO - ✓ Loaded blueprint: None (asdasd)
-2026-01-19 13:39:00,912 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
-2026-01-19 13:39:00,912 - INFO - ✓ Blueprints count: 6
-2026-01-19 13:39:00,915 - INFO - ✓ Machines count: 4
-2026-01-19 13:39:00,915 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
-INFO:     127.0.0.1:35900 - "GET /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37658 - "GET /api/docker/status HTTP/1.1" 200 OK
+2026-01-21 08:17:30,027 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:17:30,031 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:17:30,032 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:17:30,033 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:17:30,035 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:17:30,036 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:17:30,037 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:17:30,037 - INFO - ✓ Blueprints count: 6
+2026-01-21 08:17:30,039 - INFO - ✓ Machines count: 0
+2026-01-21 08:17:30,039 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 0}
+INFO:     127.0.0.1:37674 - "GET /api/stats HTTP/1.1" 200 OK
 
 ============================================================
 📊 Machine Status
 ============================================================
 
 ❌ No docker-compose.yml found
-INFO:     127.0.0.1:35904 - "GET /api/docker/status HTTP/1.1" 200 OK
-2026-01-19 13:39:00,927 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
-2026-01-19 13:39:00,930 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
-2026-01-19 13:39:00,934 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
-2026-01-19 13:39:00,936 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
-2026-01-19 13:39:00,941 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
-2026-01-19 13:39:00,942 - INFO - ✓ Loaded blueprint: None (asdasd)
-2026-01-19 13:39:00,944 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
-2026-01-19 13:39:00,944 - INFO - ✓ Blueprints count: 6
-2026-01-19 13:39:00,944 - INFO - ✓ Machines count: 4
-2026-01-19 13:39:00,944 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
-INFO:     127.0.0.1:35886 - "GET /api/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35886 - "OPTIONS /api/configs HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35904 - "OPTIONS /api/configs HTTP/1.1" 200 OK
-2026-01-19 13:39:03,299 - INFO - Found 5 config files in /root/hackforge/core/configs
-2026-01-19 13:39:03,301 - INFO - ✓ Loaded config: Command 
-2026-01-19 13:39:03,302 - INFO - ✓ Loaded config: Cross-Site Scripting
-2026-01-19 13:39:03,302 - INFO - ✓ Loaded config: Path Traversal
-2026-01-19 13:39:03,303 - INFO - ✓ Loaded config: Command Injection
-2026-01-19 13:39:03,304 - INFO - ✓ Loaded config: SQL Injection
-2026-01-19 13:39:03,304 - INFO - Returning 5 configs to frontend
-INFO:     127.0.0.1:35904 - "GET /api/configs HTTP/1.1" 200 OK
-2026-01-19 13:39:03,307 - INFO - Found 5 config files in /root/hackforge/core/configs
-2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Command 
-2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Cross-Site Scripting
-2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Path Traversal
-2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: Command Injection
-2026-01-19 13:39:03,309 - INFO - ✓ Loaded config: SQL Injection
-2026-01-19 13:39:03,309 - INFO - Returning 5 configs to frontend
-INFO:     127.0.0.1:35886 - "GET /api/configs HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35916 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35916 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:39:24,912 - INFO - Returning 4 machines
-INFO:     127.0.0.1:35916 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:39:25,455 - INFO - Returning 4 machines
-INFO:     127.0.0.1:59234 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:48988 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
-INFO:     127.0.0.1:48988 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
-2026-01-19 13:39:36,154 - INFO - Returning 4 machines
-INFO:     127.0.0.1:48992 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:39:37,494 - INFO - Returning 4 machines
-INFO:     127.0.0.1:48992 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:39:44,613 - INFO - Returning 4 machines
-INFO:     127.0.0.1:48998 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:39:55,221 - INFO - Returning 4 machines
-INFO:     127.0.0.1:56450 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:40:05,079 - INFO - Returning 4 machines
-INFO:     127.0.0.1:56454 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:40:14,821 - INFO - Returning 4 machines
-INFO:     127.0.0.1:57686 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:40:24,752 - INFO - Returning 4 machines
-INFO:     127.0.0.1:57688 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:40:35,296 - INFO - Returning 4 machines
-INFO:     127.0.0.1:55398 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:40:44,524 - INFO - Returning 4 machines
-INFO:     127.0.0.1:55406 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:40:53,591 - INFO - Found 5 config files in /root/hackforge/core/configs
-2026-01-19 13:40:53,591 - INFO - ✓ Loaded config: Command 
-2026-01-19 13:40:53,591 - INFO - ✓ Loaded config: Cross-Site Scripting
-2026-01-19 13:40:53,592 - INFO - ✓ Loaded config: Path Traversal
-2026-01-19 13:40:53,592 - INFO - ✓ Loaded config: Command Injection
-2026-01-19 13:40:53,592 - INFO - ✓ Loaded config: SQL Injection
-2026-01-19 13:40:53,592 - INFO - Returning 5 configs to frontend
-INFO:     127.0.0.1:39476 - "GET /api/configs HTTP/1.1" 200 OK
-2026-01-19 13:40:53,596 - INFO - Found 5 config files in /root/hackforge/core/configs
-2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Command 
-2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Cross-Site Scripting
-2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Path Traversal
-2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: Command Injection
-2026-01-19 13:40:53,596 - INFO - ✓ Loaded config: SQL Injection
-2026-01-19 13:40:53,596 - INFO - Returning 5 configs to frontend
-INFO:     127.0.0.1:39476 - "GET /api/configs HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35762 - "OPTIONS /api/configs/cross_site_scripting HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35762 - "DELETE /api/configs/cross_site_scripting HTTP/1.1" 405 Method Not Allowed
-INFO:     127.0.0.1:35768 - "OPTIONS /api/configs/command_inject HTTP/1.1" 200 OK
-INFO:     127.0.0.1:35768 - "DELETE /api/configs/command_inject HTTP/1.1" 405 Method Not Allowed
-2026-01-19 13:46:37,229 - INFO - Found 5 config files in /root/hackforge/core/configs
-2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Command 
-2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Cross-Site Scripting
-2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Path Traversal
-2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: Command Injection
-2026-01-19 13:46:37,230 - INFO - ✓ Loaded config: SQL Injection
-2026-01-19 13:46:37,230 - INFO - Returning 5 configs to frontend
-INFO:     127.0.0.1:35768 - "GET /api/configs HTTP/1.1" 200 OK
-2026-01-19 13:46:37,235 - INFO - Found 5 config files in /root/hackforge/core/configs
-2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Command 
-2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Cross-Site Scripting
-2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Path Traversal
-2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: Command Injection
-2026-01-19 13:46:37,235 - INFO - ✓ Loaded config: SQL Injection
-2026-01-19 13:46:37,235 - INFO - Returning 5 configs to frontend
-INFO:     127.0.0.1:35768 - "GET /api/configs HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37144 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37160 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:58:07,591 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37160 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:58:08,138 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37144 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37144 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/start HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37144 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/start HTTP/1.1" 200 OK
-2026-01-19 13:58:13,230 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37144 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:58:17,857 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46342 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:58:28,096 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46358 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:58:38,157 - INFO - Returning 4 machines
-INFO:     127.0.0.1:57236 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:58:47,931 - INFO - Returning 4 machines
-INFO:     127.0.0.1:57238 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:58:57,593 - INFO - Returning 4 machines
-INFO:     127.0.0.1:51994 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:59:07,835 - INFO - Returning 4 machines
-INFO:     127.0.0.1:52004 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 13:59:42,171 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37182 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:00:41,953 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37190 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:01:42,238 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45384 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:02:41,889 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45732 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:03:41,899 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45746 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:03:44,420 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45746 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:03:44,971 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45746 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:03:53,793 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41488 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:04:04,540 - INFO - Returning 4 machines
-INFO:     127.0.0.1:36334 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:04:14,243 - INFO - Returning 4 machines
-INFO:     127.0.0.1:36336 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:04:24,878 - INFO - Returning 4 machines
-INFO:     127.0.0.1:43792 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:04:35,066 - INFO - Returning 4 machines
-INFO:     127.0.0.1:43800 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:04:45,454 - INFO - Returning 4 machines
-INFO:     127.0.0.1:59592 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:04:55,310 - INFO - Returning 4 machines
-INFO:     127.0.0.1:60620 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:05:42,394 - INFO - Returning 4 machines
-INFO:     127.0.0.1:42114 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:06:42,026 - INFO - Returning 4 machines
-INFO:     127.0.0.1:42122 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:07:42,326 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46262 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59348 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 14:08:41,895 - INFO - Returning 4 machines
-INFO:     127.0.0.1:59348 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60922 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:36:37,972 - INFO - Returning 4 machines
-INFO:     127.0.0.1:60922 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:36:41,346 - INFO - Returning 4 machines
-INFO:     127.0.0.1:60934 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:36:51,636 - INFO - Returning 4 machines
-INFO:     127.0.0.1:36948 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:37:01,254 - INFO - Returning 4 machines
-INFO:     127.0.0.1:38068 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:37:10,935 - INFO - Returning 4 machines
-INFO:     127.0.0.1:38080 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:38080 - "OPTIONS /api/users/user_default/campaigns HTTP/1.1" 200 OK
-INFO:     127.0.0.1:38080 - "OPTIONS /api/users/user_default/campaigns HTTP/1.1" 200 OK
-2026-01-19 16:37:15,890 - INFO - Fetching campaigns for user: user_default
-2026-01-19 16:37:15,914 - INFO - Found 5 campaigns
-2026-01-19 16:37:15,921 - INFO - Successfully processed 5 campaigns
-INFO:     127.0.0.1:38080 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
-2026-01-19 16:37:15,927 - INFO - Fetching campaigns for user: user_default
-2026-01-19 16:37:15,929 - INFO - Found 5 campaigns
-2026-01-19 16:37:15,934 - INFO - Successfully processed 5 campaigns
-INFO:     127.0.0.1:38080 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47752 - "OPTIONS /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47752 - "OPTIONS /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47752 - "GET /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47752 - "GET /api/campaigns/campaign_1768494982 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47752 - "OPTIONS /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47752 - "OPTIONS /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47752 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47396 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:46426 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:46426 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-INFO:     127.0.0.1:46426 - "GET /api/docker/campaign/campaign_1768494982/containers HTTP/1.1" 200 OK
-2026-01-19 16:38:37,953 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46426 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:38:38,469 - INFO - Returning 4 machines
-INFO:     127.0.0.1:42908 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:38:48,359 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45050 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:38:58,062 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45066 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:08,250 - INFO - Returning 4 machines
-INFO:     127.0.0.1:52766 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:17,939 - INFO - Returning 4 machines
-INFO:     127.0.0.1:52772 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:28,252 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41488 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41494 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41494 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
-2026-01-19 16:39:37,223 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:39,088 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45554 - "OPTIONS /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45554 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45554 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
-2026-01-19 16:39:42,063 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:44,069 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41494 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/stop HTTP/1.1" 200 OK
-INFO:     127.0.0.1:41494 - "POST /api/docker/container/267271da051f9c3b731f19abf53df1f69fcb172b7edf5d96fa064389322cb8c5/restart HTTP/1.1" 200 OK
-2026-01-19 16:39:47,331 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:48,363 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:49,262 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41494 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:55,340 - INFO - Returning 4 machines
-INFO:     127.0.0.1:36938 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:39:55,847 - INFO - Returning 4 machines
-INFO:     127.0.0.1:36938 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:40:05,924 - INFO - Returning 4 machines
-INFO:     127.0.0.1:34444 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:40:16,267 - INFO - Returning 4 machines
-INFO:     127.0.0.1:34458 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:40:26,634 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45260 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:40:35,615 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45266 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:40:46,211 - INFO - Returning 4 machines
-INFO:     127.0.0.1:33386 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:40:56,376 - INFO - Returning 4 machines
-INFO:     127.0.0.1:33398 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:41:38,629 - INFO - Returning 4 machines
-INFO:     127.0.0.1:35582 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:42:38,158 - INFO - Returning 4 machines
-INFO:     127.0.0.1:41254 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:43:38,871 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46016 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:44:38,363 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46020 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:45:38,624 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37198 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52878 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:46:38,966 - INFO - Returning 4 machines
-INFO:     127.0.0.1:52878 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:47:38,538 - INFO - Returning 4 machines
-INFO:     127.0.0.1:59506 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:48:38,581 - INFO - Returning 4 machines
-INFO:     127.0.0.1:59508 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:49:38,587 - INFO - Returning 4 machines
-INFO:     127.0.0.1:38696 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:50:38,328 - INFO - Returning 4 machines
-INFO:     127.0.0.1:38698 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:51:38,629 - INFO - Returning 4 machines
-INFO:     127.0.0.1:56670 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:52:37,580 - INFO - Returning 4 machines
-INFO:     127.0.0.1:56686 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:53:37,796 - INFO - Returning 4 machines
-INFO:     127.0.0.1:57710 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:54:38,380 - INFO - Returning 4 machines
-INFO:     127.0.0.1:57712 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:55:38,659 - INFO - Returning 4 machines
-INFO:     127.0.0.1:48666 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:56:37,637 - INFO - Returning 4 machines
-INFO:     127.0.0.1:48670 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37446 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:57:38,107 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37446 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:58:37,729 - INFO - Returning 4 machines
-INFO:     127.0.0.1:37456 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 16:59:38,816 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45938 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:00:38,732 - INFO - Returning 4 machines
-INFO:     127.0.0.1:47908 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:01:38,840 - INFO - Returning 4 machines
-INFO:     127.0.0.1:60142 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:02:38,669 - INFO - Returning 4 machines
-INFO:     127.0.0.1:51448 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:03:38,652 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46146 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:04:37,975 - INFO - Returning 4 machines
-INFO:     127.0.0.1:54212 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:05:02,646 - INFO - Returning 4 machines
-INFO:     127.0.0.1:51072 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:05:06,287 - INFO - Returning 4 machines
-INFO:     127.0.0.1:51072 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:05:16,839 - INFO - Returning 4 machines
-INFO:     127.0.0.1:42178 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:05:25,595 - INFO - Returning 4 machines
-INFO:     127.0.0.1:42188 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:05:36,360 - INFO - Returning 4 machines
-INFO:     127.0.0.1:38820 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:05:46,392 - INFO - Returning 4 machines
-INFO:     127.0.0.1:38826 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:05:55,959 - INFO - Returning 4 machines
-INFO:     127.0.0.1:46412 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:06:38,626 - INFO - Returning 4 machines
-INFO:     127.0.0.1:38646 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:07:38,347 - INFO - Returning 4 machines
-INFO:     127.0.0.1:49326 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49330 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:08:38,009 - INFO - Returning 4 machines
-INFO:     127.0.0.1:49330 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:09:38,210 - INFO - Returning 4 machines
-INFO:     127.0.0.1:39356 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:10:37,786 - INFO - Returning 4 machines
-INFO:     127.0.0.1:39364 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:11:38,689 - INFO - Returning 4 machines
-INFO:     127.0.0.1:50290 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:12:37,611 - INFO - Returning 4 machines
-INFO:     127.0.0.1:50298 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:13:37,910 - INFO - Returning 4 machines
-INFO:     127.0.0.1:34706 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:14:38,145 - INFO - Returning 4 machines
-INFO:     127.0.0.1:34722 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:15:38,283 - INFO - Returning 4 machines
-INFO:     127.0.0.1:43528 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:16:37,783 - INFO - Returning 4 machines
-INFO:     127.0.0.1:43532 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:17:38,867 - INFO - Returning 4 machines
-INFO:     127.0.0.1:53406 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:18:38,687 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45198 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:45200 - "OPTIONS /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:19:38,492 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45200 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:20:38,986 - INFO - Returning 4 machines
-INFO:     127.0.0.1:42602 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:21:38,424 - INFO - Returning 4 machines
-INFO:     127.0.0.1:42604 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:22:38,374 - INFO - Returning 4 machines
-INFO:     127.0.0.1:39318 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:23:38,664 - INFO - Returning 4 machines
-INFO:     127.0.0.1:39334 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:23:49,891 - INFO - Returning 4 machines
-INFO:     127.0.0.1:54436 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:23:56,435 - INFO - Returning 4 machines
-INFO:     127.0.0.1:54440 - "GET /api/machines HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54772 - "OPTIONS /api/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54774 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54790 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37656 - "GET /api/docker/status HTTP/1.1" 200 OK
+2026-01-21 08:17:30,053 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:17:30,054 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:17:30,056 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:17:30,057 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:17:30,059 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:17:30,059 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:17:30,061 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:17:30,061 - INFO - ✓ Blueprints count: 6
+2026-01-21 08:17:30,061 - INFO - ✓ Machines count: 0
+2026-01-21 08:17:30,061 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 0}
+INFO:     127.0.0.1:37652 - "GET /api/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37678 - "OPTIONS /api/users/user_default/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37678 - "OPTIONS /api/blueprints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37678 - "OPTIONS /api/users/user_default/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37678 - "OPTIONS /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:17:32,488 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:17:32,492 - INFO - Found 5 campaigns
+2026-01-21 08:17:32,498 - INFO - Successfully processed 5 campaigns
+INFO:     127.0.0.1:37678 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:17:32,503 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:17:32,503 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:17:32,506 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:17:32,511 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:17:32,515 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:17:32,522 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:17:32,528 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:17:32,531 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:17:32,531 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37678 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:17:32,536 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:17:32,538 - INFO - Found 5 campaigns
+2026-01-21 08:17:32,552 - INFO - Successfully processed 5 campaigns
+INFO:     127.0.0.1:37678 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:17:32,557 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:17:32,558 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:17:32,562 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:17:32,564 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:17:32,568 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:17:32,581 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:17:32,583 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:17:32,584 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:17:32,584 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37678 - "GET /api/blueprints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48386 - "OPTIONS /api/configs HTTP/1.1" 200 OK
+2026-01-21 08:18:49,768 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-21 08:18:49,769 - INFO - ✓ Loaded config: Command 
+2026-01-21 08:18:49,770 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-21 08:18:49,772 - INFO - ✓ Loaded config: Path Traversal
+2026-01-21 08:18:49,773 - INFO - ✓ Loaded config: Command Injection
+2026-01-21 08:18:49,774 - INFO - ✓ Loaded config: SQL Injection
+2026-01-21 08:18:49,774 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:48386 - "GET /api/configs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48402 - "OPTIONS /api/configs HTTP/1.1" 200 OK
+2026-01-21 08:18:49,782 - INFO - Found 5 config files in /root/hackforge/core/configs
+2026-01-21 08:18:49,783 - INFO - ✓ Loaded config: Command 
+2026-01-21 08:18:49,783 - INFO - ✓ Loaded config: Cross-Site Scripting
+2026-01-21 08:18:49,783 - INFO - ✓ Loaded config: Path Traversal
+2026-01-21 08:18:49,783 - INFO - ✓ Loaded config: Command Injection
+2026-01-21 08:18:49,783 - INFO - ✓ Loaded config: SQL Injection
+2026-01-21 08:18:49,783 - INFO - Returning 5 configs to frontend
+INFO:     127.0.0.1:48402 - "GET /api/configs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59414 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59414 - "OPTIONS /api/machines HTTP/1.1" 200 OK
+2026-01-21 08:19:54,698 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:19:54,700 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:19:54,705 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:19:54,708 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:19:54,709 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:19:54,711 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:19:54,712 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:19:54,713 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:19:54,713 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:59414 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:19:54,716 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:19:54,720 - INFO - Found 5 campaigns
+2026-01-21 08:19:54,730 - INFO - Successfully processed 5 campaigns
+INFO:     127.0.0.1:59426 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:19:54,733 - INFO - Returning 0 machines
+INFO:     127.0.0.1:59414 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-21 08:19:54,739 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:19:54,739 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:19:54,743 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:19:54,747 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:19:54,749 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:19:54,753 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:19:54,755 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:19:54,757 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:19:54,757 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:59426 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:19:54,759 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:19:54,761 - INFO - Found 5 campaigns
+2026-01-21 08:19:54,765 - INFO - Successfully processed 5 campaigns
+INFO:     127.0.0.1:59414 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:19:54,767 - INFO - Returning 0 machines
+INFO:     127.0.0.1:59426 - "GET /api/machines HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52354 - "OPTIONS /api/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:20:14,966 - INFO - ============================================================
+2026-01-21 08:20:14,967 - INFO - CREATING CAMPAIGN: SQLINJECTION TEST
+2026-01-21 08:20:14,967 - INFO - User: user_default, Difficulty: 2, Count: 1
+2026-01-21 08:20:14,967 - INFO - Selected Blueprints: ['sqli_001']
+2026-01-21 08:20:14,967 - INFO - Generating machines...
+2026-01-21 08:20:14,973 - INFO - ✓ Generated 1 machines
+2026-01-21 08:20:14,974 - INFO - Campaign ID: campaign_1768965614
+2026-01-21 08:20:14,974 - INFO - Exporting campaign...
+2026-01-21 08:20:14,978 - INFO - ✓ Campaign exported to: /root/hackforge/core/campaigns/campaign_1768965614
+2026-01-21 08:20:14,978 - INFO - Generating Docker applications...
+2026-01-21 08:20:14,994 - INFO - ✓ Generated 1 apps
+2026-01-21 08:20:14,994 - INFO - Saving to MongoDB...
+2026-01-21 08:20:15,012 - INFO - ✓ Saved to database
+2026-01-21 08:20:15,012 - INFO - Creating progress records...
+2026-01-21 08:20:15,016 - INFO - Starting Docker containers...
+2026-01-21 08:20:15,016 - INFO - Starting containers for campaign_1768965614...
+2026-01-21 08:20:21,848 - ERROR - ✗ Failed to start containers: time="2026-01-21T08:20:15+05:00" level=warning msg="/root/hackforge/core/campaigns/campaign_1768965614/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ campaign_1768965614-21f07f74ee737fac  Built
+ Network campaign_1768965614_default  Creating
+ Network campaign_1768965614_default  Created
+ Container hackforge_21f07f74ee737fac  Creating
+ Container hackforge_21f07f74ee737fac  Created
+ Container hackforge_21f07f74ee737fac  Starting
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint hackforge_21f07f74ee737fac (c0400730422fba60e055762ca84d70ac819c408eb560839171a3676cbf79d942): Bind for 0.0.0.0:8080 failed: port is already allocated
+
+2026-01-21 08:20:21,848 - WARNING - ⚠ Failed to start containers automatically
+2026-01-21 08:20:21,848 - INFO - ✓ Campaign creation complete!
+2026-01-21 08:20:21,848 - INFO - ============================================================
+Using 1 selected blueprints: ['sqli_001']
 
 ============================================================
-📊 Machine Status
+Generating Campaign
 ============================================================
+User ID: user_default
+Difficulty: 2/5
+Machines: 1
 
-❌ No docker-compose.yml found
-INFO:     127.0.0.1:54772 - "GET /api/docker/status HTTP/1.1" 200 OK
-2026-01-19 17:23:57,974 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
-2026-01-19 17:23:57,977 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
-2026-01-19 17:23:57,979 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
-2026-01-19 17:23:57,980 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
-2026-01-19 17:23:57,983 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
-2026-01-19 17:23:57,984 - INFO - ✓ Loaded blueprint: None (asdasd)
-2026-01-19 17:23:57,986 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
-2026-01-19 17:23:57,986 - INFO - ✓ Blueprints count: 6
-2026-01-19 17:23:57,986 - INFO - ✓ Machines count: 4
-2026-01-19 17:23:57,986 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
-INFO:     127.0.0.1:54774 - "GET /api/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54806 - "OPTIONS /api/docker/status HTTP/1.1" 200 OK
-2026-01-19 17:23:57,994 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
-2026-01-19 17:23:57,995 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
-2026-01-19 17:23:57,996 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
-2026-01-19 17:23:57,997 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
-2026-01-19 17:23:57,998 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
-2026-01-19 17:23:57,999 - INFO - ✓ Loaded blueprint: None (asdasd)
-2026-01-19 17:23:58,000 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
-2026-01-19 17:23:58,000 - INFO - ✓ Blueprints count: 6
-2026-01-19 17:23:58,000 - INFO - ✓ Machines count: 4
-2026-01-19 17:23:58,000 - INFO - Stats response: {'total_users': 0, 'total_campaigns': 5, 'active_campaigns': 5, 'completed_campaigns': 0, 'total_solves': 0, 'total_flags_submitted': 0, 'total_blueprints': 6, 'total_machines': 4}
-INFO:     127.0.0.1:54806 - "GET /api/stats HTTP/1.1" 200 OK
+[1/1] Generating: SQL Injection
+  ✓ Machine ID: 21f07f74ee737fac
+  ✓ Variant: Error-based SQLi
+  ✓ Flag: HACKFORGE{50c73ed5522b606c35cc...
 
 ============================================================
-📊 Machine Status
+✓ Generated 1/1 machines
 ============================================================
 
-❌ No docker-compose.yml found
-INFO:     127.0.0.1:54774 - "GET /api/docker/status HTTP/1.1" 200 OK
-2026-01-19 17:24:06,697 - INFO - Returning 4 machines
-INFO:     127.0.0.1:55964 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:24:16,355 - INFO - Returning 4 machines
-INFO:     127.0.0.1:55972 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:24:25,928 - INFO - Returning 4 machines
-INFO:     127.0.0.1:54324 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:24:35,609 - INFO - Returning 4 machines
-INFO:     127.0.0.1:54340 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:24:46,011 - INFO - Returning 4 machines
-INFO:     127.0.0.1:57376 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:24:56,458 - INFO - Returning 4 machines
-INFO:     127.0.0.1:53768 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:25:37,770 - INFO - Returning 4 machines
-INFO:     127.0.0.1:53772 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:26:38,053 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45466 - "GET /api/machines HTTP/1.1" 200 OK
-2026-01-19 17:27:37,725 - INFO - Returning 4 machines
-INFO:     127.0.0.1:45472 - "GET /api/machines HTTP/1.1" 200 OK
+
+Exporting to: /root/hackforge/core/campaigns/campaign_1768965614
+============================================================
+  ✓ 21f07f74ee737fac
+
+✓ Manifest: /root/hackforge/core/campaigns/campaign_1768965614/manifest.json
+✓ Exported 1 machines
+
+============================================================
+Generating Apps for Campaign: campaign_1768965614
+============================================================
+
+Found 1 machine(s) to process
+
+Processing: 21f07f74ee737fac
+
+🔨 Generating application for machine: 21f07f74ee737fac
+   Variant: Error-based SQLi
+   Difficulty: 2/5
+  🎨 Theme: Sunset Gradient
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965614/21f07f74ee737fac/app/index.php
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965614/21f07f74ee737fac/Dockerfile
+   ✓ Updated: /root/hackforge/core/campaigns/campaign_1768965614/21f07f74ee737fac/flag.txt
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965614/21f07f74ee737fac/HINTS.md
+
+✓ Generated: /root/hackforge/core/campaigns/campaign_1768965614/docker-compose.yml
+
+============================================================
+✓ Generated 1 application(s)
+============================================================
+
+INFO:     127.0.0.1:52354 - "POST /api/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:20:21,865 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:20:21,866 - INFO - Found 6 campaigns
+2026-01-21 08:20:21,882 - INFO - Successfully processed 6 campaigns
+INFO:     127.0.0.1:52354 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:20:44,056 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:20:44,058 - INFO - Found 6 campaigns
+2026-01-21 08:20:44,068 - INFO - Successfully processed 6 campaigns
+INFO:     127.0.0.1:37472 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:20:44,070 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:20:44,070 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:20:44,073 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:20:44,074 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:20:44,075 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:20:44,078 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:20:44,080 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:20:44,084 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:20:44,084 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37488 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:20:44,086 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:20:44,088 - INFO - Found 6 campaigns
+2026-01-21 08:20:44,092 - INFO - Successfully processed 6 campaigns
+INFO:     127.0.0.1:37472 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:20:44,094 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:20:44,094 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:20:44,097 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:20:44,102 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:20:44,104 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:20:44,106 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:20:44,107 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:20:44,109 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:20:44,109 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37488 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:21:33,516 - INFO - ============================================================
+2026-01-21 08:21:33,516 - INFO - CREATING CAMPAIGN: Test
+2026-01-21 08:21:33,516 - INFO - User: user_default, Difficulty: 2, Count: 1
+2026-01-21 08:21:33,516 - INFO - Selected Blueprints: ['sqli_001']
+2026-01-21 08:21:33,516 - INFO - Generating machines...
+2026-01-21 08:21:33,516 - INFO - ✓ Generated 1 machines
+2026-01-21 08:21:33,517 - INFO - Campaign ID: campaign_1768965693
+2026-01-21 08:21:33,517 - INFO - Exporting campaign...
+2026-01-21 08:21:33,518 - INFO - ✓ Campaign exported to: /root/hackforge/core/campaigns/campaign_1768965693
+2026-01-21 08:21:33,518 - INFO - Generating Docker applications...
+2026-01-21 08:21:33,528 - INFO - ✓ Generated 1 apps
+2026-01-21 08:21:33,528 - INFO - Saving to MongoDB...
+2026-01-21 08:21:33,532 - INFO - ✓ Saved to database
+2026-01-21 08:21:33,532 - INFO - Creating progress records...
+2026-01-21 08:21:33,533 - INFO - Starting Docker containers...
+2026-01-21 08:21:33,533 - INFO - Starting containers for campaign_1768965693...
+2026-01-21 08:21:37,178 - ERROR - ✗ Failed to start containers: time="2026-01-21T08:21:33+05:00" level=warning msg="/root/hackforge/core/campaigns/campaign_1768965693/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ campaign_1768965693-d7add2192805162d  Built
+ Network campaign_1768965693_default  Creating
+ Network campaign_1768965693_default  Created
+ Container hackforge_d7add2192805162d  Creating
+ Container hackforge_d7add2192805162d  Created
+ Container hackforge_d7add2192805162d  Starting
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint hackforge_d7add2192805162d (8c5aedf2ed1b5e9217647514adcccf1334c5b372c44d8715c0f285b43bb8a521): Bind for 0.0.0.0:8080 failed: port is already allocated
+
+2026-01-21 08:21:37,178 - WARNING - ⚠ Failed to start containers automatically
+2026-01-21 08:21:37,178 - INFO - ✓ Campaign creation complete!
+2026-01-21 08:21:37,178 - INFO - ============================================================
+Using 1 selected blueprints: ['sqli_001']
+
+============================================================
+Generating Campaign
+============================================================
+User ID: user_default
+Difficulty: 2/5
+Machines: 1
+
+[1/1] Generating: SQL Injection
+  ✓ Machine ID: d7add2192805162d
+  ✓ Variant: Union-based SQLi
+  ✓ Flag: HACKFORGE{91e4a8a4945a0e3455af...
+
+============================================================
+✓ Generated 1/1 machines
+============================================================
+
+
+Exporting to: /root/hackforge/core/campaigns/campaign_1768965693
+============================================================
+  ✓ d7add2192805162d
+
+✓ Manifest: /root/hackforge/core/campaigns/campaign_1768965693/manifest.json
+✓ Exported 1 machines
+
+============================================================
+Generating Apps for Campaign: campaign_1768965693
+============================================================
+
+Found 1 machine(s) to process
+
+Processing: d7add2192805162d
+
+🔨 Generating application for machine: d7add2192805162d
+   Variant: Union-based SQLi
+   Difficulty: 2/5
+  🎨 Theme: Sunset Gradient
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965693/d7add2192805162d/app/index.php
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965693/d7add2192805162d/Dockerfile
+   ✓ Updated: /root/hackforge/core/campaigns/campaign_1768965693/d7add2192805162d/flag.txt
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965693/d7add2192805162d/HINTS.md
+
+✓ Generated: /root/hackforge/core/campaigns/campaign_1768965693/docker-compose.yml
+
+============================================================
+✓ Generated 1 application(s)
+============================================================
+
+INFO:     127.0.0.1:58730 - "POST /api/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:21:37,185 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:21:37,189 - INFO - Found 7 campaigns
+2026-01-21 08:21:37,194 - INFO - Successfully processed 7 campaigns
+INFO:     127.0.0.1:58730 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:24:24,426 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:24:24,430 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:24:24,435 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:24:24,437 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:24:24,439 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:24:24,442 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:24:24,443 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:24:24,444 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:24:24,445 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37162 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:24:24,459 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:24:24,485 - INFO - Found 7 campaigns
+2026-01-21 08:24:24,494 - INFO - Successfully processed 7 campaigns
+INFO:     127.0.0.1:37170 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:24:28,564 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:24:28,565 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:24:28,569 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:24:28,571 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:24:28,573 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:24:28,578 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:24:28,584 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:24:28,588 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:24:28,588 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37162 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:24:28,597 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:24:28,604 - INFO - Found 7 campaigns
+2026-01-21 08:24:28,620 - INFO - Successfully processed 7 campaigns
+INFO:     127.0.0.1:37170 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "OPTIONS /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "OPTIONS /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "GET /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "GET /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "OPTIONS /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+2026-01-21 08:24:36,973 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:24:36,975 - INFO - Found 7 campaigns
+2026-01-21 08:24:36,980 - INFO - Successfully processed 7 campaigns
+INFO:     127.0.0.1:37170 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:24:36,983 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:24:36,983 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:24:36,988 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:24:36,990 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:24:36,993 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:24:36,997 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:24:36,999 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:24:37,004 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:24:37,004 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37162 - "GET /api/blueprints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "OPTIONS /api/campaigns/campaign_1768965693 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "OPTIONS /api/campaigns/campaign_1768965693 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "GET /api/campaigns/campaign_1768965693 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "GET /api/campaigns/campaign_1768965693 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "OPTIONS /api/docker/campaign/campaign_1768965693/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "OPTIONS /api/docker/campaign/campaign_1768965693/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37162 - "GET /api/docker/campaign/campaign_1768965693/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37170 - "GET /api/docker/campaign/campaign_1768965693/containers HTTP/1.1" 200 OK
+2026-01-21 08:24:40,836 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:24:40,838 - INFO - Found 7 campaigns
+2026-01-21 08:24:40,843 - INFO - Successfully processed 7 campaigns
+INFO:     127.0.0.1:37170 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:24:40,846 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:24:40,847 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:24:40,850 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:24:40,852 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:24:40,857 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:24:40,863 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:24:40,865 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:24:40,875 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:24:40,876 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:37162 - "GET /api/blueprints HTTP/1.1" 200 OK
+2026-01-21 08:25:05,858 - INFO - ============================================================
+2026-01-21 08:25:05,858 - INFO - CREATING CAMPAIGN: Path Traversal
+2026-01-21 08:25:05,858 - INFO - User: user_default, Difficulty: 2, Count: 1
+2026-01-21 08:25:05,858 - INFO - Selected Blueprints: ['path_001']
+2026-01-21 08:25:05,858 - INFO - Generating machines...
+2026-01-21 08:25:05,860 - INFO - ✓ Generated 1 machines
+2026-01-21 08:25:05,860 - INFO - Campaign ID: campaign_1768965905
+2026-01-21 08:25:05,861 - INFO - Exporting campaign...
+2026-01-21 08:25:05,871 - INFO - ✓ Campaign exported to: /root/hackforge/core/campaigns/campaign_1768965905
+2026-01-21 08:25:05,871 - INFO - Generating Docker applications...
+2026-01-21 08:25:05,893 - INFO - ✓ Generated 1 apps
+2026-01-21 08:25:05,893 - INFO - Saving to MongoDB...
+2026-01-21 08:25:05,895 - INFO - ✓ Saved to database
+2026-01-21 08:25:05,895 - INFO - Creating progress records...
+2026-01-21 08:25:05,896 - INFO - Starting Docker containers...
+2026-01-21 08:25:05,896 - INFO - Starting containers for campaign_1768965905...
+2026-01-21 08:25:10,560 - ERROR - ✗ Failed to start containers: time="2026-01-21T08:25:06+05:00" level=warning msg="/root/hackforge/core/campaigns/campaign_1768965905/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ campaign_1768965905-04cce7e4032b7349  Built
+ Network campaign_1768965905_default  Creating
+ Network campaign_1768965905_default  Created
+ Container hackforge_04cce7e4032b7349  Creating
+ Container hackforge_04cce7e4032b7349  Created
+ Container hackforge_04cce7e4032b7349  Starting
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint hackforge_04cce7e4032b7349 (b4446379198923f6a159976951245409734d07a7b23719c3a00ac0b80578fd91): Bind for 0.0.0.0:8080 failed: port is already allocated
+
+2026-01-21 08:25:10,560 - WARNING - ⚠ Failed to start containers automatically
+2026-01-21 08:25:10,561 - INFO - ✓ Campaign creation complete!
+2026-01-21 08:25:10,561 - INFO - ============================================================
+Using 1 selected blueprints: ['path_001']
+
+============================================================
+Generating Campaign
+============================================================
+User ID: user_default
+Difficulty: 2/5
+Machines: 1
+
+[1/1] Generating: Path Traversal
+  ✓ Machine ID: 04cce7e4032b7349
+  ✓ Variant: Encoded Path Traversal
+  ✓ Flag: HACKFORGE{3b9f1bf84e9ff8d04f2a...
+
+============================================================
+✓ Generated 1/1 machines
+============================================================
+
+
+Exporting to: /root/hackforge/core/campaigns/campaign_1768965905
+============================================================
+  ✓ 04cce7e4032b7349
+
+✓ Manifest: /root/hackforge/core/campaigns/campaign_1768965905/manifest.json
+✓ Exported 1 machines
+
+============================================================
+Generating Apps for Campaign: campaign_1768965905
+============================================================
+
+Found 1 machine(s) to process
+
+Processing: 04cce7e4032b7349
+
+🔨 Generating application for machine: 04cce7e4032b7349
+   Variant: Encoded Path Traversal
+   Difficulty: 2/5
+  🎨 Theme: Sunset Gradient
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965905/04cce7e4032b7349/app/index.php
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965905/04cce7e4032b7349/Dockerfile
+   ✓ Updated: /root/hackforge/core/campaigns/campaign_1768965905/04cce7e4032b7349/flag.txt
+   ✓ Generated: /root/hackforge/core/campaigns/campaign_1768965905/04cce7e4032b7349/HINTS.md
+
+✓ Generated: /root/hackforge/core/campaigns/campaign_1768965905/docker-compose.yml
+
+============================================================
+✓ Generated 1 application(s)
+============================================================
+
+INFO:     127.0.0.1:37176 - "POST /api/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:25:10,568 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:25:10,570 - INFO - Found 8 campaigns
+2026-01-21 08:25:10,582 - INFO - Successfully processed 8 campaigns
+INFO:     127.0.0.1:37176 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "OPTIONS /api/campaigns/campaign_1768965905 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "OPTIONS /api/campaigns/campaign_1768965905 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/campaigns/campaign_1768965905 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/campaigns/campaign_1768965905 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "OPTIONS /api/docker/campaign/campaign_1768965905/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "OPTIONS /api/docker/campaign/campaign_1768965905/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965905/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965905/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965905/containers HTTP/1.1" 200 OK
+2026-01-21 08:25:17,501 - INFO - Returning 0 machines
+INFO:     127.0.0.1:37176 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-21 08:25:17,505 - INFO - Returning 0 machines
+INFO:     127.0.0.1:51092 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-21 08:25:17,299 - INFO - Returning 0 machines
+INFO:     127.0.0.1:51092 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-21 08:25:17,302 - INFO - Returning 0 machines
+INFO:     127.0.0.1:37176 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-21 08:25:20,366 - INFO - Returning 0 machines
+INFO:     127.0.0.1:37176 - "GET /api/machines HTTP/1.1" 200 OK
+2026-01-21 08:25:21,381 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:25:21,383 - INFO - Found 8 campaigns
+2026-01-21 08:25:21,417 - INFO - Successfully processed 8 campaigns
+INFO:     127.0.0.1:37176 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:25:21,419 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:25:21,419 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:25:21,423 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:25:21,427 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:25:21,430 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:25:21,434 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:25:21,436 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:25:21,439 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:25:21,439 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:51092 - "GET /api/blueprints HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51092 - "GET /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51092 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "OPTIONS /api/docker/container/9902a0df3f9c4e57c97e6804c59efad6fe95a81159048dd37fb42ce191640064/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "POST /api/docker/container/9902a0df3f9c4e57c97e6804c59efad6fe95a81159048dd37fb42ce191640064/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51096 - "GET /api/campaigns/campaign_1768965614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51096 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37176 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36276 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36276 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36276 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36276 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36276 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36276 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55444 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34930 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34932 - "GET /api/docker/campaign/campaign_1768965614/containers HTTP/1.1" 200 OK
+2026-01-21 08:27:20,863 - INFO - Fetching campaigns for user: user_default
+2026-01-21 08:27:20,866 - INFO - Found 8 campaigns
+2026-01-21 08:27:20,884 - INFO - Successfully processed 8 campaigns
+INFO:     127.0.0.1:34932 - "GET /api/users/user_default/campaigns HTTP/1.1" 200 OK
+2026-01-21 08:27:20,886 - WARNING - Generator failed: 'DynamicHackforgeGenerator' object has no attribute 'list_blueprints', using direct loading
+2026-01-21 08:27:20,887 - INFO - Loading 6 blueprint files from /root/hackforge/core/blueprints
+2026-01-21 08:27:20,897 - INFO - ✓ Loaded blueprint: SQL Injection (sqli_001)
+2026-01-21 08:27:20,900 - INFO - ✓ Loaded blueprint: Path Traversal (path_001)
+2026-01-21 08:27:20,902 - INFO - ✓ Loaded blueprint: Command (cmdi_002)
+2026-01-21 08:27:20,905 - INFO - ✓ Loaded blueprint: Cross-Site Scripting (xss_001)
+2026-01-21 08:27:20,908 - INFO - ✓ Loaded blueprint: None (asdasd)
+2026-01-21 08:27:20,914 - INFO - ✓ Loaded blueprint: Command Injection (cmdi_001)
+2026-01-21 08:27:20,914 - INFO - Returning 6 blueprints to frontend
+INFO:     127.0.0.1:34930 - "GET /api/blueprints HTTP/1.1" 200 OK

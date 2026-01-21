@@ -44,18 +44,24 @@ class APIService {
   }
 
   // Campaigns - ENHANCED
-  async createCampaign(userId, campaignName, difficulty, count = null) {
-    return this.request('/api/campaigns', {
-      method: 'POST',
-      body: JSON.stringify({
-        user_id: userId,
-        campaign_name: campaignName,
-        difficulty: difficulty,
-        count: count
-      }),
-    });
+  async createCampaign(userId, campaignName, difficulty, count = null, selectedBlueprints = null) {
+    const payload = {
+    user_id: userId,
+    campaign_name: campaignName,
+    difficulty: difficulty,
+    count: count
+  };
+
+  // NEW: Add selected blueprints if provided
+  if (selectedBlueprints && selectedBlueprints.length > 0) {
+    payload.selected_blueprints = selectedBlueprints;
   }
 
+  return this.request('/api/campaigns', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+   });
+ }
   // NEW: Get user's campaigns
   async getUserCampaigns(userId) {
     return this.request(`/api/users/${userId}/campaigns`);

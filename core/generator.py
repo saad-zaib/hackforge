@@ -287,15 +287,37 @@ class DynamicHackforgeGenerator:
 
         return str(output_dir)
 
-    def generate_campaign(self, user_id: str, difficulty: int = 2, count: int = None) -> List[MachineConfig]:
-        """Generate a campaign with multiple machines"""
-
-        if not self.blueprints:
+    def generate_campaign(self, user_id: str, difficulty: int = 2, count: int = None, blueprint_ids: List[str] = None) -> List[MachineConfig]:
+        """
+        Generate a campaign with multiple machines
+        
+        Args:
+            user_id: User identifier
+            difficulty: Target difficulty level (1-5)
+            count: Number of machines to generate
+            blueprint_ids: Optional list of specific blueprint IDs to use
+        """
+        
+        # NEW: Filter blueprints if specific ones are selected
+        if blueprint_ids:
+            # Use only selected blueprints
+            available_blueprints = {
+                bp_id: bp for bp_id, bp in self.blueprints.items() 
+                if bp_id in blueprint_ids
+            }
+            print(f"Using {len(available_blueprints)} selected blueprints: {list(available_blueprints.keys())}")
+        else:
+            # Use all blueprints
+            available_blueprints = self.blueprints
+            print(f"Using all {len(available_blueprints)} blueprints")
+        
+        if not available_blueprints:
             print("✗ No blueprints available!")
             return []
 
+        # Determine how many machines to generate
         if count is None:
-            count = min(len(self.blueprints), 5)
+            count = min(len(available_blueprints), 5)
 
         machines = []
         timestamp = int(time.time())
@@ -308,15 +330,19 @@ class DynamicHackforgeGenerator:
         print(f"Machines: {count}")
         print()
 
-        # Select random blueprints
+        # Select from available blueprints
         import random
-        selected_ids = random.sample(list(self.blueprints.keys()),
-                                     min(count, len(self.blueprints)))
+        blueprint_list = list(available_blueprints.keys())
+        
+        # If count > available blueprints, cycle through them
+        selected_ids = []
+        for i in range(count):
+            selected_ids.append(blueprint_list[i % len(blueprint_list)])
 
         for i, blueprint_id in enumerate(selected_ids, 1):
             seed = f"{user_id}_{blueprint_id}_{timestamp}_{i}"
 
-            blueprint = self.blueprints[blueprint_id]
+            blueprint = available_blueprints[blueprint_id]
             print(f"[{i}/{count}] Generating: {blueprint.name}")
 
             machine = self.generate_machine(blueprint_id, seed, difficulty)
@@ -336,6 +362,7 @@ class DynamicHackforgeGenerator:
         print(f"{'='*60}\n")
 
         return machines
+
 
     def export_campaign(self, machines: List[MachineConfig], output_dir: str = None) -> str:
         """Export campaign to directory"""

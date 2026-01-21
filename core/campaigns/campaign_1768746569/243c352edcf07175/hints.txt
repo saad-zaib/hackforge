@@ -1,9 +1,0 @@
-Machine: 243c352edcf07175
-Variant: Direct
-Difficulty: 1/5
-
-Hints:
-  • Context: ping_utility
-  • Difficulty: 1/5
-  • ✓ No input filtering - direct attack possible
-  • 💡 Try basic payloads first

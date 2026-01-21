@@ -101,14 +101,11 @@ class FlagSubmitRequest(BaseModel):
     flag: str
     user_id: str
 
-
 class CampaignCreateRequest(BaseModel):
     user_id: str
     campaign_name: str
     difficulty: int = 2
-    count: Optional[int] = None
     selected_blueprints: Optional[List[str]] = None
-
 
 # ============================================================================
 # User Endpoints
@@ -265,7 +262,6 @@ async def create_campaign(request: CampaignCreateRequest, background_tasks: Back
 
     if not machines:
         raise HTTPException(status_code=500, detail="No machines were generated")
-
     # FIXED: Create campaign-specific directory
     campaign_id = f"campaign_{int(time.time())}"
     campaign_output_dir = f"campaigns/{campaign_id}"

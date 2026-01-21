@@ -1,9 +1,0 @@
-Machine: 5c82b9804f4cb764
-Variant: Error-based SQLi
-Difficulty: 1/5
-
-Hints:
-  • Context: search_functionality
-  • Difficulty: 1/5
-  • ✓ No input filtering - direct attack possible
-  • 💡 Try basic payloads first

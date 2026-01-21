@@ -1,9 +1,0 @@
-Machine: 6f25e6f98078ff98
-Variant: Reflected XSS
-Difficulty: 1/5
-
-Hints:
-  • Context: search_box
-  • Difficulty: 1/5
-  • ✓ No input filtering - direct attack possible
-  • 💡 Try basic payloads first

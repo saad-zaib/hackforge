@@ -1,27 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Plus, Target, AlertCircle, CheckCircle, Loader, ChevronRight, Shield, List, Eye } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import { Zap, Plus, Target, AlertCircle, CheckCircle, Loader, ChevronRight, Shield, List, Eye, Check } from 'lucide-react';
 
 const Campaigns = () => {
-  const navigate = useNavigate();
   const [userId] = useState('user_default');
   const [isCreating, setIsCreating] = useState(false);
   const [difficulty, setDifficulty] = useState(2);
   const [machineCount, setMachineCount] = useState(5);
-  const [campaignName, setCampaignName] = useState(''); // NEW
+  const [campaignName, setCampaignName] = useState('');
   const [createdCampaign, setCreatedCampaign] = useState(null);
   const [error, setError] = useState(null);
-  
-  // NEW: Campaign list
+
+  // NEW: Blueprint selection
+  const [blueprints, setBlueprints] = useState([]);
+  const [selectedBlueprints, setSelectedBlueprints] = useState([]);
+  const [loadingBlueprints, setLoadingBlueprints] = useState(true);
+
+  // Campaign list
   const [myCampaigns, setMyCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
 
+  // Import api dynamically
+  const [api, setApi] = useState(null);
+
   useEffect(() => {
-    fetchMyCampaigns();
+    // Dynamically import api
+    import('../services/api').then(module => {
+      setApi(module.default);
+    });
   }, []);
 
+  useEffect(() => {
+    if (api) {
+      fetchMyCampaigns();
+      fetchBlueprints();
+    }
+  }, [api]);
+
+  const fetchBlueprints = async () => {
+    if (!api) return;
+    try {
+      setLoadingBlueprints(true);
+      const data = await api.getBlueprints();
+      setBlueprints(data);
+      // Select all blueprints by default
+      setSelectedBlueprints(data.map(bp => bp.blueprint_id));
+      setLoadingBlueprints(false);
+    } catch (err) {
+      console.error('Error fetching blueprints:', err);
+      setLoadingBlueprints(false);
+    }
+  };
+
   const fetchMyCampaigns = async () => {
+    if (!api) return;
     try {
       setLoadingCampaigns(true);
       const campaigns = await api.getUserCampaigns(userId);
@@ -33,29 +64,65 @@ const Campaigns = () => {
     }
   };
 
+  const toggleBlueprintSelection = (blueprintId) => {
+    setSelectedBlueprints(prev => {
+      if (prev.includes(blueprintId)) {
+        return prev.filter(id => id !== blueprintId);
+      } else {
+        return [...prev, blueprintId];
+      }
+    });
+  };
+
+  const selectAllBlueprints = () => {
+    setSelectedBlueprints(blueprints.map(bp => bp.blueprint_id));
+  };
+
+  const deselectAllBlueprints = () => {
+    setSelectedBlueprints([]);
+  };
+
   const handleCreateCampaign = async () => {
     if (!campaignName.trim()) {
       setError('Please enter a campaign name');
       return;
     }
 
+    if (selectedBlueprints.length === 0) {
+      setError('Please select at least one blueprint');
+      return;
+    }
+
     try {
       setIsCreating(true);
       setError(null);
+
+      // Pass selected blueprints to API
+      const campaign = await api.createCampaign(
+        userId, 
+        campaignName, 
+        difficulty, 
+        machineCount,
+        selectedBlueprints  // NEW
+      );
       
-      const campaign = await api.createCampaign(userId, campaignName, difficulty, machineCount);
       setCreatedCampaign(campaign);
       setIsCreating(false);
-      
+
       // Refresh campaigns list
       fetchMyCampaigns();
-      
+
       // Reset form
       setCampaignName('');
     } catch (err) {
       setError(err.message);
       setIsCreating(false);
     }
+  };
+
+  const navigateToCampaign = (campaignId) => {
+    // Use window.location for navigation
+    window.location.href = `/campaigns/${campaignId}`;
   };
 
   const getDifficultyColor = (level) => {
@@ -79,6 +146,25 @@ const Campaigns = () => {
     };
     return labels[level] || 'Unknown';
   };
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      'injection': '#3b82f6',
+      'authentication': '#10b981',
+      'authorization': '#f59e0b',
+      'cryptography': '#8b5cf6',
+      'default': '#6b7280'
+    };
+    return colors[category] || colors.default;
+  };
+
+  if (!api) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Loader className="w-12 h-12 text-orange-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -117,7 +203,7 @@ const Campaigns = () => {
                   <div
                     key={campaign.campaign_id}
                     className="p-4 rounded-xl bg-black/30 border border-gray-800 hover:border-orange-500/50 transition-all duration-300 group cursor-pointer"
-                    onClick={() => navigate(`/campaigns/${campaign.campaign_id}`)}
+                    onClick={() => navigateToCampaign(campaign.campaign_id)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -135,7 +221,7 @@ const Campaigns = () => {
                             Level {campaign.difficulty}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-4 text-sm text-gray-400">
                           <span>{campaign.machine_count} machines</span>
                           <span>•</span>
@@ -148,7 +234,6 @@ const Campaigns = () => {
                           </span>
                         </div>
 
-                        {/* Progress Bar */}
                         <div className="mt-3 h-2 bg-gray-900 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-500"
@@ -160,7 +245,7 @@ const Campaigns = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/campaigns/${campaign.campaign_id}`);
+                          navigateToCampaign(campaign.campaign_id);
                         }}
                         className="ml-4 p-3 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 transition-all group/btn"
                       >
@@ -185,7 +270,7 @@ const Campaigns = () => {
               Create New Campaign
             </h2>
 
-            {/* Campaign Name Input - NEW */}
+            {/* Campaign Name Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-400 mb-3">
                 Campaign Name *
@@ -197,6 +282,85 @@ const Campaigns = () => {
                 placeholder="e.g., Web Security Training, SQL Injection Course"
                 className="w-full px-4 py-3 bg-black/50 border border-gray-800 rounded-xl text-white focus:outline-none focus:border-orange-500 transition-colors placeholder-gray-600"
               />
+            </div>
+
+            {/* Blueprint Selection - NEW */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium text-gray-400">
+                  Select Blueprints ({selectedBlueprints.length} selected)
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    onClick={selectAllBlueprints}
+                    className="text-xs px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-colors"
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={deselectAllBlueprints}
+                    className="text-xs px-3 py-1 bg-gray-700/50 hover:bg-gray-700 text-gray-400 rounded-lg transition-colors"
+                  >
+                    None
+                  </button>
+                </div>
+              </div>
+
+              {loadingBlueprints ? (
+                <div className="text-center py-4">
+                  <Loader className="w-6 h-6 text-orange-500 animate-spin mx-auto" />
+                </div>
+              ) : (
+                <div className="max-h-64 overflow-y-auto space-y-2 p-2 bg-black/30 rounded-xl border border-gray-800">
+                  {blueprints.map((blueprint) => {
+                    const isSelected = selectedBlueprints.includes(blueprint.blueprint_id);
+                    return (
+                      <div
+                        key={blueprint.blueprint_id}
+                        onClick={() => toggleBlueprintSelection(blueprint.blueprint_id)}
+                        className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                          isSelected
+                            ? 'border-orange-500 bg-orange-500/10'
+                            : 'border-gray-800 hover:border-gray-700 bg-black/20'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div
+                              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                isSelected
+                                  ? 'border-orange-500 bg-orange-500'
+                                  : 'border-gray-600'
+                              }`}
+                            >
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-white">
+                                {blueprint.name}
+                              </h4>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span
+                                  className="text-xs px-2 py-0.5 rounded"
+                                  style={{
+                                    backgroundColor: `${getCategoryColor(blueprint.category)}20`,
+                                    color: getCategoryColor(blueprint.category)
+                                  }}
+                                >
+                                  {blueprint.category}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {blueprint.variants?.length || 0} variants
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Difficulty Selector */}
@@ -220,7 +384,7 @@ const Campaigns = () => {
                     }}
                   >
                     <div className="text-center">
-                      <Shield 
+                      <Shield
                         className="w-6 h-6 mx-auto mb-1"
                         style={{ color: difficulty === level ? getDifficultyColor(level) : '#6b7280' }}
                       />
@@ -239,7 +403,7 @@ const Campaigns = () => {
             {/* Machine Count */}
             <div className="mb-8">
               <label className="block text-sm font-medium text-gray-400 mb-3">
-                Number of Machines
+                Machines per Blueprint
               </label>
               <div className="relative">
                 <input
@@ -254,6 +418,9 @@ const Campaigns = () => {
                   machines
                 </div>
               </div>
+              <p className="mt-2 text-xs text-gray-500">
+                Total: {selectedBlueprints.length * machineCount} machines will be generated
+              </p>
             </div>
 
             {/* Error Display */}
@@ -267,7 +434,7 @@ const Campaigns = () => {
             {/* Create Button */}
             <button
               onClick={handleCreateCampaign}
-              disabled={isCreating}
+              disabled={isCreating || selectedBlueprints.length === 0}
               className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-700 disabled:to-gray-800 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-3 group"
             >
               {isCreating ? (
@@ -288,7 +455,6 @@ const Campaigns = () => {
           <div className="rounded-2xl border border-gray-900 bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur p-8">
             {createdCampaign ? (
               <div className="space-y-6">
-                {/* Success Header */}
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-green-950/20 border border-green-500/50">
                   <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
                   <div>
@@ -297,7 +463,6 @@ const Campaigns = () => {
                   </div>
                 </div>
 
-                {/* Campaign Info */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 rounded-lg bg-black/30">
                     <span className="text-gray-400">Campaign ID</span>
@@ -315,7 +480,6 @@ const Campaigns = () => {
                   </div>
                 </div>
 
-                {/* Machines List */}
                 <div>
                   <h4 className="text-sm font-semibold text-gray-400 mb-3">Your Machines</h4>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -326,7 +490,7 @@ const Campaigns = () => {
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-3">
-                            <div 
+                            <div
                               className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
                               style={{ backgroundColor: getDifficultyColor(machine.difficulty) }}
                             >
@@ -339,7 +503,7 @@ const Campaigns = () => {
                           </div>
                           <Target className="w-5 h-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
                         </div>
-                        
+
                         {machine.port && (
                           <div className="mt-2 p-2 rounded-lg bg-gray-900/50 border border-gray-800">
                             <p className="text-xs text-gray-500 mb-1">Access URL</p>
@@ -353,9 +517,8 @@ const Campaigns = () => {
                   </div>
                 </div>
 
-                {/* Action Button */}
                 <button
-                  onClick={() => navigate(`/campaigns/${createdCampaign.campaign_id}`)}
+                  onClick={() => navigateToCampaign(createdCampaign.campaign_id)}
                   className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
                 >
                   View Campaign Details

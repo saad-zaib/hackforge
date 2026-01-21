@@ -1,9 +1,0 @@
-Machine: fe09828f4588b857
-Variant: Direct Command Injection
-Difficulty: 1/5
-
-Hints:
-  • Context: ping_utility
-  • Difficulty: 1/5
-  • ✓ No input filtering - direct attack possible
-  • 💡 Try basic payloads first
