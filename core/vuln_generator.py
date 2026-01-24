@@ -1,8 +1,3 @@
-"""
-UPDATED vuln_generator.py - Now includes theme variety support
-Replace your existing core/vuln_generator.py with this version
-"""
-
 #!/usr/bin/env python3
 import json
 import os
@@ -83,7 +78,7 @@ mutation_axes:
     def generate_mutation(self) -> str:
         """Generate mutation engine Python code"""
 
-        class_name = self._to_class_name(self.vuln_name) + "Mutation"
+        class_name = self._to_class_name(self.category) + "Mutation"
         variants = self.config.get('variants', [])
 
         # Generate variant methods
@@ -176,7 +171,7 @@ class {class_name}(MutationEngine):
     def generate_template(self) -> str:
         """Generate template Python code WITH THEME SUPPORT"""
 
-        class_name = self._to_class_name(self.vuln_name) + "Template"
+        class_name = self._to_class_name(self.category) + "Template"
         variants = self.config.get('variants', [])
 
         # Generate variant template methods
@@ -196,8 +191,8 @@ import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
-from templates.base_template import BaseTemplate
-from templates.theme_library import ThemeLibrary  # ← THEME SUPPORT
+from base_template import BaseTemplate
+from theme_library import ThemeLibrary
 from typing import Dict
 
 
@@ -274,8 +269,10 @@ CMD ["apache2-foreground"]
         return '\n'.join(result)
 
     def _to_class_name(self, name: str) -> str:
-        """Convert name to class name"""
-        return ''.join(word.capitalize() for word in name.replace('-', ' ').split())
+        """Convert name to class name - FIXED to handle underscores"""
+        # Replace both hyphens and underscores with spaces, then capitalize each word
+        words = name.replace('-', ' ').replace('_', ' ').split()
+        return ''.join(word.capitalize() for word in words)
 
     def _to_method_name(self, name: str) -> str:
         """Convert name to method name"""
@@ -410,8 +407,6 @@ CMD ["apache2-foreground"]
     def _generate_template_method(self, variant: str, method_name: str) -> str:
         """Generate a variant template method WITH THEME SUPPORT"""
 
-        # This generates themed HTML templates
-        # FIXED: Use proper brace escaping for multi-level string generation
         return f'''    def {method_name}(self) -> str:
         """Generate {variant} vulnerable application with themed UI"""
 

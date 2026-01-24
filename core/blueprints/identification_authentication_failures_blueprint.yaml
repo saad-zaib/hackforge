@@ -1,0 +1,61 @@
+blueprint_id: auth_bypass_001
+
+name: Authentication Bypass
+
+category: identification_authentication_failures
+
+difficulty_range: [1, 5]
+
+description: |
+  Authentication bypass vulnerabilities occur when authentication mechanisms can be circumvented through various techniques like SQL injection, default credentials, or session manipulation.
+
+variants:
+  - SQL Injection Auth Bypass
+  - Default Credentials
+  - Session Fixation
+  - JWT Manipulation
+
+entry_points:
+  - login_form
+  - http_get_param
+  - http_post_param
+  - cookie_value
+  - jwt_token
+
+mutation_axes:
+  filters:
+    basic:
+      - or_1_equals_1
+      - admin_admin
+    medium:
+      - or_1_equals_1
+      - admin_admin
+      - null_byte
+      - comment_bypass
+    advanced:
+      - or_1_equals_1
+      - admin_admin
+      - null_byte
+      - comment_bypass
+      - jwt_manipulation
+      - session_hijacking
+  contexts:
+    - login_page
+    - api_authentication
+    - admin_panel
+    - password_reset
+    - session_management
+  sinks:
+    - sql_query
+    - ldap_query
+    - session_store
+    - jwt_validator
+  encoding:
+    - none
+    - url_encoding
+    - base64
+    - hex_encoding
+  output_contexts:
+    - session_token
+    - redirect
+    - error_message

@@ -1,0 +1,45 @@
+{
+  "machine_id": "99b6ea212ea1484c",
+  "blueprint_id": "idor_001",
+  "variant": "Basic IDOR",
+  "difficulty": 2,
+  "seed": "demo_user_idor_001_1769235076_12",
+  "application": {
+    "context": "admin_panel",
+    "variant": "Basic IDOR",
+    "entry_point": "http_post_param"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "numeric_increment",
+        "description": "Numeric_increment filtering",
+        "php_code": "$input = str_replace('n', '', $input);",
+        "python_code": "input = input.replace('n', '')"
+      },
+      {
+        "type": "numeric_decrement",
+        "description": "Numeric_decrement filtering",
+        "php_code": "$input = str_replace('n', '', $input);",
+        "python_code": "input = input.replace('n', '')"
+      }
+    ]
+  },
+  "flag": {
+    "content": "HACKFORGE{0f871e66109098c99cc137bd66d284f8}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: admin_panel",
+      "Difficulty: 2/5",
+      "\u26a0\ufe0f Filters active: numeric_increment, numeric_decrement",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Basic IDOR",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

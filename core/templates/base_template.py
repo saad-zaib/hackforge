@@ -73,65 +73,50 @@ class TemplateRenderer:
     @staticmethod
     def _get_category_from_blueprint(blueprint_id: str) -> str:
         """
-        Load blueprint and extract category
-        
-        Args:
-            blueprint_id: Blueprint identifier (e.g., 'xss_001')
-            
-        Returns:
-            Category name (e.g., 'cross_site_scripting')
+        FIXED: Load blueprint and extract category
         """
         import yaml
         from pathlib import Path
-        
-        # Look for blueprint file in blueprints directory
+
         blueprints_dir = Path(parent_dir) / "blueprints"
-        
-        # Try to find blueprint by ID
+
         for blueprint_file in blueprints_dir.glob("*_blueprint.yaml"):
             try:
                 with open(blueprint_file, 'r') as f:
                     data = yaml.safe_load(f)
                     if data.get('blueprint_id') == blueprint_id:
                         return data.get('category')
-            except Exception as e:
+            except Exception:
                 continue
-        
+
         # If not found, return blueprint_id as fallback
         return blueprint_id
 
     @staticmethod
     def get_template_class(config: MachineConfig):
         """
-        Dynamically load template class based on category
-        
-        Args:
-            config: MachineConfig object
-            
-        Returns:
-            Template class for the vulnerability category
+        FIXED: Dynamically load template class based on category
         """
-        
+
         # Get category from blueprint
         category = TemplateRenderer._get_category_from_blueprint(config.blueprint_id)
+
+        # FIXED: Convert category to class name correctly
+        # 'identification_authentication_failures' -> 'IdentificationAuthenticationFailuresTemplate'
+        class_name = ''.join(word.capitalize() for word in category.replace('-', '_').split('_')) + 'Template'
         
-        # Convert category to template module name
-        # e.g., 'cross_site_scripting' -> 'cross_site_scripting_templates'
+        # Template module uses category directly
         template_module_name = f"{category}_templates"
-        
-        # Convert category to class name
-        # e.g., 'cross_site_scripting' -> 'CrossSiteScriptingTemplate'
-        class_name = ''.join(word.capitalize() for word in category.split('_')) + 'Template'
-        
+
         try:
-            # Try to import the template module dynamically
+            # Try to import the template module
             module = importlib.import_module(f"templates.{template_module_name}")
-            
-            # Get the template class from the module
+
+            # Get the template class
             template_class = getattr(module, class_name)
-            
+
             return template_class
-            
+
         except ImportError as e:
             raise ValueError(
                 f"No template module found for category: {category}\n"
@@ -151,12 +136,6 @@ class TemplateRenderer:
     def render(config: MachineConfig) -> Dict[str, str]:
         """
         Render machine config to code
-
-        Args:
-            config: MachineConfig object
-
-        Returns:
-            Dict with 'code', 'dockerfile', 'docker_compose', 'flag', 'hints'
         """
 
         template_class = TemplateRenderer.get_template_class(config)

@@ -1,0 +1,104 @@
+{
+  "vulnerability_id": "cmd_001",
+  "name": "Command Injection",
+  "category": "injection",
+  "difficulty_range": [
+    1,
+    5
+  ],
+  "description": "Command injection vulnerabilities occur when user input is improperly sanitized before being passed to system commands. Attackers can execute arbitrary commands on the underlying operating system.",
+  "variants": [
+    "Basic Command Injection",
+    "Blind Command Injection",
+    "Time-based Command Injection"
+  ],
+  "entry_points": [
+    "http_get_param",
+    "http_post_param",
+    "cookie_value",
+    "http_header",
+    "file_upload"
+  ],
+  "mutation_axes": {
+    "filters": {
+      "basic": [
+        "semicolon",
+        "pipe",
+        "backtick"
+      ],
+      "medium": [
+        "semicolon",
+        "pipe",
+        "backtick",
+        "ampersand",
+        "newline"
+      ],
+      "advanced": [
+        "semicolon",
+        "pipe",
+        "backtick",
+        "ampersand",
+        "newline",
+        "dollar_paren",
+        "command_substitution"
+      ]
+    },
+    "contexts": [
+      "ping_command",
+      "file_operation",
+      "system_info",
+      "backup_script",
+      "log_parser"
+    ],
+    "sinks": [
+      "system",
+      "exec",
+      "shell_exec",
+      "popen",
+      "proc_open"
+    ],
+    "encoding": [
+      "none",
+      "url_encoding",
+      "hex_encoding",
+      "unicode_encoding"
+    ],
+    "output_contexts": [
+      "command_output",
+      "error_message",
+      "http_response"
+    ]
+  },
+  "variant_configs": [
+    {
+      "name": "Basic Command Injection",
+      "parameters": [
+        {
+          "name": "context",
+          "axis": "contexts",
+          "default": "ping_command"
+        },
+        {
+          "name": "sink",
+          "axis": "sinks",
+          "default": "system"
+        }
+      ]
+    },
+    {
+      "name": "Blind Command Injection",
+      "parameters": [
+        {
+          "name": "context",
+          "axis": "contexts",
+          "default": "file_operation"
+        },
+        {
+          "name": "sink",
+          "axis": "sinks",
+          "default": "exec"
+        }
+      ]
+    }
+  ]
+}

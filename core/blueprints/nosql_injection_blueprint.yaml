@@ -1,0 +1,59 @@
+blueprint_id: nosqli_001
+
+name: NoSQL Injection
+
+category: nosql_injection
+
+difficulty_range: [1, 5]
+
+description: |
+  NoSQL injection vulnerabilities occur when user input is improperly sanitized before being used in NoSQL database queries. Attackers can manipulate queries to bypass authentication or extract data.
+
+variants:
+  - MongoDB Injection
+  - Authentication Bypass
+  - Operator Injection
+
+entry_points:
+  - http_get_param
+  - http_post_param
+  - json_body
+  - login_form
+  - api_endpoint
+
+mutation_axes:
+  filters:
+    basic:
+      - dollar_operator
+      - ne_operator
+    medium:
+      - dollar_operator
+      - ne_operator
+      - regex_operator
+      - gt_operator
+    advanced:
+      - dollar_operator
+      - ne_operator
+      - regex_operator
+      - gt_operator
+      - where_clause
+      - javascript_injection
+  contexts:
+    - user_authentication
+    - product_search
+    - user_query
+    - api_filter
+    - admin_panel
+  sinks:
+    - mongodb_query
+    - find_one
+    - find
+    - aggregate
+  encoding:
+    - none
+    - json_encoding
+    - url_encoding
+  output_contexts:
+    - json_response
+    - error_message
+    - user_data

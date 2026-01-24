@@ -1,0 +1,57 @@
+blueprint_id: xxe_001
+
+name: XML External Entity
+
+category: xxe_injection
+
+difficulty_range: [1, 5]
+
+description: |
+  XXE vulnerabilities occur when XML parsers process external entity references without proper restrictions. Attackers can read local files, perform SSRF attacks, or cause denial of service.
+
+variants:
+  - File Disclosure XXE
+  - Blind XXE
+  - XXE via File Upload
+
+entry_points:
+  - http_post_param
+  - http_get_param
+  - file_upload
+  - soap_request
+  - xml_api
+
+mutation_axes:
+  filters:
+    basic:
+      - file_protocol
+      - http_protocol
+    medium:
+      - file_protocol
+      - http_protocol
+      - php_wrapper
+    advanced:
+      - file_protocol
+      - http_protocol
+      - php_wrapper
+      - expect_protocol
+      - data_protocol
+  contexts:
+    - xml_parser
+    - soap_endpoint
+    - document_processor
+    - api_request
+    - file_upload_handler
+  sinks:
+    - xml_parse
+    - dom_parser
+    - sax_parser
+    - libxml_parse
+  encoding:
+    - none
+    - xml_entities
+    - cdata_wrapper
+  output_contexts:
+    - xml_response
+    - error_message
+    - file_content

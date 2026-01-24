@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import {
   Target, Shield, Play, Square, RefreshCw, Trash2, Loader,
   AlertCircle, CheckCircle, ArrowLeft, Send, FileText, Activity,
   Trophy, ExternalLink
 } from 'lucide-react';
-import api from '../services/api';
 
-const CampaignDetail = () => {
-  const { campaignId } = useParams();
-  const navigate = useNavigate();
+const CampaignDetail = ({ campaignId: propCampaignId, onBack }) => {
   const [userId] = useState('user_default');
+  
+  // Get campaign ID from URL if not provided as prop
+  const [campaignId, setCampaignId] = useState(propCampaignId);
+  
+  useEffect(() => {
+    // If campaignId is not provided as prop, extract from URL
+    if (!propCampaignId) {
+      const path = window.location.pathname;
+      const matches = path.match(/\/campaigns\/([^\/]+)/);
+      if (matches && matches[1]) {
+        setCampaignId(matches[1]);
+      }
+    } else {
+      setCampaignId(propCampaignId);
+    }
+  }, [propCampaignId]);
 
   const [campaign, setCampaign] = useState(null);
   const [containers, setContainers] = useState([]);
@@ -29,13 +41,29 @@ const CampaignDetail = () => {
   // Container logs
   const [containerLogs, setContainerLogs] = useState(null);
 
+  // Delete confirmation
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Import api
+  const [api, setApi] = useState(null);
+
   useEffect(() => {
-    fetchCampaignData();
-    const interval = setInterval(fetchContainers, 3000);
-    return () => clearInterval(interval);
-  }, [campaignId]);
+    import('../services/api').then(module => {
+      setApi(module.default);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (api && campaignId) {
+      fetchCampaignData();
+      const interval = setInterval(fetchContainers, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [campaignId, api]);
 
   const fetchCampaignData = async () => {
+    if (!api) return;
     try {
       setIsLoading(true);
       const data = await api.getCampaign(campaignId);
@@ -49,6 +77,7 @@ const CampaignDetail = () => {
   };
 
   const fetchContainers = async () => {
+    if (!api) return;
     try {
       const data = await api.getCampaignContainers(campaignId);
       setContainers(data.containers || []);
@@ -74,7 +103,7 @@ const CampaignDetail = () => {
 
   const handleContainerAction = async (containerId, action, machineName, machineId) => {
     const key = `${action}-${containerId}`;
-    
+
     try {
       setActionLoading(prev => ({ ...prev, [key]: true }));
       setError(null);
@@ -160,6 +189,30 @@ const CampaignDetail = () => {
     }
   };
 
+  const handleDeleteCampaign = async () => {
+    try {
+      setDeleting(true);
+      
+      // Call backend API to delete campaign
+      await api.deleteCampaign(campaignId);
+      
+      setShowDeleteModal(false);
+      setDeleting(false);
+      
+      // Navigate back to campaigns list
+      if (onBack) {
+        onBack();
+      } else {
+        window.location.href = '/campaigns';
+      }
+      
+    } catch (err) {
+      setError(`Failed to delete campaign: ${err.message}`);
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
   const getDifficultyColor = (level) => {
     const colors = {
       1: '#10b981',
@@ -176,28 +229,53 @@ const CampaignDetail = () => {
   };
 
   const getContainerUrl = (container) => {
-    if (!container || !container.State || container.State !== 'running') {
+    if (!container || container.State !== 'running') {
       return null;
     }
-    
-    // Extract port from container ports
-    // Assuming format like "80/tcp": [{"HostIp": "0.0.0.0", "HostPort": "8080"}]
-    const ports = container.Ports || {};
-    for (const [containerPort, bindings] of Object.entries(ports)) {
-      if (bindings && bindings.length > 0) {
-        const hostPort = bindings[0].HostPort;
-        return `http://localhost:${hostPort}`;
+
+    // Try to find port mapping
+    try {
+      // Docker API returns ports in different formats
+      // Format 1: Container object with Ports array
+      if (container.Ports && Array.isArray(container.Ports)) {
+        for (const portMapping of container.Ports) {
+          if (portMapping.PublicPort) {
+            return `http://localhost:${portMapping.PublicPort}`;
+          }
+        }
       }
+      
+      // Format 2: NetworkSettings with Ports object
+      if (container.NetworkSettings && container.NetworkSettings.Ports) {
+        for (const [containerPort, bindings] of Object.entries(container.NetworkSettings.Ports)) {
+          if (bindings && bindings.length > 0 && bindings[0].HostPort) {
+            return `http://localhost:${bindings[0].HostPort}`;
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error extracting port:', err);
     }
+
     return null;
   };
 
-  if (isLoading) {
+  const navigateBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      window.location.href = '/campaigns';
+    }
+  };
+
+  if (!api || isLoading || !campaignId) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 text-orange-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading campaign...</p>
+          <p className="text-gray-400">
+            {!campaignId ? 'Loading campaign ID...' : 'Loading campaign...'}
+          </p>
         </div>
       </div>
     );
@@ -211,7 +289,7 @@ const CampaignDetail = () => {
           <h2 className="text-2xl font-bold text-white mb-2">Error Loading Campaign</h2>
           <p className="text-gray-400 mb-6">{error}</p>
           <button
-            onClick={() => navigate('/campaigns')}
+            onClick={navigateBack}
             className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
           >
             Back to Campaigns
@@ -224,16 +302,26 @@ const CampaignDetail = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/campaigns')}
-          className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back to Campaigns
-        </button>
+        {/* Header with Delete Button */}
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={navigateBack}
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Campaigns
+          </button>
 
-        {/* Header */}
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400 rounded-lg transition-all"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete Campaign
+          </button>
+        </div>
+
+        {/* Title */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white via-orange-500 to-orange-600 bg-clip-text text-transparent">
             {campaign?.campaign_name || 'Campaign Details'}
@@ -370,7 +458,7 @@ const CampaignDetail = () => {
                     </div>
                   </div>
 
-                  {/* Container Status & Controls */}
+                  {/* Container Status & URL - ENHANCED */}
                   {container ? (
                     <div className="mb-4 p-4 rounded-lg bg-black/30 border border-gray-800">
                       <div className="flex items-center justify-between mb-3">
@@ -454,24 +542,34 @@ const CampaignDetail = () => {
                         </div>
                       </div>
 
-                      {/* Container URL */}
-                      {containerUrl && isRunning && (
+                      {/* Container URL - ENHANCED */}
+                      {containerUrl && isRunning ? (
                         <a
                           href={containerUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-sm text-orange-500 hover:text-orange-400 transition-colors font-mono"
+                          className="flex items-center gap-2 px-4 py-3 rounded-lg bg-green-950/20 border border-green-500/30 hover:border-green-500/50 transition-all group"
                         >
-                          <ExternalLink className="w-4 h-4" />
-                          {containerUrl}
+                          <ExternalLink className="w-5 h-5 text-green-400 group-hover:scale-110 transition-transform" />
+                          <div className="flex-1">
+                            <p className="text-xs text-green-600 font-medium">Access Machine</p>
+                            <code className="text-green-400 font-mono text-sm">{containerUrl}</code>
+                          </div>
                         </a>
-                      )}
-
-                      {!isRunning && container.State === 'exited' && (
-                        <p className="text-xs text-gray-500 mt-2 flex items-center gap-2">
-                          <AlertCircle className="w-3 h-3" />
-                          Container stopped. Click Play to start.
-                        </p>
+                      ) : isRunning ? (
+                        <div className="px-4 py-3 rounded-lg bg-yellow-950/20 border border-yellow-500/30">
+                          <p className="text-xs text-yellow-400 flex items-center gap-2">
+                            <AlertCircle className="w-3 h-3" />
+                            Container running but no port exposed
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-800">
+                          <p className="text-xs text-gray-500 flex items-center gap-2">
+                            <AlertCircle className="w-3 h-3" />
+                            Container stopped. Click Play to start and get URL.
+                          </p>
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -589,6 +687,49 @@ const CampaignDetail = () => {
                 <pre className="text-xs text-green-400 font-mono bg-black/50 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
                   {containerLogs.logs}
                 </pre>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div className="bg-gray-900 rounded-2xl border border-red-500/50 max-w-md w-full p-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-8 h-8 text-red-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">Delete Campaign?</h3>
+                <p className="text-gray-400 mb-6">
+                  This will stop and remove all containers for this campaign. This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    disabled={deleting}
+                    className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 text-white rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteCampaign}
+                    disabled={deleting}
+                    className="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 disabled:bg-red-800 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    {deleting ? (
+                      <>
+                        <Loader className="w-4 h-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

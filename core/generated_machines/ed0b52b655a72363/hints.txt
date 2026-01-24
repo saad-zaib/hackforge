@@ -1,0 +1,10 @@
+Machine: ed0b52b655a72363
+Name: Unknown
+Variant: Basic Command Injection
+Difficulty: 2/5
+
+Hints:
+  • Context: log_parser
+  • Difficulty: 2/5
+  • ⚠️ Filters active: semicolon, pipe, backtick
+  • 💡 Try basic payloads first

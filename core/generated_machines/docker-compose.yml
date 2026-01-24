@@ -2,54 +2,158 @@ version: '3.8'
 
 services:
 
-  6d6806424cd10864:
-    build: ./6d6806424cd10864
-    container_name: hackforge_6d6806424cd10864
+  e1c909389ada9406:
+    build: ./e1c909389ada9406
+    container_name: hackforge_e1c909389ada9406
     ports:
       - "8080:80"
     volumes:
-      - ./6d6806424cd10864/app:/var/www/html
-      - ./6d6806424cd10864/flag.txt:/var/www/html/flag.txt:ro
+      - ./e1c909389ada9406/app:/var/www/html
+      - ./e1c909389ada9406/flag.txt:/var/www/html/flag.txt:ro
     environment:
-      - MACHINE_ID=6d6806424cd10864
+      - MACHINE_ID=e1c909389ada9406
       - FLAG_LOCATION=/var/www/html/flag.txt
     restart: unless-stopped
 
-  d0a99a1ad57e8339:
-    build: ./d0a99a1ad57e8339
-    container_name: hackforge_d0a99a1ad57e8339
+  25c54f49c2cf86c1:
+    build: ./25c54f49c2cf86c1
+    container_name: hackforge_25c54f49c2cf86c1
     ports:
       - "8081:80"
     volumes:
-      - ./d0a99a1ad57e8339/app:/var/www/html
-      - ./d0a99a1ad57e8339/flag.txt:/var/www/html/flag.txt:ro
+      - ./25c54f49c2cf86c1/app:/var/www/html
+      - ./25c54f49c2cf86c1/flag.txt:/var/www/html/flag.txt:ro
     environment:
-      - MACHINE_ID=d0a99a1ad57e8339
+      - MACHINE_ID=25c54f49c2cf86c1
       - FLAG_LOCATION=/var/www/html/flag.txt
     restart: unless-stopped
 
-  41cacfe7485bc845:
-    build: ./41cacfe7485bc845
-    container_name: hackforge_41cacfe7485bc845
+  0872e17e216f0118:
+    build: ./0872e17e216f0118
+    container_name: hackforge_0872e17e216f0118
     ports:
       - "8082:80"
     volumes:
-      - ./41cacfe7485bc845/app:/var/www/html
-      - ./41cacfe7485bc845/flag.txt:/var/www/html/flag.txt:ro
+      - ./0872e17e216f0118/app:/var/www/html
+      - ./0872e17e216f0118/flag.txt:/var/www/html/flag.txt:ro
     environment:
-      - MACHINE_ID=41cacfe7485bc845
+      - MACHINE_ID=0872e17e216f0118
       - FLAG_LOCATION=/var/www/html/flag.txt
     restart: unless-stopped
 
-  5f2ebc682a0f4bd2:
-    build: ./5f2ebc682a0f4bd2
-    container_name: hackforge_5f2ebc682a0f4bd2
+  6ac735cded344203:
+    build: ./6ac735cded344203
+    container_name: hackforge_6ac735cded344203
     ports:
       - "8083:80"
     volumes:
-      - ./5f2ebc682a0f4bd2/app:/var/www/html
-      - ./5f2ebc682a0f4bd2/flag.txt:/var/www/html/flag.txt:ro
+      - ./6ac735cded344203/app:/var/www/html
+      - ./6ac735cded344203/flag.txt:/var/www/html/flag.txt:ro
     environment:
-      - MACHINE_ID=5f2ebc682a0f4bd2
+      - MACHINE_ID=6ac735cded344203
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  99b6ea212ea1484c:
+    build: ./99b6ea212ea1484c
+    container_name: hackforge_99b6ea212ea1484c
+    ports:
+      - "8084:80"
+    volumes:
+      - ./99b6ea212ea1484c/app:/var/www/html
+      - ./99b6ea212ea1484c/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=99b6ea212ea1484c
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  b9712a305f0cf194:
+    build: ./b9712a305f0cf194
+    container_name: hackforge_b9712a305f0cf194
+    ports:
+      - "8085:80"
+    volumes:
+      - ./b9712a305f0cf194/app:/var/www/html
+      - ./b9712a305f0cf194/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=b9712a305f0cf194
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  fb603172dcbe699d:
+    build: ./fb603172dcbe699d
+    container_name: hackforge_fb603172dcbe699d
+    ports:
+      - "8086:80"
+    volumes:
+      - ./fb603172dcbe699d/app:/var/www/html
+      - ./fb603172dcbe699d/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=fb603172dcbe699d
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  70c65973099cff3f:
+    build: ./70c65973099cff3f
+    container_name: hackforge_70c65973099cff3f
+    ports:
+      - "8087:80"
+    volumes:
+      - ./70c65973099cff3f/app:/var/www/html
+      - ./70c65973099cff3f/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=70c65973099cff3f
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  cb55e2d227ed0d33:
+    build: ./cb55e2d227ed0d33
+    container_name: hackforge_cb55e2d227ed0d33
+    ports:
+      - "8088:80"
+    volumes:
+      - ./cb55e2d227ed0d33/app:/var/www/html
+      - ./cb55e2d227ed0d33/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=cb55e2d227ed0d33
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  7e73f7f8c5df5561:
+    build: ./7e73f7f8c5df5561
+    container_name: hackforge_7e73f7f8c5df5561
+    ports:
+      - "8089:80"
+    volumes:
+      - ./7e73f7f8c5df5561/app:/var/www/html
+      - ./7e73f7f8c5df5561/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=7e73f7f8c5df5561
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  b81f8e8ebea3cff9:
+    build: ./b81f8e8ebea3cff9
+    container_name: hackforge_b81f8e8ebea3cff9
+    ports:
+      - "8090:80"
+    volumes:
+      - ./b81f8e8ebea3cff9/app:/var/www/html
+      - ./b81f8e8ebea3cff9/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=b81f8e8ebea3cff9
+      - FLAG_LOCATION=/var/www/html/flag.txt
+    restart: unless-stopped
+
+  ed0b52b655a72363:
+    build: ./ed0b52b655a72363
+    container_name: hackforge_ed0b52b655a72363
+    ports:
+      - "8091:80"
+    volumes:
+      - ./ed0b52b655a72363/app:/var/www/html
+      - ./ed0b52b655a72363/flag.txt:/var/www/html/flag.txt:ro
+    environment:
+      - MACHINE_ID=ed0b52b655a72363
       - FLAG_LOCATION=/var/www/html/flag.txt
     restart: unless-stopped

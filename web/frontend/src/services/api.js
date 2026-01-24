@@ -34,6 +34,11 @@ class APIService {
     return this.request('/api/statistics');
   }
 
+  async deleteCampaign(campaignId) {
+    return this.request(`/api/campaigns/${campaignId}`, {
+      method: 'DELETE',
+    });
+  }
   // Blueprints
   async getBlueprints() {
     return this.request('/api/blueprints');

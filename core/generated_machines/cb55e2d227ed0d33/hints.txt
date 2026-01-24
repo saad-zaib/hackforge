@@ -1,0 +1,10 @@
+Machine: cb55e2d227ed0d33
+Name: Unknown
+Variant: Reflected XSS
+Difficulty: 2/5
+
+Hints:
+  • Context: search_box
+  • Difficulty: 2/5
+  • ⚠️ Filters active: script_tag, onerror
+  • 💡 Try basic payloads first

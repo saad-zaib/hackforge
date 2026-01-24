@@ -1,0 +1,45 @@
+{
+  "machine_id": "b81f8e8ebea3cff9",
+  "blueprint_id": "auth_bypass_001",
+  "variant": "Default Credentials",
+  "difficulty": 2,
+  "seed": "demo_user_auth_bypass_001_1769235076_9",
+  "application": {
+    "context": "session_management",
+    "variant": "Default Credentials",
+    "entry_point": "cookie_value"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "or_1_equals_1",
+        "description": "Or_1_equals_1 filtering",
+        "php_code": "$input = str_replace('o', '', $input);",
+        "python_code": "input = input.replace('o', '')"
+      },
+      {
+        "type": "admin_admin",
+        "description": "Admin_admin filtering",
+        "php_code": "$input = str_replace('a', '', $input);",
+        "python_code": "input = input.replace('a', '')"
+      }
+    ]
+  },
+  "flag": {
+    "content": "HACKFORGE{5b349f64225c634571e54f59ceb7806b}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: session_management",
+      "Difficulty: 2/5",
+      "\u26a0\ufe0f Filters active: or_1_equals_1, admin_admin",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Default Credentials",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

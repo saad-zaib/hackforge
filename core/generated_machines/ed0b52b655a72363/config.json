@@ -1,0 +1,51 @@
+{
+  "machine_id": "ed0b52b655a72363",
+  "blueprint_id": "cmd_001",
+  "variant": "Basic Command Injection",
+  "difficulty": 2,
+  "seed": "demo_user_cmd_001_1769235076_8",
+  "application": {
+    "context": "log_parser",
+    "variant": "Basic Command Injection",
+    "entry_point": "file_upload"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "semicolon",
+        "description": "Semicolon filtering",
+        "php_code": "$input = str_replace('s', '', $input);",
+        "python_code": "input = input.replace('s', '')"
+      },
+      {
+        "type": "pipe",
+        "description": "Pipe filtering",
+        "php_code": "$input = str_replace('p', '', $input);",
+        "python_code": "input = input.replace('p', '')"
+      },
+      {
+        "type": "backtick",
+        "description": "Backtick filtering",
+        "php_code": "$input = str_replace('b', '', $input);",
+        "python_code": "input = input.replace('b', '')"
+      }
+    ]
+  },
+  "flag": {
+    "content": "HACKFORGE{5d535f307477ab54af67f9ee9e4765b7}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: log_parser",
+      "Difficulty: 2/5",
+      "\u26a0\ufe0f Filters active: semicolon, pipe, backtick",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Basic Command Injection",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}

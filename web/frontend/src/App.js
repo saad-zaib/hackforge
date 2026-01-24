@@ -95,7 +95,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/campaigns" element={<Campaigns />} />
-          <Route path="/campaigns/:campaignId" element={<CampaignDetail />} /> {/* NEW */}
+          <Route path="/campaigns/:campaignId" element={<CampaignDetail />} /> 
           <Route path="/machines" element={<Machines />} />
           <Route path="/docker" element={<DockerControl />} />
           <Route path="/leaderboard" element={<Leaderboard />} />

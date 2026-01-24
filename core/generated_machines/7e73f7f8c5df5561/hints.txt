@@ -1,0 +1,10 @@
+Machine: 7e73f7f8c5df5561
+Name: Unknown
+Variant: MongoDB Injection
+Difficulty: 2/5
+
+Hints:
+  • Context: user_query
+  • Difficulty: 2/5
+  • ⚠️ Filters active: dollar_operator, ne_operator
+  • 💡 Try basic payloads first

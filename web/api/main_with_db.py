@@ -439,6 +439,78 @@ async def get_campaign_progress(campaign_id: str, user_id: str):
     }
 
 
+@app.delete("/api/campaigns/{campaign_id}")
+async def delete_campaign(campaign_id: str):
+    """Delete a campaign and all its associated data"""
+    try:
+        import docker
+        import shutil
+        
+        logger.info(f"Deleting campaign: {campaign_id}")
+        
+        # Get campaign from database
+        campaign = db.get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+        
+        # Step 1: Stop and remove all Docker containers
+        try:
+            client = docker.from_env()
+            containers = client.containers.list(all=True)
+            
+            for machine in campaign.get('machines', []):
+                machine_id = machine['machine_id']
+                
+                # Find and remove container
+                for container in containers:
+                    if machine_id[:12] in container.name or machine_id in container.name:
+                        try:
+                            logger.info(f"Removing container: {container.name}")
+                            container.remove(force=True)
+                        except Exception as e:
+                            logger.warning(f"Failed to remove container {container.name}: {e}")
+                        break
+        except Exception as e:
+            logger.error(f"Error removing containers: {e}")
+        
+        # Step 2: Delete campaign directory from filesystem
+        try:
+            campaign_path = CORE_PATH / "campaigns" / campaign_id
+            if campaign_path.exists():
+                logger.info(f"Removing campaign directory: {campaign_path}")
+                shutil.rmtree(campaign_path)
+        except Exception as e:
+            logger.error(f"Error removing campaign directory: {e}")
+        
+        # Step 3: Delete from database
+        try:
+            # Delete progress records
+            db.progress.delete_many({'campaign_id': campaign_id})
+            
+            # Delete submissions
+            db.submissions.delete_many({'campaign_id': campaign_id})
+            
+            # Delete campaign
+            db.campaigns.delete_one({'campaign_id': campaign_id})
+            
+            logger.info(f"✓ Campaign {campaign_id} deleted from database")
+        except Exception as e:
+            logger.error(f"Error deleting from database: {e}")
+            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        
+        return {
+            'message': 'Campaign deleted successfully',
+            'campaign_id': campaign_id,
+            'deleted': True
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting campaign: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to delete campaign: {str(e)}")
 # ============================================================================
 # Flag Validation with Database
 # ============================================================================

@@ -1,0 +1,45 @@
+{
+  "machine_id": "0872e17e216f0118",
+  "blueprint_id": "ssrf_001",
+  "variant": "Basic SSRF",
+  "difficulty": 2,
+  "seed": "demo_user_ssrf_001_1769235076_2",
+  "application": {
+    "context": "pdf_generation",
+    "variant": "Basic SSRF",
+    "entry_point": "http_get_param"
+  },
+  "constraints": {
+    "filters": [
+      {
+        "type": "localhost",
+        "description": "Localhost filtering",
+        "php_code": "$input = str_replace('l', '', $input);",
+        "python_code": "input = input.replace('l', '')"
+      },
+      {
+        "type": "127.0.0.1",
+        "description": "127.0.0.1 filtering",
+        "php_code": "$input = str_replace('1', '', $input);",
+        "python_code": "input = input.replace('1', '')"
+      }
+    ]
+  },
+  "flag": {
+    "content": "HACKFORGE{b690aee80297cf3d088624ec28853933}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: pdf_generation",
+      "Difficulty: 2/5",
+      "\u26a0\ufe0f Filters active: localhost, 127.0.0.1",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Basic SSRF",
+    "estimated_solve_time": "20-30 minutes"
+  }
+}
