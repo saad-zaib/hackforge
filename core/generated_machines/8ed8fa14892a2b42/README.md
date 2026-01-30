@@ -1,6 +1,6 @@
 # SQL Injection
 
-**Machine ID:** `b68ac20ae41e4064`
+**Machine ID:** `8ed8fa14892a2b42`
 **Variant:** Error-based SQL Injection
 **Difficulty:** 2/5
 **Category:** sql_injection

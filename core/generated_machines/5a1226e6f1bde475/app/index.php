@@ -1,38 +1,44 @@
 <?php
 /**
- * Machine: b68ac20ae41e4064
- * Variant: Error-based SQL Injection
+ * Machine: 5a1226e6f1bde475
+ * Variant: Stored XSS
  * Difficulty: 2/5
- * Context: profile_view
+ * Context: message_board
  */
 
 // Database connection
-$conn = mysqli_connect('db_b68ac20ae41e4064', 'hackforge', 'hackforge123', 'hackforge');
+$conn = mysqli_connect('db', 'hackforge', 'hackforge123', 'hackforge');
 if (!$conn) {
     die('<div class="error">Connection failed: ' . mysqli_connect_error() . '</div>');
 }
 
 // Process user input if provided
 if (isset($_GET['input'])) {
-$input = $_GET['input'];
-// Apply filters
-$input = str_replace("'", "", $input);
-$input = str_replace("OR", "", $input);
+    $input = $_GET['input'];
+    
+    $author = $_GET['author'];
+    $content = $_GET['content'];
 
-// Vulnerable operation
+    // Connect to database
 
-// Display results or error messages based on output_type: error_message
-while ($row = mysqli_fetch_assoc($result)) {
-    echo $row['username'] . "<br>";
+    // Vulnerable operation - no sanitization
+    $sql = "INSERT INTO messages (author, content) VALUES ('$author', '$content')";
+    mysqli_query($conn, $sql);
+
+    // Display stored content
+    $result = mysqli_query($conn, "SELECT content FROM messages WHERE author = '$author'");
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo $row['content'];
+    }
 }
-}
 
+// Close database connection
 mysqli_close($conn);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Error-based SQL Injection</title>
+    <title>Stored XSS</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -136,12 +142,12 @@ mysqli_close($conn);
 </head>
 <body>
     <div class="container">
-        <h1>🎯 Error-based SQL Injection</h1>
+        <h1>🎯 Stored XSS</h1>
 
         <div class="info">
-            <p><strong>Context:</strong> User profile viewer</p>
+            <p><strong>Context:</strong> Public message board</p>
             <p><strong>Difficulty:</strong> 2/5</p>
-            <p><strong>Machine ID:</strong> <code>b68ac20ae41e4064</code></p>
+            <p><strong>Machine ID:</strong> <code>5a1226e6f1bde475</code></p>
         </div>
 
         <form method="GET">
@@ -155,7 +161,7 @@ mysqli_close($conn);
         </form>
 
         <div class="hint">
-            <strong>💡 Challenge Hint:</strong> Try to exploit the error-based sql injection in the profile_view context.
+            <strong>💡 Challenge Hint:</strong> Try to exploit the stored xss in the message_board context.
         </div>
     </div>
 </body>

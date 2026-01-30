@@ -1,11 +1,11 @@
 {
-  "machine_id": "b68ac20ae41e4064",
+  "machine_id": "8ed8fa14892a2b42",
   "blueprint_id": "sqli_001",
   "variant": "Error-based SQL Injection",
   "difficulty": 2,
-  "seed": "demo_user_sqli_001_1769705084_1",
+  "seed": "demo_user_sqli_001_1769786897_3",
   "application": {
-    "context": "profile_view",
+    "context": "login_form",
     "variant": "Error-based SQL Injection",
     "entry_point": "http_get_param"
   },
@@ -26,7 +26,7 @@
     ]
   },
   "flag": {
-    "content": "HACKFORGE{3080dca93ebe6369a2bc5963247c4e42}",
+    "content": "HACKFORGE{a37513f5dd834fba337541d69ec150ba}",
     "location": "/var/www/html/flag.txt"
   },
   "behavior": {
@@ -34,7 +34,7 @@
   },
   "metadata": {
     "exploit_hints": [
-      "Context: profile_view",
+      "Context: login_form",
       "Difficulty: 2/5",
       "\u26a0\ufe0f Filters active: single_quote, or_keyword",
       "\ud83d\udca1 Try basic payloads first"

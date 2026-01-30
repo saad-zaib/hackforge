@@ -1,0 +1,36 @@
+{
+  "machine_id": "58e7e5331ef3b59d",
+  "blueprint_id": "cmdi_001",
+  "variant": "Command Injection with Filters",
+  "difficulty": 2,
+  "seed": "demo_user_cmdi_001_1769786897_1",
+  "application": {
+    "context": "url_checker",
+    "variant": "Command Injection with Filters",
+    "entry_point": "http_get_param"
+  },
+  "constraints": {
+    "filters": []
+  },
+  "flag": {
+    "content": "HACKFORGE{b88e9f2493e1084733c8dfc1d96d9aa0}",
+    "location": "/var/www/html/flag.txt"
+  },
+  "behavior": {
+    "output": "direct_echo"
+  },
+  "metadata": {
+    "exploit_hints": [
+      "Context: url_checker",
+      "Difficulty: 2/5",
+      "\u2713 No input filtering - direct attack possible",
+      "\ud83d\udca1 Try basic payloads first"
+    ],
+    "vulnerability_type": "Command Injection with Filters",
+    "estimated_solve_time": "20-30 minutes",
+    "vuln_name": "Command Injection",
+    "category": "command_injection",
+    "description": "Basic filtering that can be bypassed"
+  },
+  "blueprint_config": {}
+}

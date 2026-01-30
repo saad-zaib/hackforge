@@ -1,0 +1,77 @@
+blueprint_id: xss_001
+
+name: Cross-Site Scripting (XSS)
+
+category: cross_site_scripting
+
+difficulty_range: [1, 5]
+
+description: |
+  Cross-Site Scripting vulnerabilities allow attackers to inject malicious scripts into web pages viewed by other users. This can lead to session hijacking, credential theft, and defacement.
+
+infrastructure:
+  needs_database: true
+  database_type: mysql
+  needs_file_system: false
+  needs_external_service: false
+
+database_schema:
+  tables:
+    - name: comments
+      columns:
+        - id INT AUTO_INCREMENT PRIMARY KEY
+        - username VARCHAR(100)
+        - comment TEXT
+        - created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    - name: posts
+      columns:
+        - id INT AUTO_INCREMENT PRIMARY KEY
+        - title VARCHAR(255)
+        - content TEXT
+        - author VARCHAR(100)
+        - created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    - name: users
+      columns:
+        - id INT AUTO_INCREMENT PRIMARY KEY
+        - username VARCHAR(100) UNIQUE
+        - email VARCHAR(255)
+        - session_token VARCHAR(255)
+        - secret_data TEXT
+  flag_location: users.secret_data WHERE username='admin'
+
+variants:
+  - Reflected XSS
+  - Stored XSS
+  - DOM-based XSS
+  - Attribute-based XSS
+
+entry_points:
+  - search_query
+  - comment_form
+  - profile_field
+  - url_parameter
+
+mutation_axes:
+  contexts:
+    - name: comment_system
+    - name: search_results
+    - name: user_profile
+    - name: message_board
+  filters:
+    basic:
+      - name: script_tag_filter
+      - name: angle_bracket_filter
+    medium:
+      - name: htmlspecialchars_partial
+      - name: event_handler_filter
+      - name: javascript_protocol_filter
+    advanced:
+      - name: dom_purify_bypass
+      - name: csp_bypass
+      - name: regex_blacklist
+  payloads:
+    - name: unknown
+    - name: unknown
+    - name: unknown
+    - name: unknown
+    - name: unknown

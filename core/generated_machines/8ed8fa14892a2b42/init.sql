@@ -18,5 +18,5 @@ CREATE TABLE IF NOT EXISTS secrets (
 
 INSERT INTO users (username, password, email, role) VALUES ('admin', 'admin123', 'admin@hack.com', 'admin');
 INSERT INTO users (username, password, email, role) VALUES ('user', 'password', 'user@hack.com', 'user');
-INSERT INTO secrets (flag, description, created_at) VALUES ('HACKFORGE{3080dca93ebe6369a2bc5963247c4e42}', 'Capture this flag!', NOW());
+INSERT INTO secrets (flag, description, created_at) VALUES ('HACKFORGE{a37513f5dd834fba337541d69ec150ba}', 'Capture this flag!', NOW());
 

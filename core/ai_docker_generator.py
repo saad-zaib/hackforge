@@ -2,10 +2,12 @@
 """
 AI Docker Generator - FIXED
 Properly generates database services in docker-compose
+AND strips markdown code fences from AI responses
 """
 
 import requests
 import json
+import re
 from typing import Dict, Optional, Tuple
 
 
@@ -32,10 +34,19 @@ class AIDockerGenerator:
                 timeout=self.timeout
             )
             response.raise_for_status()
-            return response.json()['choices'][0]['message']['content'].strip()
+            content = response.json()['choices'][0]['message']['content']
+            return self._strip_markdown(content)
         except Exception as e:
             print(f"AI API Error: {e}")
             return None
+
+    def _strip_markdown(self, text: str) -> str:
+        """Remove markdown code fences and language identifiers"""
+        # Remove code fences with optional language identifier (e.g., ```dockerfile or ```)
+        text = re.sub(r'```[\w]*\n?', '', text)
+        # Remove standalone "Dockerfile" or "dockerfile" on its own line at start
+        text = re.sub(r'^[Dd]ockerfile\s*\n', '', text, flags=re.MULTILINE)
+        return text.strip()
 
     def generate_dockerfile_from_config(self, blueprint_config: Dict) -> str:
         """Generate Dockerfile from enhanced config"""
@@ -49,7 +60,9 @@ class AIDockerGenerator:
         packages = docker_reqs.get('packages', [])
 
         system_prompt = """Generate a Dockerfile for vulnerable web applications.
-Output ONLY the Dockerfile content, no explanations."""
+Output ONLY the Dockerfile content, no explanations.
+DO NOT include markdown code fences (```).
+DO NOT include the word "Dockerfile" as a header."""
 
         user_prompt = f"""Create Dockerfile with these requirements:
 
@@ -65,7 +78,11 @@ Standard requirements:
 - Expose port 80
 - Keep under 25 lines
 
-Output format:
+IMPORTANT: Use apt-get to install system packages (like mysqli, curl, wget)
+Use docker-php-ext-install ONLY for PHP extensions (like pdo, pdo_mysql, mysqli)
+DO NOT mix them up!
+
+Output format (NO markdown fences, NO "Dockerfile" header):
 FROM {base_image}
 RUN apt-get update && apt-get install -y ...
 ...

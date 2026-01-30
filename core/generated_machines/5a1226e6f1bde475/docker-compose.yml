@@ -1,29 +1,32 @@
 version: '3.8'
 
 services:
-
-  b68ac20ae41e4064:
-    build: ./b68ac20ae41e4064
-    container_name: hackforge_b68ac20ae41e4064
+  web:
+    build: .
+    container_name: hackforge_5a1226e6f1bde475
     ports:
       - "8081:80"
     volumes:
-      - ./b68ac20ae41e4064/app:/var/www/html
+      - ./app:/var/www/html
     depends_on:
-      - db_b68ac20ae41e4064
+      - db
+    networks:
+      - hackforge_5a1226e6f1bde475
     restart: unless-stopped
 
-  db_b68ac20ae41e4064:
+  db:
     image: mysql:8.0
-    container_name: hackforge_db_b68ac20ae41e4064
+    container_name: hackforge_db_5a1226e6f1bde475
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: hackforge
       MYSQL_USER: hackforge
       MYSQL_PASSWORD: hackforge123
     volumes:
-      - ./b68ac20ae41e4064/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - db_data_b68ac20ae41e4064:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+    networks:
+      - hackforge_5a1226e6f1bde475
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -31,5 +34,9 @@ services:
       retries: 5
     restart: unless-stopped
 
+networks:
+  hackforge_5a1226e6f1bde475:
+    driver: bridge
+
 volumes:
-  db_data_b68ac20ae41e4064:
+  db_data:

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Template Engine - FIXED
-Ensures docker-compose properly includes database services
+Template Engine - INDIVIDUAL DOCKER-COMPOSE PER MACHINE
+Each machine gets its own docker-compose.yml for independent management
 """
 
 import os
 import sys
 import json
+import re
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -93,43 +94,66 @@ class AIEnhancedTemplate:
 
         return self._wrap_html(vuln_function, context_config)
 
-    def _wrap_html(self, vuln_code: str, context: Dict) -> str:
-        """FIXED: Wrap AI code with proper single database connection"""
+    def _clean_ai_php_code(self, code: str) -> str:
+        """Safely clean AI-generated PHP code without breaking syntax"""
+        code = code.strip()
+        if code.startswith('<?php'):
+            code = code[5:].strip()
+        if code.endswith('?>'):
+            code = code[:-2].strip()
 
-        vuln_code = vuln_code.strip()
-        if vuln_code.startswith('<?php'):
-            vuln_code = vuln_code[5:].strip()
-        if vuln_code.endswith('?>'):
-            vuln_code = vuln_code[:-2].strip()
+        # Replace any database connection variables with our standard $conn
+        code = re.sub(r'\$connection\s*=', '$conn =', code)
+        code = re.sub(r'\$db\s*=', '$conn =', code)
+        code = re.sub(r'\$link\s*=', '$conn =', code)
+        
+        # Replace all references to old variable names
+        code = re.sub(r'\$connection\b', '$conn', code)
+        code = re.sub(r'\$db\b(?!\w)', '$conn', code)
+        code = re.sub(r'\$link\b', '$conn', code)
 
-        # Remove any database connections from AI code
-        lines = vuln_code.split('\n')
+        # Remove duplicate mysqli_connect calls
+        lines = code.split('\n')
         cleaned_lines = []
-        skip_next = False
         
         for line in lines:
-            # Skip lines that create database connections
-            if 'mysqli_connect' in line or '$conn' in line or '$connection' in line:
-                if 'mysqli_connect' in line:
-                    skip_next = True
+            stripped = line.strip()
+            
+            if stripped.startswith('$conn') and 'mysqli_connect' in stripped and stripped.endswith(';'):
                 continue
-            if skip_next and ('die(' in line or 'Connection failed' in line):
-                skip_next = False
+            
+            if 'mysqli_connect_error' in stripped:
                 continue
+                
             cleaned_lines.append(line)
-        
-        vuln_code = '\n'.join(cleaned_lines).strip()
+
+        return '\n'.join(cleaned_lines).strip()
+
+    def _wrap_html(self, vuln_code: str, context: Dict) -> str:
+        """Wrap AI code with proper single database connection"""
+
+        vuln_code = self._clean_ai_php_code(vuln_code)
 
         context_name = context.get('name', 'default')
         context_desc = context.get('description', 'Vulnerability challenge')
 
         # Check if we need database
         needs_db = False
+        db_host = 'localhost'  # Default for individual compose
+        
         if self.blueprint_config:
             infrastructure = self.blueprint_config.get('infrastructure', {})
             needs_db = infrastructure.get('needs_database', False)
+            
+            # For individual docker-compose, database is in same compose file
+            if needs_db:
+                db_type = infrastructure.get('database_type', 'mysql')
+                if db_type == 'mysql':
+                    db_host = 'db'  # Service name in docker-compose
+                elif db_type == 'mongodb':
+                    db_host = 'mongodb'
 
-        # Build PHP header with SINGLE DB connection if needed
+        # Build PHP header
         php_header = f'''<?php
 /**
  * Machine: {self.machine_id}
@@ -140,37 +164,44 @@ class AIEnhancedTemplate:
 '''
 
         if needs_db:
-            db_type = self.blueprint_config.get('infrastructure', {}).get('database_type', 'mysql')
-            if db_type == 'mysql':
-                # FIXED: Use consistent connection variable name
-                php_header += f'''
+            php_header += f'''
 // Database connection
-$conn = mysqli_connect('db_{self.machine_id}', 'hackforge', 'hackforge123', 'hackforge');
+$conn = mysqli_connect('{db_host}', 'hackforge', 'hackforge123', 'hackforge');
 if (!$conn) {{
     die('<div class="error">Connection failed: ' . mysqli_connect_error() . '</div>');
 }}
+
 '''
 
-        php_header += '''
-// Process user input if provided
+        php_header += '''// Process user input if provided
 if (isset($_GET['input'])) {
+    $input = $_GET['input'];
+    
 '''
 
-        php_footer = '''
-}
+        # Indent the vulnerable code
+        indented_code = '\n'.join('    ' + line if line.strip() else '' for line in vuln_code.split('\n'))
+
+        php_footer = '''\n}
 '''
 
         if needs_db:
             php_footer += '''
+// Close database connection
 mysqli_close($conn);
 '''
 
         php_footer += '?>'
 
-        # Replace any $connection with $conn in AI code
-        vuln_code = vuln_code.replace('$connection', '$conn')
+        # Combine everything
+        full_php = php_header + indented_code + php_footer
 
-        return php_header + vuln_code + php_footer + f'''
+        # Validate PHP syntax
+        if not self._validate_php_syntax(full_php):
+            print("  ⚠️ PHP syntax validation failed, using fallback")
+            return self._fallback_code()
+
+        return full_php + f'''
 <!DOCTYPE html>
 <html>
 <head>
@@ -303,6 +334,27 @@ mysqli_close($conn);
 </body>
 </html>'''
 
+    def _validate_php_syntax(self, php_code: str) -> bool:
+        """Validate PHP syntax by counting braces"""
+        code_without_strings = re.sub(r'"[^"]*"', '""', php_code)
+        code_without_strings = re.sub(r"'[^']*'", "''", code_without_strings)
+        
+        open_braces = code_without_strings.count('{')
+        close_braces = code_without_strings.count('}')
+        
+        if open_braces != close_braces:
+            print(f"  ⚠️ Brace mismatch: {open_braces} open, {close_braces} close")
+            return False
+        
+        open_parens = code_without_strings.count('(')
+        close_parens = code_without_strings.count(')')
+        
+        if open_parens != close_parens:
+            print(f"  ⚠️ Parenthesis mismatch: {open_parens} open, {close_parens} close")
+            return False
+            
+        return True
+
     def _fallback_code(self) -> str:
         """Fallback template"""
         return f'''<?php
@@ -325,15 +377,12 @@ if (isset($_GET['input'])) {{
 
     def generate_dockerfile(self) -> str:
         """Generate Dockerfile using blueprint config"""
-
         if self.use_ai and self.ai_docker_gen and self.blueprint_config:
             return self.ai_docker_gen.generate_dockerfile_from_config(self.blueprint_config)
-
         return self._fallback_dockerfile()
 
     def _fallback_dockerfile(self) -> str:
         """Fallback Dockerfile"""
-
         if not self.blueprint_config:
             return self._basic_dockerfile()
 
@@ -385,7 +434,6 @@ CMD ["apache2-foreground"]
 
     def generate_setup_files(self) -> dict:
         """Generate setup files using blueprint config"""
-
         files = {}
 
         if not self.blueprint_config:
@@ -407,41 +455,112 @@ CMD ["apache2-foreground"]
                 elif db_type == 'mongodb':
                     files['init.js'] = schema
 
-        # File structure
-        if infrastructure.get('needs_file_system') and self.use_ai and self.ai_code_gen:
-            file_structure = self.ai_code_gen.generate_file_structure(
-                blueprint_config=self.blueprint_config,
-                flag=self.config.flag['content']
-            )
-
-            if file_structure:
-                files['setup.sh'] = self._generate_file_setup_script(file_structure)
-
         return files
 
-    def _generate_file_setup_script(self, file_structure: Dict[str, str]) -> str:
-        """Generate bash script to create file structure"""
+    def generate_individual_compose(self, port: int) -> str:
+        """
+        NEW: Generate individual docker-compose.yml for this machine
+        This allows independent management of each machine
+        """
+        
+        needs_db = False
+        db_type = None
+        
+        if self.blueprint_config:
+            infrastructure = self.blueprint_config.get('infrastructure', {})
+            needs_db = infrastructure.get('needs_database', False)
+            db_type = infrastructure.get('database_type', 'mysql')
 
-        script = "#!/bin/bash\n\n"
-        script += "# Setup file structure for vulnerability\n\n"
+        compose = f'''version: '3.8'
 
-        for filepath, content in file_structure.items():
-            # Escape content for bash
-            content_escaped = content.replace('"', '\\"').replace('$', '\\$')
+services:
+  web:
+    build: .
+    container_name: hackforge_{self.machine_id}
+    ports:
+      - "{port}:80"
+    volumes:
+      - ./app:/var/www/html
+'''
 
-            # Create directory if needed
-            dir_path = os.path.dirname(filepath)
-            if dir_path:
-                script += f'mkdir -p {dir_path}\n'
+        if needs_db:
+            compose += f'''    depends_on:
+      - db
+    networks:
+      - hackforge_{self.machine_id}
+'''
+        else:
+            compose += f'''    networks:
+      - hackforge_{self.machine_id}
+'''
 
-            script += f'echo "{content_escaped}" > {filepath}\n'
-            script += f'chmod 644 {filepath}\n\n'
+        compose += '''    restart: unless-stopped
 
-        return script
+'''
+
+        # Add database service if needed
+        if needs_db:
+            if db_type == 'mysql':
+                compose += f'''  db:
+    image: mysql:8.0
+    container_name: hackforge_db_{self.machine_id}
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hackforge
+      MYSQL_USER: hackforge
+      MYSQL_PASSWORD: hackforge123
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+    networks:
+      - hackforge_{self.machine_id}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+'''
+            elif db_type == 'mongodb':
+                compose += f'''  mongodb:
+    image: mongo:5.0
+    container_name: hackforge_mongodb_{self.machine_id}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root123
+    volumes:
+      - ./init.js:/docker-entrypoint-initdb.d/init.js
+      - mongo_data:/data/db
+    networks:
+      - hackforge_{self.machine_id}
+    restart: unless-stopped
+
+'''
+
+        # Add networks section
+        compose += f'''networks:
+  hackforge_{self.machine_id}:
+    driver: bridge
+
+'''
+
+        # Add volumes section if database exists
+        if needs_db:
+            compose += '''volumes:
+'''
+            if db_type == 'mysql':
+                compose += '''  db_data:
+'''
+            elif db_type == 'mongodb':
+                compose += '''  mongo_data:
+'''
+
+        return compose
 
 
 class TemplateEngine:
-    """Template engine with AI code and Docker generation"""
+    """Template engine that generates INDIVIDUAL docker-compose per machine"""
 
     def __init__(self, machines_dir: str = "generated_machines", use_ai: bool = True):
         self.machines_dir = Path(machines_dir)
@@ -457,12 +576,13 @@ class TemplateEngine:
             print("📝 Using static templates")
             self.ai_docker_gen = None
 
-    def generate_machine_app(self, config: MachineConfig, machine_dir: Path) -> dict:
-        """Generate complete application with Docker setup"""
+    def generate_machine_app(self, config: MachineConfig, machine_dir: Path, port: int) -> dict:
+        """Generate complete application with INDIVIDUAL docker-compose"""
 
         print(f"\n🔨 Generating: {config.machine_id}")
         print(f"   Variant: {config.variant}")
         print(f"   Category: {config.blueprint_id.split('_')[0]}")
+        print(f"   Port: {port}")
 
         if config.blueprint_config:
             print(f"   ✓ Blueprint config loaded ({len(json.dumps(config.blueprint_config))} bytes)")
@@ -493,7 +613,13 @@ class TemplateEngine:
             dockerfile_path.write_text(dockerfile)
             print(f"   ✓ Dockerfile: {dockerfile_path}")
 
-            # 3. Generate setup files (DB schema, file structure)
+            # 3. Generate INDIVIDUAL docker-compose.yml
+            compose_content = template.generate_individual_compose(port)
+            compose_file = machine_dir / "docker-compose.yml"
+            compose_file.write_text(compose_content)
+            print(f"   ✓ Docker Compose: {compose_file}")
+
+            # 4. Generate setup files (DB schema, etc.)
             setup_files = template.generate_setup_files()
 
             for filename, content in setup_files.items():
@@ -501,18 +627,21 @@ class TemplateEngine:
                 filepath.write_text(content)
                 print(f"   ✓ Setup: {filepath}")
 
-            # 4. Write flag and hints
+            # 5. Write flag and hints
             flag_file = machine_dir / "flag.txt"
             flag_file.write_text(config.flag['content'])
 
             hints_file = machine_dir / "HINTS.md"
             hints_file.write_text(self._generate_hints(config))
 
+            # 6. Generate start/stop scripts
+            self._generate_management_scripts(machine_dir, config.machine_id, port)
+
             return {
                 'machine_id': config.machine_id,
                 'machine_dir': str(machine_dir),
                 'category': category,
-                'port': None,  # Will be set later
+                'port': port,
                 'ai_generated': self.use_ai and bool(config.blueprint_config)
             }
 
@@ -521,6 +650,38 @@ class TemplateEngine:
             import traceback
             traceback.print_exc()
             return None
+
+    def _generate_management_scripts(self, machine_dir: Path, machine_id: str, port: int):
+        """Generate convenience scripts for managing this machine"""
+        
+        # Start script
+        start_script = f'''#!/bin/bash
+# Start {machine_id}
+echo "🚀 Starting {machine_id}..."
+docker-compose up -d --build
+
+echo "✓ Machine running at: http://localhost:{port}"
+echo "✓ Container: hackforge_{machine_id}"
+echo ""
+echo "View logs: docker-compose logs -f"
+echo "Stop: docker-compose down"
+'''
+        
+        start_file = machine_dir / "start.sh"
+        start_file.write_text(start_script)
+        start_file.chmod(0o755)
+        
+        # Stop script
+        stop_script = f'''#!/bin/bash
+# Stop {machine_id}
+echo "🛑 Stopping {machine_id}..."
+docker-compose down
+echo "✓ Machine stopped"
+'''
+        
+        stop_file = machine_dir / "stop.sh"
+        stop_file.write_text(stop_script)
+        stop_file.chmod(0o755)
 
     def _generate_hints(self, config: MachineConfig) -> str:
         """Generate hints markdown"""
@@ -542,7 +703,7 @@ class TemplateEngine:
         return content
 
     def process_all_machines(self, start_port: int = 8080) -> list:
-        """FIXED: Process all machines and ALWAYS generate proper docker-compose"""
+        """Process all machines with INDIVIDUAL docker-compose files"""
 
         print(f"\n{'='*60}")
         print(f"Processing Machines: {self.machines_dir}")
@@ -558,9 +719,6 @@ class TemplateEngine:
 
         print(f"\nFound {len(machine_dirs)} machine(s)\n")
 
-        # Collect blueprint configs
-        blueprint_configs = {}
-
         for machine_dir in machine_dirs:
             config_file = machine_dir / "config.json"
 
@@ -569,25 +727,18 @@ class TemplateEngine:
                     config_dict = json.load(f)
 
                 config = MachineConfig(**config_dict)
-                result = self.generate_machine_app(config, machine_dir)
+                result = self.generate_machine_app(config, machine_dir, port)
 
                 if result:
-                    result['port'] = port
                     machines_generated.append(result)
-                    
-                    # Store blueprint config
-                    if config.blueprint_config:
-                        category = config.blueprint_id.split('_')[0]
-                        blueprint_configs[category] = config.blueprint_config
-                    
                     port += 1
 
             except Exception as e:
                 print(f"   ✗ Error: {e}")
 
-        # ALWAYS generate docker-compose
+        # Generate master management script
         if machines_generated:
-            self._generate_compose(machines_generated, blueprint_configs)
+            self._generate_master_scripts(machines_generated)
 
         print(f"\n{'='*60}")
         print(f"✓ Generated {len(machines_generated)} application(s)")
@@ -595,57 +746,100 @@ class TemplateEngine:
 
         return machines_generated
 
-    def _generate_compose(self, machines: list, blueprint_configs: Dict[str, Dict]):
-        """FIXED: Always generate proper docker-compose with databases"""
+    def _generate_master_scripts(self, machines: list):
+        """Generate master scripts to manage all machines"""
+        
+        # Start all script
+        start_all = '''#!/bin/bash
+# Start all Hackforge machines
 
-        print(f"\n{'='*60}")
-        print(f"DOCKER-COMPOSE GENERATION")
-        print(f"{'='*60}")
+echo "🚀 Starting all machines..."
+echo ""
 
-        # Use AI docker generator with collected configs
-        if self.use_ai and self.ai_docker_gen and blueprint_configs:
-            print(f"🤖 Generating with AI ({len(blueprint_configs)} configs)...")
-            compose_content = self.ai_docker_gen.generate_docker_compose(machines, blueprint_configs)
-        else:
-            print(f"📝 Generating basic compose...")
-            compose_content = self._generate_basic_compose(machines)
+'''
+        for m in machines:
+            machine_id = m['machine_id']
+            start_all += f'''echo "Starting {machine_id}..."
+cd {machine_id} && docker-compose up -d --build && cd ..
 
-        compose_file = self.machines_dir / "docker-compose.yml"
-        compose_file.write_text(compose_content)
-        print(f"✓ Generated: {compose_file}")
+'''
 
-    def _generate_basic_compose(self, machines: list) -> str:
-        """Fallback: Basic docker-compose"""
-        compose = "version: '3.8'\n\nservices:\n"
+        start_all += '''
+echo ""
+echo "✓ All machines started!"
+echo ""
+echo "Active machines:"
+'''
 
-        for machine in machines:
-            machine_id = machine['machine_id']
-            port = machine['port']
+        for m in machines:
+            start_all += f'''echo "  • http://localhost:{m['port']} - {m['machine_id']}"
+'''
 
-            compose += f"""
-  {machine_id}:
-    build: ./{machine_id}
-    container_name: hackforge_{machine_id}
-    ports:
-      - "{port}:80"
-    volumes:
-      - ./{machine_id}/app:/var/www/html
-    restart: unless-stopped
-"""
+        start_file = self.machines_dir / "start_all.sh"
+        start_file.write_text(start_all)
+        start_file.chmod(0o755)
+        print(f"✓ Master script: {start_file}")
 
-        return compose
+        # Stop all script
+        stop_all = '''#!/bin/bash
+# Stop all Hackforge machines
+
+echo "🛑 Stopping all machines..."
+echo ""
+
+'''
+        for m in machines:
+            machine_id = m['machine_id']
+            stop_all += f'''echo "Stopping {machine_id}..."
+cd {machine_id} && docker-compose down && cd ..
+
+'''
+
+        stop_all += '''
+echo ""
+echo "✓ All machines stopped!"
+'''
+
+        stop_file = self.machines_dir / "stop_all.sh"
+        stop_file.write_text(stop_all)
+        stop_file.chmod(0o755)
+        print(f"✓ Master script: {stop_file}")
+
+        # List machines script
+        list_script = '''#!/bin/bash
+# List all Hackforge machines
+
+echo "📋 Hackforge Machines"
+echo "===================="
+echo ""
+
+'''
+        for m in machines:
+            list_script += f'''echo "{m['machine_id']}"
+echo "  Port: {m['port']}"
+echo "  Category: {m['category']}"
+echo "  URL: http://localhost:{m['port']}"
+cd {m['machine_id']} && echo -n "  Status: " && docker-compose ps --services --filter "status=running" | wc -l | awk '{{if ($1 > 0) print "🟢 Running"; else print "⚫ Stopped"}}' && cd ..
+echo ""
+
+'''
+
+        list_file = self.machines_dir / "list_machines.sh"
+        list_file.write_text(list_script)
+        list_file.chmod(0o755)
+        print(f"✓ Master script: {list_file}")
 
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description='Hackforge Template Engine with AI')
+    parser = argparse.ArgumentParser(description='Hackforge Template Engine - Individual Compose')
     parser.add_argument('--machines-dir', default='generated_machines')
     parser.add_argument('--port', type=int, default=8080)
     parser.add_argument('--no-ai', action='store_true')
     args = parser.parse_args()
 
     print("="*60)
-    print("HACKFORGE - AI Template & Docker Engine - FIXED")
+    print("HACKFORGE - INDIVIDUAL DOCKER-COMPOSE ENGINE")
     print("="*60)
 
     engine = TemplateEngine(
@@ -656,13 +850,23 @@ def main():
     machines = engine.process_all_machines(start_port=args.port)
 
     if machines:
-        print("\nNext steps:")
-        print(f"  cd {args.machines_dir}")
-        print(f"  docker-compose up -d --build")
-        print(f"\nMachines:")
+        print("\n" + "="*60)
+        print("MANAGEMENT COMMANDS")
+        print("="*60)
+        print(f"\nIndividual machines:")
         for m in machines:
             ai_emoji = '🤖' if m.get('ai_generated') else '📝'
-            print(f"  {ai_emoji} http://localhost:{m['port']} - {m['machine_id']}")
+            print(f"  {ai_emoji} cd {m['machine_id']} && ./start.sh")
+        
+        print(f"\nMaster commands (from {args.machines_dir}/):")
+        print(f"  Start all:  ./start_all.sh")
+        print(f"  Stop all:   ./stop_all.sh")
+        print(f"  List:       ./list_machines.sh")
+        
+        print(f"\nURLs:")
+        for m in machines:
+            print(f"  • http://localhost:{m['port']} - {m['machine_id']}")
+        print()
 
 
 if __name__ == "__main__":

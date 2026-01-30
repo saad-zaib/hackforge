@@ -1,0 +1,10 @@
+Machine: 58e7e5331ef3b59d
+Name: Command Injection
+Variant: Command Injection with Filters
+Difficulty: 2/5
+
+Hints:
+  • Context: url_checker
+  • Difficulty: 2/5
+  • ✓ No input filtering - direct attack possible
+  • 💡 Try basic payloads first
