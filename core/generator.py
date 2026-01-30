@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Hackforge Dynamic Generator
+Hackforge Dynamic Generator - UPDATED
 Automatically discovers and loads all mutation engines and blueprints
+NOW: Stores full blueprint JSON for AI generation
 """
 
 import os
@@ -35,6 +36,7 @@ class DynamicHackforgeGenerator:
         self.core_dir = Path(core_dir)
         self.blueprints_dir = self.core_dir / "blueprints"
         self.mutations_dir = self.core_dir / "mutations"
+        self.configs_dir = self.core_dir / "configs"  # NEW: Track configs directory
 
         print(f"\n{'='*60}")
         print(f"GENERATOR INITIALIZATION")
@@ -42,11 +44,11 @@ class DynamicHackforgeGenerator:
         print(f"Core directory: {self.core_dir}")
         print(f"Blueprints directory: {self.blueprints_dir}")
         print(f"Mutations directory: {self.mutations_dir}")
-        print(f"Blueprints exists: {self.blueprints_dir.exists()}")
-        print(f"Mutations exists: {self.mutations_dir.exists()}")
+        print(f"Configs directory: {self.configs_dir}")
         print(f"{'='*60}\n")
 
         self.blueprints: Dict[str, VulnerabilityBlueprint] = {}
+        self.blueprint_configs: Dict[str, Dict] = {}  # NEW: Store full JSON configs
         self.mutation_engines: Dict[str, type] = {}
 
         # Auto-discover everything
@@ -73,7 +75,7 @@ class DynamicHackforgeGenerator:
         print()
 
     def _discover_blueprints(self):
-        """Automatically discover all blueprint YAML files"""
+        """Automatically discover all blueprint YAML files and load full JSON configs"""
 
         if not self.blueprints_dir.exists():
             print(f"⚠️  Blueprints directory not found: {self.blueprints_dir}")
@@ -88,7 +90,40 @@ class DynamicHackforgeGenerator:
 
                 if BlueprintLoader.validate_blueprint(blueprint):
                     self.blueprints[blueprint.blueprint_id] = blueprint
-                    print(f"  ✓ Loaded blueprint: {blueprint.name} (category: {blueprint.category})")
+                    
+                    # NEW: Load full JSON config for AI
+                    # Try multiple possible filenames
+                    json_file = None
+                    possible_filenames = [
+                        f"{blueprint.category}.json",           # sql_injection.json
+                        f"{blueprint.blueprint_id}.json",       # sqli_001.json
+                        f"{'_'.join(blueprint.category.split('_')[:2])}.json",  # sql_injection.json
+                    ]
+                    
+                    # Also try short names like "sqli.json" from first part
+                    category_parts = blueprint.category.split('_')
+                    if len(category_parts) > 1:
+                        possible_filenames.append(f"{category_parts[0]}.json")  # sqli.json
+                    
+                    possible_paths = []
+                    for filename in possible_filenames:
+                        possible_paths.extend([
+                            self.configs_dir / filename,
+                            self.core_dir / "configs" / filename,
+                            self.blueprints_dir.parent / "configs" / filename,
+                        ])
+                    
+                    for path in possible_paths:
+                        if path.exists():
+                            json_file = path
+                            break
+                    
+                    if json_file and json_file.exists():
+                        with open(json_file, 'r') as f:
+                            self.blueprint_configs[blueprint.category] = json.load(f)
+                        print(f"  ✓ Loaded blueprint: {blueprint.name} (category: {blueprint.category}) + JSON config from {json_file.name}")
+                    else:
+                        print(f"  ✓ Loaded blueprint: {blueprint.name} (category: {blueprint.category}) [no JSON - tried: {', '.join([p.name for p in possible_paths[:3]])}]")
 
             except Exception as e:
                 print(f"  ✗ Error loading {yaml_file.name}: {e}")
@@ -131,12 +166,6 @@ class DynamicHackforgeGenerator:
                 import traceback
                 traceback.print_exc()
 
-    def _camel_to_snake(self, name: str) -> str:
-        """Convert CamelCase to snake_case"""
-        import re
-        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
-
     def list_all_blueprints(self) -> List[Dict]:
         """List all available blueprints"""
         result = []
@@ -158,7 +187,7 @@ class DynamicHackforgeGenerator:
         return self.blueprints.get(blueprint_id)
 
     def generate_machine(self, blueprint_id: str, seed: str, difficulty: int) -> Optional[MachineConfig]:
-        """Generate a machine from blueprint"""
+        """Generate a machine from blueprint WITH full config for AI"""
 
         blueprint = self.blueprints.get(blueprint_id)
         if not blueprint:
@@ -177,6 +206,12 @@ class DynamicHackforgeGenerator:
         try:
             engine = engine_class(seed)
             config = engine.mutate(blueprint, difficulty)
+            
+            # NEW: Attach full blueprint JSON config for AI
+            if blueprint.category in self.blueprint_configs:
+                config.blueprint_config = self.blueprint_configs[blueprint.category]
+                print(f"  ✓ Attached full config ({len(json.dumps(config.blueprint_config))} bytes)")
+            
             return config
         except Exception as e:
             print(f"✗ Error generating machine: {e}")
@@ -184,10 +219,10 @@ class DynamicHackforgeGenerator:
             traceback.print_exc()
             return None
 
-    def generate_single_machine(self, blueprint_id: str = None, difficulty: int = 2, 
+    def generate_single_machine(self, blueprint_id: str = None, difficulty: int = 2,
                                 user_id: str = "user") -> Optional[MachineConfig]:
         """Generate a single machine and export to generated_machines directory"""
-        
+
         # If no blueprint specified, pick a random one
         if blueprint_id is None:
             if not self.blueprints:
@@ -195,7 +230,7 @@ class DynamicHackforgeGenerator:
                 return None
             import random
             blueprint_id = random.choice(list(self.blueprints.keys()))
-        
+
         blueprint = self.blueprints.get(blueprint_id)
         if not blueprint:
             print(f"✗ Blueprint not found: {blueprint_id}")
@@ -220,14 +255,14 @@ class DynamicHackforgeGenerator:
             print(f"✓ Machine ID: {machine.machine_id}")
             print(f"✓ Variant: {machine.variant}")
             print(f"✓ Flag: {machine.flag['content'][:30]}...")
-            
+
             # Export to generated_machines directory
             output_path = self.export_single_machine(machine)
-            
+
             print(f"\n{'='*60}")
             print(f"✓ Machine exported to: {output_path}")
             print(f"{'='*60}\n")
-            
+
             return machine
         else:
             print("✗ Failed to generate machine")
@@ -235,7 +270,7 @@ class DynamicHackforgeGenerator:
 
     def export_single_machine(self, machine: MachineConfig) -> str:
         """Export a single machine to generated_machines directory"""
-        
+
         # Create generated_machines directory structure
         output_dir = self.core_dir / "generated_machines" / machine.machine_id
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -243,7 +278,7 @@ class DynamicHackforgeGenerator:
         print(f"\nExporting to: {output_dir}")
         print("-"*60)
 
-        # Export config
+        # Export config (now includes blueprint_config!)
         config_file = output_dir / "config.json"
         with open(config_file, 'w') as f:
             json.dump(machine.to_dict(), f, indent=2)
@@ -290,19 +325,19 @@ class DynamicHackforgeGenerator:
     def generate_campaign(self, user_id: str, difficulty: int = 2, count: int = None, blueprint_ids: List[str] = None) -> List[MachineConfig]:
         """
         Generate a campaign with multiple machines
-        
+
         Args:
             user_id: User identifier
             difficulty: Target difficulty level (1-5)
             count: Number of machines to generate
             blueprint_ids: Optional list of specific blueprint IDs to use
         """
-        
+
         # NEW: Filter blueprints if specific ones are selected
         if blueprint_ids:
             # Use only selected blueprints
             available_blueprints = {
-                bp_id: bp for bp_id, bp in self.blueprints.items() 
+                bp_id: bp for bp_id, bp in self.blueprints.items()
                 if bp_id in blueprint_ids
             }
             print(f"Using {len(available_blueprints)} selected blueprints: {list(available_blueprints.keys())}")
@@ -310,7 +345,7 @@ class DynamicHackforgeGenerator:
             # Use all blueprints
             available_blueprints = self.blueprints
             print(f"Using all {len(available_blueprints)} blueprints")
-        
+
         if not available_blueprints:
             print("✗ No blueprints available!")
             return []
@@ -333,7 +368,7 @@ class DynamicHackforgeGenerator:
         # Select from available blueprints
         import random
         blueprint_list = list(available_blueprints.keys())
-        
+
         # If count > available blueprints, cycle through them
         selected_ids = []
         for i in range(count):
@@ -433,7 +468,7 @@ def main():
     """Main entry point"""
 
     print("\n" + "="*60)
-    print("HACKFORGE DYNAMIC GENERATOR")
+    print("HACKFORGE DYNAMIC GENERATOR - UPDATED")
     print("="*60 + "\n")
 
     # Initialize generator
@@ -518,7 +553,7 @@ def main():
                 # Export this machine
                 output_path = generator.export_single_machine(machine)
                 generated_machines.append(machine)
-                
+
                 print(f"✓ Machine ID: {machine.machine_id}")
                 print(f"✓ Variant: {machine.variant}")
                 print(f"✓ Flag: {machine.flag['content'][:30]}...")

@@ -15,7 +15,7 @@ class DatabaseManager:
     
     def __init__(self, connection_string: str = None):
         if connection_string is None:
-            connection_string = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
+            connection_string = os.getenv('MONGODB_URI', 'mongodb://0.0.0.0:27017/')
         
         self.client = MongoClient(connection_string)
         self.db = self.client['hackforge']

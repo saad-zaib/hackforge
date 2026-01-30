@@ -240,7 +240,7 @@ const CampaignDetail = ({ campaignId: propCampaignId, onBack }) => {
       if (container.Ports && Array.isArray(container.Ports)) {
         for (const portMapping of container.Ports) {
           if (portMapping.PublicPort) {
-            return `http://localhost:${portMapping.PublicPort}`;
+            return `http://4.231.90.52:${portMapping.PublicPort}`;
           }
         }
       }
@@ -249,7 +249,7 @@ const CampaignDetail = ({ campaignId: propCampaignId, onBack }) => {
       if (container.NetworkSettings && container.NetworkSettings.Ports) {
         for (const [containerPort, bindings] of Object.entries(container.NetworkSettings.Ports)) {
           if (bindings && bindings.length > 0 && bindings[0].HostPort) {
-            return `http://localhost:${bindings[0].HostPort}`;
+            return `http://4.231.90.52:${bindings[0].HostPort}`;
           }
         }
       }

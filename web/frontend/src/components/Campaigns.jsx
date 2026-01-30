@@ -508,7 +508,7 @@ const Campaigns = () => {
                           <div className="mt-2 p-2 rounded-lg bg-gray-900/50 border border-gray-800">
                             <p className="text-xs text-gray-500 mb-1">Access URL</p>
                             <code className="text-orange-500 text-sm">
-                              http://localhost:{machine.port}
+                              http://4.231.90.52:{machine.port}
                             </code>
                           </div>
                         )}

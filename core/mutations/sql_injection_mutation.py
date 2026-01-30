@@ -26,16 +26,14 @@ class SqlInjectionMutation(MutationEngine):
         machine_id = self.generate_machine_id()
 
         # Generate configuration based on variant
-        if variant == "Error-based SQLi":
-            config = self._generate_error_based_sqli(blueprint, difficulty)
-        elif variant == "Union-based SQLi":
-            config = self._generate_union_based_sqli(blueprint, difficulty)
-        elif variant == "Blind SQLi":
-            config = self._generate_blind_sqli(blueprint, difficulty)
-        elif variant == "Time-based Blind SQLi":
-            config = self._generate_time_based_blind_sqli(blueprint, difficulty)
+        if variant == "Error-based SQL Injection":
+            config = self._generate_error_based_sql_injection(blueprint, difficulty)
+        elif variant == "Union-based SQL Injection":
+            config = self._generate_union_based_sql_injection(blueprint, difficulty)
+        elif variant == "Blind SQL Injection":
+            config = self._generate_blind_sql_injection(blueprint, difficulty)
         else:
-            config = self._generate_error_based_sqli(blueprint, difficulty)
+            config = self._generate_error_based_sql_injection(blueprint, difficulty)
 
         # Create machine config
         return MachineConfig(
@@ -59,21 +57,24 @@ class SqlInjectionMutation(MutationEngine):
         else:
             return self.select_random(variants)
 
-    def _generate_error_based_sqli(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
-        """Generate Error-based SQLi vulnerability configuration"""
+    def _generate_error_based_sql_injection(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
+        """Generate Error-based SQL Injection vulnerability configuration"""
 
-        context = self.select_random(blueprint.mutation_axes.get('context', ['search_functionality']))
-        entry_point = self.select_random(blueprint.entry_points)
+        contexts = ['login_form', 'user_search', 'profile_view']
+        context = self.select_random(contexts)
+        
+        entry_points = blueprint.entry_points
+        entry_point = self.select_random(entry_points)
 
         # Select filters based on difficulty
         if difficulty == 1:
             filters = []
         elif difficulty == 2:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('basic', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword'])
         elif difficulty == 3:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('medium', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword'])
         else:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('advanced', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword', 'select_keyword'])
 
         flag_content = self.generate_flag()
         hints = self._generate_hints(filters, context, difficulty)
@@ -81,7 +82,7 @@ class SqlInjectionMutation(MutationEngine):
         return {
             'application': {
                 'context': context,
-                'variant': 'Error-based SQLi',
+                'variant': 'Error-based SQL Injection',
                 'entry_point': entry_point,
             },
             'constraints': {
@@ -96,26 +97,32 @@ class SqlInjectionMutation(MutationEngine):
             },
             'metadata': {
                 'exploit_hints': hints,
-                'vulnerability_type': 'Error-based SQLi',
+                'vulnerability_type': 'Error-based SQL Injection',
                 'estimated_solve_time': f"{difficulty * 10}-{difficulty * 15} minutes",
+                'vuln_name': 'SQL Injection',
+                'category': 'sql_injection',
+                'description': 'Exploits database error messages to extract information',
             }
         }
 
-    def _generate_union_based_sqli(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
-        """Generate Union-based SQLi vulnerability configuration"""
+    def _generate_union_based_sql_injection(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
+        """Generate Union-based SQL Injection vulnerability configuration"""
 
-        context = self.select_random(blueprint.mutation_axes.get('contexts', ['default_context']))
-        entry_point = self.select_random(blueprint.entry_points)
+        contexts = ['login_form', 'user_search', 'profile_view']
+        context = self.select_random(contexts)
+        
+        entry_points = blueprint.entry_points
+        entry_point = self.select_random(entry_points)
 
         # Select filters based on difficulty
         if difficulty == 1:
             filters = []
         elif difficulty == 2:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('basic', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword'])
         elif difficulty == 3:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('medium', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword'])
         else:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('advanced', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword', 'select_keyword'])
 
         flag_content = self.generate_flag()
         hints = self._generate_hints(filters, context, difficulty)
@@ -123,7 +130,7 @@ class SqlInjectionMutation(MutationEngine):
         return {
             'application': {
                 'context': context,
-                'variant': 'Union-based SQLi',
+                'variant': 'Union-based SQL Injection',
                 'entry_point': entry_point,
             },
             'constraints': {
@@ -138,26 +145,32 @@ class SqlInjectionMutation(MutationEngine):
             },
             'metadata': {
                 'exploit_hints': hints,
-                'vulnerability_type': 'Union-based SQLi',
+                'vulnerability_type': 'Union-based SQL Injection',
                 'estimated_solve_time': f"{difficulty * 10}-{difficulty * 15} minutes",
+                'vuln_name': 'SQL Injection',
+                'category': 'sql_injection',
+                'description': 'Uses UNION to combine results from injected queries',
             }
         }
 
-    def _generate_blind_sqli(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
-        """Generate Blind SQLi vulnerability configuration"""
+    def _generate_blind_sql_injection(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
+        """Generate Blind SQL Injection vulnerability configuration"""
 
-        context = self.select_random(blueprint.mutation_axes.get('contexts', ['default_context']))
-        entry_point = self.select_random(blueprint.entry_points)
+        contexts = ['login_form', 'user_search', 'profile_view']
+        context = self.select_random(contexts)
+        
+        entry_points = blueprint.entry_points
+        entry_point = self.select_random(entry_points)
 
         # Select filters based on difficulty
         if difficulty == 1:
             filters = []
         elif difficulty == 2:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('basic', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword'])
         elif difficulty == 3:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('medium', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword'])
         else:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('advanced', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword', 'select_keyword'])
 
         flag_content = self.generate_flag()
         hints = self._generate_hints(filters, context, difficulty)
@@ -165,7 +178,7 @@ class SqlInjectionMutation(MutationEngine):
         return {
             'application': {
                 'context': context,
-                'variant': 'Blind SQLi',
+                'variant': 'Blind SQL Injection',
                 'entry_point': entry_point,
             },
             'constraints': {
@@ -180,50 +193,11 @@ class SqlInjectionMutation(MutationEngine):
             },
             'metadata': {
                 'exploit_hints': hints,
-                'vulnerability_type': 'Blind SQLi',
+                'vulnerability_type': 'Blind SQL Injection',
                 'estimated_solve_time': f"{difficulty * 10}-{difficulty * 15} minutes",
-            }
-        }
-
-    def _generate_time_based_blind_sqli(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
-        """Generate Time-based Blind SQLi vulnerability configuration"""
-
-        context = self.select_random(blueprint.mutation_axes.get('contexts', ['default_context']))
-        entry_point = self.select_random(blueprint.entry_points)
-
-        # Select filters based on difficulty
-        if difficulty == 1:
-            filters = []
-        elif difficulty == 2:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('basic', []))
-        elif difficulty == 3:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('medium', []))
-        else:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {}).get('advanced', []))
-
-        flag_content = self.generate_flag()
-        hints = self._generate_hints(filters, context, difficulty)
-
-        return {
-            'application': {
-                'context': context,
-                'variant': 'Time-based Blind SQLi',
-                'entry_point': entry_point,
-            },
-            'constraints': {
-                'filters': filters,
-            },
-            'flag': {
-                'content': flag_content,
-                'location': '/var/www/html/flag.txt',
-            },
-            'behavior': {
-                'output': 'direct_echo',
-            },
-            'metadata': {
-                'exploit_hints': hints,
-                'vulnerability_type': 'Time-based Blind SQLi',
-                'estimated_solve_time': f"{difficulty * 10}-{difficulty * 15} minutes",
+                'vuln_name': 'SQL Injection',
+                'category': 'sql_injection',
+                'description': 'No direct output, must infer data from behavior',
             }
         }
 
@@ -233,9 +207,33 @@ class SqlInjectionMutation(MutationEngine):
         filter_map = {
             'single_quote': {
                 'type': 'single_quote',
-                'description': 'Single_quote filtering',
-                'php_code': "$input = str_replace('s', '', $input);",
-                'python_code': "input = input.replace('s', '')",
+                'description': 'Removes single quotes',
+                'php_code': '''$input = str_replace(\"\'\", \"\", $input);''',
+                'python_code': '''''',
+            },
+            'or_keyword': {
+                'type': 'or_keyword',
+                'description': 'Removes OR keyword',
+                'php_code': '''$input = preg_replace(\'/\\bOR\\b/i\', \'\', $input);''',
+                'python_code': '''''',
+            },
+            'union_keyword': {
+                'type': 'union_keyword',
+                'description': 'Removes UNION keyword',
+                'php_code': '''$input = preg_replace(\'/\\bUNION\\b/i\', \'\', $input);''',
+                'python_code': '''''',
+            },
+            'select_keyword': {
+                'type': 'select_keyword',
+                'description': 'Removes SELECT keyword',
+                'php_code': '''$input = preg_replace(\'/\\bSELECT\\b/i\', \'\', $input);''',
+                'python_code': '''''',
+            },
+            'sql_comments': {
+                'type': 'sql_comments',
+                'description': 'Removes SQL comments',
+                'php_code': '''$input = preg_replace(\'/--.*$/m\', \'\', $input);''',
+                'python_code': '''''',
             }
         }
 

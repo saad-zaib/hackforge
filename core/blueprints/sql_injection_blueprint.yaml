@@ -7,34 +7,57 @@ category: sql_injection
 difficulty_range: [1, 5]
 
 description: |
-  SQL Injection vulnerabilities occur when untrusted user input is directly incorporated into SQL queries without proper sanitization or parameterization. Attackers can manipulate database queries to access, modify, or delete data, bypass authentication, or execute administrative operations.
+  SQL injection allows attackers to interfere with database queries by injecting malicious SQL code through user input.
+
+infrastructure:
+  needs_database: true
+  database_type: mysql
+  needs_file_system: false
+  needs_external_service: false
+
+database_schema:
+  tables:
+    - name: users
+      columns:
+        - id INT PRIMARY KEY AUTO_INCREMENT
+        - username VARCHAR(50)
+        - password VARCHAR(255)
+        - email VARCHAR(100)
+        - role VARCHAR(20)
+    - name: secrets
+      columns:
+        - id INT PRIMARY KEY AUTO_INCREMENT
+        - flag VARCHAR(255)
+        - description TEXT
+        - created_at TIMESTAMP
+  flag_location: secrets.flag
 
 variants:
-  - Error-based SQLi
-  - Union-based SQLi
-  - Blind SQLi
-  - Time-based Blind SQLi
+  - Error-based SQL Injection
+  - Union-based SQL Injection
+  - Blind SQL Injection
 
 entry_points:
   - http_get_param
   - http_post_param
-  - cookie_value
-  - http_header
-  - url_path
+  - http_get_param
 
 mutation_axes:
   filters:
     basic:
-      - single_quote
+      - name: single_quote
+      - name: or_keyword
     medium:
-      - single_quote
+      - name: union_keyword
+      - name: select_keyword
     advanced:
-      - single_quote
+      - name: sql_comments
   contexts:
-    - login_form
+    - name: login_form
+    - name: user_search
+    - name: profile_view
   sinks:
+    - mysqli_query
+    - mysqli_real_query
     - mysql_query
-  encoding:
-    - none
-  output_contexts:
-    - error_message
+    - PDO::query

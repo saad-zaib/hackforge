@@ -155,7 +155,7 @@ const ConfigManager = () => {
       const result = await api.generateMachineFromConfig(category);
 
       showMessage(
-        `🎉 Machine ready! ID: ${result.machine_id} at ${result.url || 'http://localhost:8080'}`,
+        `🎉 Machine ready! ID: ${result.machine_id} at ${result.url || 'http://0.0.0.0:8080'}`,
         'success'
       );
 

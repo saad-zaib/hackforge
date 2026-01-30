@@ -2,11 +2,15 @@
 
 # Hackforge Enhanced Startup Script with Auto-Blueprint Generation
 # Automatically processes config files and generates blueprints
+# Configured for public IP access
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+# Public IP Configuration
+PUBLIC_IP="4.231.90.52"
 
 # Colors
 RED='\033[0;31m'
@@ -18,30 +22,31 @@ NC='\033[0m' # No Color
 echo ""
 echo "╔═══════════════════════════════════════════════════════════╗"
 echo "║         HACKFORGE PLATFORM STARTUP (ENHANCED)             ║"
+echo "║              Public IP: $PUBLIC_IP                    ║"
 echo "╚═══════════════════════════════════════════════════════════╝"
 echo ""
 
 # NEW: Auto-generate blueprints from config files
 auto_generate_blueprints() {
     echo -e "${YELLOW}[0/6] Checking for vulnerability configs...${NC}"
-    
+
     CONFIG_DIR="$SCRIPT_DIR/core/configs"
-    
+
     # Create configs directory if it doesn't exist
     if [ ! -d "$CONFIG_DIR" ]; then
         echo -e "${BLUE}Creating configs directory...${NC}"
         mkdir -p "$CONFIG_DIR"
-        
+
         # Copy XSS config as example if it exists
         if [ -f "$SCRIPT_DIR/core/xss_config.json" ]; then
             echo -e "${BLUE}Moving existing config to configs directory...${NC}"
             mv "$SCRIPT_DIR/core/xss_config.json" "$CONFIG_DIR/"
         fi
     fi
-    
+
     # Count config files
     config_count=$(find "$CONFIG_DIR" -name "*_config.json" 2>/dev/null | wc -l)
-    
+
     if [ "$config_count" -eq 0 ]; then
         echo -e "${YELLOW}⚠️  No config files found in $CONFIG_DIR${NC}"
         echo "You can:"
@@ -49,29 +54,29 @@ auto_generate_blueprints() {
         echo "  2. Add *_config.json files to $CONFIG_DIR manually"
         return 0
     fi
-    
+
     echo -e "${GREEN}✓ Found $config_count config file(s)${NC}"
-    
+
     # Check if blueprints already exist
     BLUEPRINT_DIR="$SCRIPT_DIR/core/blueprints"
     blueprint_count=$(find "$BLUEPRINT_DIR" -name "*_blueprint.yaml" 2>/dev/null | wc -l)
-    
+
     if [ "$blueprint_count" -ge "$config_count" ]; then
         echo -e "${GREEN}✓ Blueprints already exist ($blueprint_count blueprints)${NC}"
         return 0
     fi
-    
+
     echo ""
     echo -e "${BLUE}🔨 Generating blueprints from config files...${NC}"
-    
+
     cd "$SCRIPT_DIR/core"
-    
+
     # Process each config file
     for config_file in "$CONFIG_DIR"/*_config.json; do
         if [ -f "$config_file" ]; then
             config_name=$(basename "$config_file")
             echo -e "${BLUE}  Processing: $config_name${NC}"
-            
+
             if python3 vuln_generator.py "$config_file"; then
                 echo -e "${GREEN}  ✓ Generated from $config_name${NC}"
             else
@@ -79,11 +84,11 @@ auto_generate_blueprints() {
             fi
         fi
     done
-    
+
     # Count generated blueprints
     new_blueprint_count=$(find "$BLUEPRINT_DIR" -name "*_blueprint.yaml" 2>/dev/null | wc -l)
     echo -e "${GREEN}✓ Generated $new_blueprint_count blueprint(s) total${NC}"
-    
+
     cd "$SCRIPT_DIR"
 }
 
@@ -129,7 +134,7 @@ check_and_generate_machines() {
                         machine_count=$(find . -maxdepth 1 -type d ! -name "." ! -name ".." | wc -l)
                         for i in $(seq 0 $((machine_count - 1))); do
                             port=$((8080 + i))
-                            echo "  • Machine $((i + 1)): http://localhost:$port"
+                            echo "  • Machine $((i + 1)): http://$PUBLIC_IP:$port"
                         done
                     else
                         echo -e "${RED}❌ Failed to start Docker machines${NC}"
@@ -218,8 +223,8 @@ start_api() {
 
     if ps -p $API_PID > /dev/null; then
         echo -e "${GREEN}✓ API started (PID: $API_PID)${NC}"
-        echo "  URL: http://localhost:8000"
-        echo "  Docs: http://localhost:8000/docs"
+        echo "  URL: http://$PUBLIC_IP:8000"
+        echo "  Docs: http://$PUBLIC_IP:8000/docs"
     else
         echo -e "${RED}❌ API failed to start. Check logs/api.log${NC}"
         tail -20 "$SCRIPT_DIR/logs/api.log"
@@ -252,6 +257,9 @@ start_frontend() {
 
     cd "$SCRIPT_DIR/web/frontend"
 
+    # Set HOST to bind to all interfaces (0.0.0.0)
+    export HOST=0.0.0.0
+    
     # Start frontend in background
     BROWSER=none npm start > "$SCRIPT_DIR/logs/frontend.log" 2>&1 &
     FRONTEND_PID=$!
@@ -264,7 +272,7 @@ start_frontend() {
 
     if ps -p $FRONTEND_PID > /dev/null; then
         echo -e "${GREEN}✓ Frontend started (PID: $FRONTEND_PID)${NC}"
-        echo "  URL: http://localhost:3000"
+        echo "  URL: http://$PUBLIC_IP:3000"
     else
         echo -e "${RED}❌ Frontend failed to start. Check logs/frontend.log${NC}"
         tail -20 "$SCRIPT_DIR/logs/frontend.log"
@@ -305,17 +313,17 @@ show_summary() {
     echo "║              HACKFORGE IS NOW RUNNING!                    ║"
     echo "╚═══════════════════════════════════════════════════════════╝"
     echo ""
-    echo -e "${GREEN}🌐 Web Services:${NC}"
-    echo "  • Frontend:  http://localhost:3000"
-    echo "  • API:       http://localhost:8000"
-    echo "  • API Docs:  http://localhost:8000/docs"
-    echo "  • MongoDB:   mongodb://localhost:27017"
+    echo -e "${GREEN}🌐 Web Services (Public IP: $PUBLIC_IP):${NC}"
+    echo "  • Frontend:  http://$PUBLIC_IP:3000"
+    echo "  • API:       http://$PUBLIC_IP:8000"
+    echo "  • API Docs:  http://$PUBLIC_IP:8000/docs"
+    echo "  • MongoDB:   mongodb://0.0.0.0:27017 (local only)"
     echo ""
-    
+
     # Show config stats
     config_count=$(find "$SCRIPT_DIR/core/configs" -name "*_config.json" 2>/dev/null | wc -l)
     blueprint_count=$(find "$SCRIPT_DIR/core/blueprints" -name "*_blueprint.yaml" 2>/dev/null | wc -l)
-    
+
     echo -e "${GREEN}📋 Blueprint Status:${NC}"
     echo "  • Configs:    $config_count"
     echo "  • Blueprints: $blueprint_count"
@@ -337,9 +345,9 @@ show_summary() {
 
                     # Check if container is running
                     if docker-compose ps -q "$machine_id" 2>/dev/null | grep -q .; then
-                        echo -e "  • Machine $((i + 1)) [${GREEN}RUNNING${NC}]: http://localhost:$port"
+                        echo -e "  • Machine $((i + 1)) [${GREEN}RUNNING${NC}]: http://$PUBLIC_IP:$port"
                     else
-                        echo -e "  • Machine $((i + 1)) [${RED}STOPPED${NC}]: http://localhost:$port"
+                        echo -e "  • Machine $((i + 1)) [${RED}STOPPED${NC}]: http://$PUBLIC_IP:$port"
                     fi
 
                     i=$((i + 1))
@@ -359,11 +367,16 @@ show_summary() {
     echo "  • Stop all:           ./stop_hackforge.sh"
     echo "  • Restart:            ./stop_hackforge.sh && ./start_hackforge.sh"
     echo "  • Add config:         Copy *_config.json to core/configs/"
-    echo "  • Generate blueprint: curl -X POST http://localhost:8000/api/configs/generate-all"
+    echo "  • Generate blueprint: curl -X POST http://$PUBLIC_IP:8000/api/configs/generate-all"
     echo "  • Docker up:          cd core/generated_machines && docker-compose up -d"
     echo "  • Docker down:        cd core/generated_machines && docker-compose down"
     echo ""
-    echo -e "${BLUE}💡 Tip: Create new vulnerability configs via the web UI at http://localhost:3000${NC}"
+    echo -e "${BLUE}💡 Tip: Create new vulnerability configs via the web UI at http://$PUBLIC_IP:3000${NC}"
+    echo ""
+    echo -e "${YELLOW}⚠️  Security Reminder:${NC}"
+    echo "  • Ensure firewall allows ports 3000, 8000, 8080+"
+    echo "  • Consider using HTTPS in production"
+    echo "  • MongoDB is only accessible locally for security"
     echo ""
 }
 

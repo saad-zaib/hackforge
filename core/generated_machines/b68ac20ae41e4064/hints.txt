@@ -1,0 +1,10 @@
+Machine: b68ac20ae41e4064
+Name: SQL Injection
+Variant: Error-based SQL Injection
+Difficulty: 2/5
+
+Hints:
+  • Context: profile_view
+  • Difficulty: 2/5
+  • ⚠️ Filters active: single_quote, or_keyword
+  • 💡 Try basic payloads first

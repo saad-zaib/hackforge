@@ -2,19 +2,139 @@
 > hackforge-frontend@2.0.0 start
 > react-scripts start
 
-(node:3014) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Attempting to bind to HOST environment variable: 0.0.0.0
+If this was unintentional, check that you haven't mistakenly set it in your shell.
+Learn more here: https://cra.link/advanced-config
+
+(node:8458) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:3014) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:8458) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
-Compiled successfully!
+Compiled with warnings.
 
-You can now view hackforge-frontend in the browser.
+[eslint] 
+src/services/api.js
+  Line 263:3:  Duplicate name 'generateFromConfig'  no-dupe-class-members
 
-  Local:            http://localhost:3000
-  On Your Network:  http://172.19.249.27:3000
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
 
-Note that the development build is not optimized.
-To create a production build, use npm run build.
+WARNING in [eslint] 
+src/services/api.js
+  Line 263:3:  Duplicate name 'generateFromConfig'  no-dupe-class-members
 
-webpack compiled successfully
+webpack compiled with 1 warning
+Failed to compile.
+
+Error: ENOENT: no such file or directory, open '/root/hackforge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js'
+WARNING in [eslint] 
+src/services/api.js
+  Line 263:3:  Duplicate name 'generateFromConfig'  no-dupe-class-members
+
+ERROR in ./node_modules/@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/root/hackforge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js'
+
+ERROR in ./node_modules/ansi-html-community/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/root/hackforge/web/frontend/node_modules/ansi-html-community/index.js'
+
+ERROR in ./node_modules/lucide-react/dist/esm/lucide-react.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/root/hackforge/web/frontend/node_modules/lucide-react/dist/esm/lucide-react.js'
+
+ERROR in ./node_modules/react-router/dist/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/root/hackforge/web/frontend/node_modules/react-router/dist/index.js'
+
+ERROR in ./node_modules/webpack/hot/emitter.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/root/hackforge/web/frontend/node_modules/webpack/hot/emitter.js'
+
+ERROR in ./node_modules/webpack/hot/log.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/root/hackforge/web/frontend/node_modules/webpack/hot/log.js'
+
+ERROR in ./src/index.css (./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[2]!./node_modules/source-map-loader/dist/cjs.js!./src/index.css)
+Module Error (from ./node_modules/postcss-loader/dist/cjs.js):
+Cannot find module '/root/hackforge/web/frontend/node_modules/postcss/lib/postcss.js'
+
+ERROR in ./src/index.css (./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[5].use[2]!./node_modules/source-map-loader/dist/cjs.js!./src/index.css)
+Module build failed (from ./node_modules/postcss-loader/dist/cjs.js):
+Error: The Postcss implementation "undefined" not found
+    at Object.loader (/root/hackforge/web/frontend/node_modules/postcss-loader/dist/index.js:46:14)
+
+ERROR in Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js' in '/root/hackforge/web/frontend'
+
+ERROR in Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/webpack/hot/dev-server.js' in '/root/hackforge/web/frontend'
+
+webpack compiled with 10 errors and 1 warning
+Failed to compile.
+
+Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js' in '/root/hackforge/web/frontend'
+WARNING in [eslint] 
+src/services/api.js
+  Line 263:3:  Duplicate name 'generateFromConfig'  no-dupe-class-members
+
+ERROR in Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js' in '/root/hackforge/web/frontend'
+
+ERROR in main
+Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/babel-loader/lib/index.js' in '/root/hackforge/web/frontend'
+
+ERROR in Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/webpack-dev-server/client/index.js?protocol=ws%3A&hostname=0.0.0.0&port=3000&pathname=%2Fws&logging=none&overlay=%7B%22errors%22%3Atrue%2C%22warnings%22%3Afalse%7D&reconnect=10&hot=true&live-reload=true' in '/root/hackforge/web/frontend'
+
+ERROR in Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/webpack/hot/dev-server.js' in '/root/hackforge/web/frontend'
+
+ERROR in Error: Child compilation failed:
+Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/html-webpack-plugin/lib/loader.js' in '/root/hackforge/web/frontend'
+ModuleNotFoundError: Module not found: Error: Can't resolve '/root/hackforge/web/frontend/node_modules/html-webpack-plugin/lib/loader.js' in '/root/hackforge/web/frontend'
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/Compilation.js:2065:28
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:1028:13
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:10:1)
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:429:22
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:9:1)
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:614:22
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:180:10
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:846:23
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:1338:5
+    at /root/hackforge/web/frontend/node_modules/neo-async/async.js:2830:7
+    at done (/root/hackforge/web/frontend/node_modules/neo-async/async.js:2925:13)
+    at /root/hackforge/web/frontend/node_modules/webpack/lib/NormalModuleFactory.js:1301:23
+    at finishWithoutResolve (/root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:568:11)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:657:14
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:16:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:27:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/DescriptionFilePlugin.js:89:43
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:16:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:27:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/DescriptionFilePlugin.js:89:43
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:16:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+    at eval (eval at create (/root/hackforge/web/frontend/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at /root/hackforge/web/frontend/node_modules/enhanced-resolve/lib/DirectoryExistsPlugin.js:43:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21)
+
+1 ERROR in child compilations (Use 'stats.children: true' resp. '--stats-children' for more details)
+webpack compiled with 6 errors and 1 warning
+/root/hackforge/web/frontend/node_modules/react-scripts/scripts/start.js:19
+  throw err;
+  ^
+
+[Error: ENOENT: no such file or directory, stat '/root/hackforge/web/frontend/node_modules/.cache/default-development/0.pack'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/root/hackforge/web/frontend/node_modules/.cache/default-development/0.pack'
+}
+
+Node.js v18.19.1

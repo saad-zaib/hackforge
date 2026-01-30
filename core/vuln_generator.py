@@ -52,6 +52,14 @@ class VulnerabilityGenerator:
         variants = self.config.get('variants', [])
         entry_points = self.config.get('entry_points', [])
         mutation_axes = self.config.get('mutation_axes', {})
+        infrastructure = self.config.get('infrastructure', {})
+        database_schema = self.config.get('database_schema', {})
+
+        # Extract variant names for simple list
+        variant_names = [v['name'] if isinstance(v, dict) else v for v in variants]
+        
+        # Extract entry point types for simple list
+        entry_point_types = [ep['type'] if isinstance(ep, dict) else ep for ep in entry_points]
 
         blueprint = f"""blueprint_id: {self.vuln_id}
 
@@ -64,11 +72,17 @@ difficulty_range: {self.config.get('difficulty_range', [1, 5])}
 description: |
   {self.config.get('description', 'Vulnerability description')}
 
+infrastructure:
+{self._format_infrastructure(infrastructure)}
+
+database_schema:
+{self._format_database_schema(database_schema)}
+
 variants:
-{self._format_list(variants)}
+{self._format_list(variant_names)}
 
 entry_points:
-{self._format_list(entry_points)}
+{self._format_list(entry_point_types)}
 
 mutation_axes:
 {self._format_mutation_axes(mutation_axes)}
@@ -80,12 +94,14 @@ mutation_axes:
 
         class_name = self._to_class_name(self.category) + "Mutation"
         variants = self.config.get('variants', [])
+        variant_names = [v['name'] if isinstance(v, dict) else v for v in variants]
 
         # Generate variant methods
         variant_methods = []
         for variant in variants:
-            method_name = self._to_method_name(variant)
-            variant_methods.append(self._generate_variant_method(variant, method_name))
+            variant_obj = variant if isinstance(variant, dict) else {'name': variant}
+            method_name = self._to_method_name(variant_obj['name'])
+            variant_methods.append(self._generate_variant_method(variant_obj, method_name))
 
         mutation_code = f'''"""
 {self.vuln_name} Mutation Engine
@@ -115,7 +131,7 @@ class {class_name}(MutationEngine):
         machine_id = self.generate_machine_id()
 
         # Generate configuration based on variant
-{self._generate_variant_dispatch(variants)}
+{self._generate_variant_dispatch(variant_names)}
 
         # Create machine config
         return MachineConfig(
@@ -173,12 +189,16 @@ class {class_name}(MutationEngine):
 
         class_name = self._to_class_name(self.category) + "Template"
         variants = self.config.get('variants', [])
+        variant_names = [v['name'] if isinstance(v, dict) else v for v in variants]
+        infrastructure = self.config.get('infrastructure', {})
+        needs_db = infrastructure.get('needs_database', False)
 
         # Generate variant template methods
         variant_templates = []
         for variant in variants:
-            method_name = self._to_method_name(variant)
-            variant_templates.append(self._generate_template_method(variant, method_name))
+            variant_obj = variant if isinstance(variant, dict) else {'name': variant}
+            method_name = self._to_method_name(variant_obj['name'])
+            variant_templates.append(self._generate_template_method(variant_obj, method_name, needs_db))
 
         template_code = f'''"""
 {self.vuln_name} Vulnerability Templates
@@ -212,7 +232,7 @@ class {class_name}(BaseTemplate):
 
         variant = self.config.variant
 
-{self._generate_template_dispatch(variants)}
+{self._generate_template_dispatch(variant_names)}
 
 {chr(10).join(variant_templates)}
 
@@ -231,22 +251,43 @@ class {class_name}(BaseTemplate):
     def generate_dockerfile(self) -> str:
         """Generate Dockerfile for {self.vuln_name.lower()} vulnerabilities"""
 
-        return \'\'\'FROM php:8.0-apache
-
-RUN apt-get update && apt-get install -y \\\\
-    iputils-ping \\\\
-    whois \\\\
-    dnsutils \\\\
-    && rm -rf /var/lib/apt/lists/*
-
-EXPOSE 80
-
-CMD ["apache2-foreground"]
-\'\'\'
+{self._generate_dockerfile_method()}
 '''
         return template_code
 
     # Helper methods
+
+    def _format_infrastructure(self, infra: dict) -> str:
+        """Format infrastructure section for YAML"""
+        if not infra:
+            return "  needs_database: false"
+        
+        lines = []
+        lines.append(f"  needs_database: {str(infra.get('needs_database', False)).lower()}")
+        if infra.get('database_type'):
+            lines.append(f"  database_type: {infra['database_type']}")
+        lines.append(f"  needs_file_system: {str(infra.get('needs_file_system', False)).lower()}")
+        lines.append(f"  needs_external_service: {str(infra.get('needs_external_service', False)).lower()}")
+        
+        return '\n'.join(lines)
+
+    def _format_database_schema(self, schema: dict) -> str:
+        """Format database schema section for YAML"""
+        if not schema:
+            return "  tables: []"
+        
+        lines = []
+        lines.append("  tables:")
+        for table in schema.get('tables', []):
+            lines.append(f"    - name: {table['name']}")
+            lines.append("      columns:")
+            for col in table['columns']:
+                lines.append(f"        - {col}")
+        
+        if schema.get('flag_location'):
+            lines.append(f"  flag_location: {schema['flag_location']}")
+        
+        return '\n'.join(lines)
 
     def _format_list(self, items: list) -> str:
         """Format list for YAML"""
@@ -262,10 +303,16 @@ CMD ["apache2-foreground"]
                     result.append(f"    {subkey}:")
                     if isinstance(subvalue, list):
                         for item in subvalue:
-                            result.append(f"      - {item}")
+                            if isinstance(item, dict):
+                                result.append(f"      - name: {item.get('name', 'unknown')}")
+                            else:
+                                result.append(f"      - {item}")
             elif isinstance(value, list):
                 for item in value:
-                    result.append(f"    - {item}")
+                    if isinstance(item, dict):
+                        result.append(f"    - name: {item.get('name', 'unknown')}")
+                    else:
+                        result.append(f"    - {item}")
         return '\n'.join(result)
 
     def _to_class_name(self, name: str) -> str:
@@ -282,99 +329,64 @@ CMD ["apache2-foreground"]
         """Generate if-elif chain for variant dispatch"""
         lines = []
         for i, variant in enumerate(variants):
-            method_name = self._to_method_name(variant)
+            variant_name = variant if isinstance(variant, str) else variant['name']
+            method_name = self._to_method_name(variant_name)
             if i == 0:
-                lines.append(f'        if variant == "{variant}":')
+                lines.append(f'        if variant == "{variant_name}":')
             else:
-                lines.append(f'        elif variant == "{variant}":')
+                lines.append(f'        elif variant == "{variant_name}":')
             lines.append(f'            config = self.{method_name}(blueprint, difficulty)')
         lines.append('        else:')
-        lines.append(f'            config = self.{self._to_method_name(variants[0])}(blueprint, difficulty)')
+        first_variant = variants[0] if isinstance(variants[0], str) else variants[0]['name']
+        lines.append(f'            config = self.{self._to_method_name(first_variant)}(blueprint, difficulty)')
         return '\n'.join(lines)
 
     def _generate_template_dispatch(self, variants: list) -> str:
         """Generate if-elif chain for template dispatch"""
         lines = []
         for i, variant in enumerate(variants):
-            method_name = self._to_method_name(variant)
+            variant_name = variant if isinstance(variant, str) else variant['name']
+            method_name = self._to_method_name(variant_name)
             if i == 0:
-                lines.append(f'        if variant == "{variant}":')
+                lines.append(f'        if variant == "{variant_name}":')
             else:
-                lines.append(f'        elif variant == "{variant}":')
+                lines.append(f'        elif variant == "{variant_name}":')
             lines.append(f'            return self.{method_name}()')
         lines.append('        else:')
-        lines.append(f'            return self.{self._to_method_name(variants[0])}()')
+        first_variant = variants[0] if isinstance(variants[0], str) else variants[0]['name']
+        lines.append(f'            return self.{self._to_method_name(first_variant)}()')
         return '\n'.join(lines)
 
-    def _generate_variant_method(self, variant: str, method_name: str) -> str:
+    def _generate_variant_method(self, variant: dict, method_name: str) -> str:
         """Generate a variant mutation method"""
 
-        variant_config = next((v for v in self.config.get('variant_configs', []) if v['name'] == variant), None)
-
-        if not variant_config:
-            # Default template
-            return f'''    def {method_name}(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
-        """Generate {variant} vulnerability configuration"""
-
-        context = self.select_random(blueprint.mutation_axes.get('contexts', ['default_context']))
-        entry_point = self.select_random(blueprint.entry_points)
-
-        # Select filters based on difficulty
-        if difficulty == 1:
-            filters = []
-        elif difficulty == 2:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {{}}).get('basic', []))
-        elif difficulty == 3:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {{}}).get('medium', []))
+        variant_name = variant['name']
+        contexts = self.config.get('mutation_axes', {}).get('contexts', [])
+        
+        # Get contexts list
+        if contexts and isinstance(contexts[0], dict):
+            context_names = [c['name'] for c in contexts]
         else:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {{}}).get('advanced', []))
-
-        flag_content = self.generate_flag()
-        hints = self._generate_hints(filters, context, difficulty)
-
-        return {{
-            'application': {{
-                'context': context,
-                'variant': '{variant}',
-                'entry_point': entry_point,
-            }},
-            'constraints': {{
-                'filters': filters,
-            }},
-            'flag': {{
-                'content': flag_content,
-                'location': '/var/www/html/flag.txt',
-            }},
-            'behavior': {{
-                'output': 'direct_echo',
-            }},
-            'metadata': {{
-                'exploit_hints': hints,
-                'vulnerability_type': '{variant}',
-                'estimated_solve_time': f"{{difficulty * 10}}-{{difficulty * 15}} minutes",
-            }}
-        }}
-'''
-
-        # Custom configuration
-        params = variant_config.get('parameters', [])
-        param_setup = '\n        '.join([f"{p['name']} = self.select_random(blueprint.mutation_axes.get('{p['axis']}', ['{p.get('default', 'default')}']))" for p in params])
+            context_names = contexts if contexts else ['default_context']
 
         return f'''    def {method_name}(self, blueprint: VulnerabilityBlueprint, difficulty: int) -> Dict:
-        """Generate {variant} vulnerability configuration"""
+        """Generate {variant_name} vulnerability configuration"""
 
-        {param_setup}
-        entry_point = self.select_random(blueprint.entry_points)
+        contexts = {context_names}
+        context = self.select_random(contexts)
+        
+        entry_points = blueprint.entry_points
+        entry_point = self.select_random(entry_points)
 
         # Select filters based on difficulty
         if difficulty == 1:
             filters = []
         elif difficulty == 2:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {{}}).get('basic', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword'])
         elif difficulty == 3:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {{}}).get('medium', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword'])
         else:
-            filters = self._get_filter_codes(blueprint.mutation_axes.get('filters', {{}}).get('advanced', []))
+            filters = self._get_filter_codes(['single_quote', 'or_keyword', 'union_keyword', 'select_keyword'])
 
         flag_content = self.generate_flag()
         hints = self._generate_hints(filters, context, difficulty)
@@ -382,7 +394,7 @@ CMD ["apache2-foreground"]
         return {{
             'application': {{
                 'context': context,
-                'variant': '{variant}',
+                'variant': '{variant_name}',
                 'entry_point': entry_point,
             }},
             'constraints': {{
@@ -397,18 +409,55 @@ CMD ["apache2-foreground"]
             }},
             'metadata': {{
                 'exploit_hints': hints,
-                'vulnerability_type': '{variant}',
+                'vulnerability_type': '{variant_name}',
                 'estimated_solve_time': f"{{difficulty * 10}}-{{difficulty * 15}} minutes",
+                'vuln_name': '{self.vuln_name}',
+                'category': '{self.category}',
+                'description': '{variant.get("description", "")}',
             }}
         }}
 '''
 
-
-    def _generate_template_method(self, variant: str, method_name: str) -> str:
+    def _generate_template_method(self, variant: dict, method_name: str, needs_db: bool) -> str:
         """Generate a variant template method WITH THEME SUPPORT"""
 
+        variant_name = variant['name']
+        
+        if needs_db:
+            db_code = '''
+        // Database connection
+        $conn = mysqli_connect('db', 'hackforge', 'hackforge123', 'hackforge');
+        if (!$conn) {{
+            die("Connection failed: " . mysqli_connect_error());
+        }}'''
+            
+            query_code = '''
+            // Vulnerable SQL query
+            $query = "SELECT * FROM users WHERE username='$input'";
+            $result = mysqli_query($conn, $query);
+            
+            if ($result) {{
+                echo '<div class="result">';
+                echo '<h3>Results:</h3>';
+                while ($row = mysqli_fetch_assoc($result)) {{
+                    echo '<div>User: ' . $row['username'] . '</div>';
+                }}
+                echo '</div>';
+            }} else {{
+                echo '<div class="result error">Error: ' . mysqli_error($conn) . '</div>';
+            }}
+            
+            mysqli_close($conn);'''
+        else:
+            db_code = ''
+            query_code = '''
+            echo '<div class="result">';
+            echo '<h3>Results:</h3>';
+            echo '<div>' . $input . '</div>';
+            echo '</div>';'''
+
         return f'''    def {method_name}(self) -> str:
-        """Generate {variant} vulnerable application with themed UI"""
+        """Generate {variant_name} vulnerable application with themed UI"""
 
         app = self.config.application
         constraints = self.config.constraints
@@ -427,15 +476,16 @@ CMD ["apache2-foreground"]
         php_code = f\'\'\'<?php
 /**
  * Hackforge Machine: {{self.machine_id}}
- * Vulnerability: {variant}
+ * Vulnerability: {variant_name}
  * Theme: {{self.theme['name']}}
  * Difficulty: {{self.difficulty}}/5
  */
+{db_code}
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{variant} Challenge</title>
+    <title>{variant_name} Challenge</title>
     {{fonts_import}}
     <style>
 {{theme_css}}
@@ -443,7 +493,7 @@ CMD ["apache2-foreground"]
 </head>
 <body>
     <div class="container">
-        <h1>{variant}</h1>
+        <h1>{variant_name}</h1>
         <p>Context: {{context}}</p>
 
         <form method="GET">
@@ -455,10 +505,7 @@ CMD ["apache2-foreground"]
         if (isset($_GET['input'])) {{{{
             $input = $_GET['input'];
             {{filter_code if filter_code else '// No filters'}}
-            echo '<div class="result">';
-            echo '<h3>Results:</h3>';
-            echo '<div>' . $input . '</div>';
-            echo '</div>';
+{query_code}
         }}}}
         ?>
 
@@ -473,28 +520,90 @@ CMD ["apache2-foreground"]
 '''
 
     def _generate_filter_map(self) -> str:
-        """Generate filter mapping code"""
+        """Generate filter mapping code from new JSON structure"""
         filters = self.config.get('mutation_axes', {}).get('filters', {})
 
         filter_entries = []
+        seen_filters = set()
+        
         for category, filter_list in filters.items():
             if category in ['basic', 'medium', 'advanced']:
-                for filter_name in filter_list:
-                    if filter_name not in [e.split(':')[0].strip().strip("'") for e in filter_entries]:
-                        filter_entries.append(f"""            '{filter_name}': {{
-                'type': '{filter_name}',
-                'description': '{filter_name.capitalize()} filtering',
-                'php_code': "$input = str_replace('{filter_name[0]}', '', $input);",
-                'python_code': "input = input.replace('{filter_name[0]}', '')",
+                for filter_obj in filter_list:
+                    if isinstance(filter_obj, dict):
+                        filter_name = filter_obj['name']
+                        if filter_name not in seen_filters:
+                            seen_filters.add(filter_name)
+                            # Escape quotes properly for PHP and Python code
+                            php_code = filter_obj.get('php_code', '').replace('"', '\\"').replace("'", "\\'")
+                            python_code = filter_obj.get('python_code', '').replace('"', '\\"').replace("'", "\\'")
+                            description = filter_obj.get('description', '').replace("'", "\\'")
+                            
+                            filter_entries.append(f"""            '{filter_name}': {{
+                'type': '{filter_obj.get('type', filter_name)}',
+                'description': '{description}',
+                'php_code': '''{php_code}''',
+                'python_code': '''{python_code}''',
             }}""")
 
         return ',\n'.join(filter_entries) if filter_entries else "            # No filters defined"
+
+    def _generate_dockerfile_method(self) -> str:
+        """Generate Dockerfile method based on infrastructure requirements"""
+        
+        infrastructure = self.config.get('infrastructure', {})
+        needs_db = infrastructure.get('needs_database', False)
+        docker_reqs = infrastructure.get('docker_requirements', {})
+        
+        base_image = docker_reqs.get('base_image', 'php:8.0-apache')
+        extensions = docker_reqs.get('extensions', [])
+        packages = docker_reqs.get('packages', [])
+        
+        # Build extension installation
+        ext_install = ''
+        if extensions:
+            ext_install = f"docker-php-ext-install {' '.join(extensions)} && \\\\\n    "
+        
+        # Build package installation
+        pkg_install = ''
+        if packages:
+            pkg_install = ' \\\\\n    '.join(packages) + ' \\\\'
+        
+        if needs_db:
+            return f'''        return \'\'\'FROM {base_image}
+
+RUN apt-get update && apt-get install -y \\\\
+    {pkg_install}
+    iputils-ping \\\\
+    whois \\\\
+    dnsutils \\\\
+    && rm -rf /var/lib/apt/lists/* && \\\\
+    {ext_install}rm -rf /tmp/*
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
+\'\'\'
+'''
+        else:
+            return '''        return \'\'\'FROM php:8.0-apache
+
+RUN apt-get update && apt-get install -y \\\\
+    iputils-ping \\\\
+    whois \\\\
+    dnsutils \\\\
+    && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
+\'\'\'
+'''
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python vuln_generator.py <config.json>")
-        print("Example: python vuln_generator.py xss_config.json")
+        print("Example: python vuln_generator.py sqli_config.json")
         sys.exit(1)
 
     config_path = sys.argv[1]

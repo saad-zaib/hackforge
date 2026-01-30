@@ -1,5 +1,5 @@
 // src/services/api.js - Enhanced API Service
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://4.231.90.52:8000';
 
 class APIService {
   // Helper method for API calls

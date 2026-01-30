@@ -309,7 +309,7 @@ class DockerOrchestrator:
                     for port in ports:
                         published = port.get('PublishedPort', '')
                         if published:
-                            print(f"  URL: http://localhost:{published}")
+                            print(f"  URL: http://0.0.0.0:{published}")
                 
                 print()
         else:

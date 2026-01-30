@@ -65,10 +65,14 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_origins=[
+        "http://4.231.90.52:3000",
+        "http://localhost:3000",
+        "http://0.0.0.0:3000",
+    ],
 )
 
 # Initialize with correct paths
@@ -855,7 +859,7 @@ async def list_machines():
                 for container_port, host_bindings in ports.items():
                     if host_bindings:
                         host_port = host_bindings[0]['HostPort']
-                        enriched_machine['url'] = f"http://localhost:{host_port}"
+                        enriched_machine['url'] = f"http://4.231.90.52:{host_port}"
                         break
             
             enriched_machines.append(enriched_machine)
@@ -1120,7 +1124,7 @@ services:
             if result.returncode == 0:
                 logger.info("✓ Docker container started successfully")
                 container_started = True
-                container_url = "http://localhost:8080"
+                container_url = "http://4.231.90.52:8080"
                 
                 # Wait a moment for container to fully start
                 time.sleep(2)
