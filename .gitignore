@@ -1,6 +1,7 @@
 # Node modules
 node_modules/
-
+core/generated_machines/
+generated_machines/
 # Logs
 logs/
 *.log
