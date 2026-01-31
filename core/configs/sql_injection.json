@@ -2,9 +2,11 @@
   "vulnerability_id": "sqli_001",
   "name": "SQL Injection",
   "category": "sql_injection",
-  "difficulty_range": [1, 5],
+  "difficulty_range": [
+    1,
+    5
+  ],
   "description": "SQL injection allows attackers to interfere with database queries by injecting malicious SQL code through user input.",
-  
   "infrastructure": {
     "needs_database": true,
     "database_type": "mysql",
@@ -12,35 +14,66 @@
     "needs_external_service": false,
     "docker_requirements": {
       "base_image": "php:8.0-apache",
-      "extensions": ["mysqli", "pdo", "pdo_mysql"],
-      "packages": ["default-mysql-client"],
-      "ports": [80]
+      "extensions": [
+        "mysqli",
+        "pdo",
+        "pdo_mysql"
+      ],
+      "packages": [
+        "default-mysql-client"
+      ],
+      "ports": [
+        80
+      ]
     }
   },
-  
   "database_schema": {
     "tables": [
       {
         "name": "users",
-        "columns": ["id INT PRIMARY KEY AUTO_INCREMENT", "username VARCHAR(50)", "password VARCHAR(255)", "email VARCHAR(100)", "role VARCHAR(20)"]
+        "columns": [
+          "id INT PRIMARY KEY AUTO_INCREMENT",
+          "username VARCHAR(50)",
+          "password VARCHAR(255)",
+          "email VARCHAR(100)",
+          "role VARCHAR(20)"
+        ]
       },
       {
         "name": "secrets",
-        "columns": ["id INT PRIMARY KEY AUTO_INCREMENT", "flag VARCHAR(255)", "description TEXT", "created_at TIMESTAMP"]
+        "columns": [
+          "id INT PRIMARY KEY AUTO_INCREMENT",
+          "flag VARCHAR(255)",
+          "description TEXT",
+          "created_at TIMESTAMP"
+        ]
       }
     ],
     "seed_data": {
       "users": [
-        {"username": "admin", "password": "admin123", "email": "admin@hack.com", "role": "admin"},
-        {"username": "user", "password": "password", "email": "user@hack.com", "role": "user"}
+        {
+          "username": "admin",
+          "password": "admin123",
+          "email": "admin@hack.com",
+          "role": "admin"
+        },
+        {
+          "username": "user",
+          "password": "password",
+          "email": "user@hack.com",
+          "role": "user"
+        }
       ],
       "secrets": [
-        {"flag": "{{FLAG}}", "description": "Capture this flag!", "created_at": "NOW()"}
+        {
+          "flag": "{{FLAG}}",
+          "description": "Capture this flag!",
+          "created_at": "NOW()"
+        }
       ]
     },
     "flag_location": "secrets.flag"
   },
-  
   "variants": [
     {
       "name": "Error-based SQL Injection",
@@ -67,7 +100,6 @@
       "output_type": "timing"
     }
   ],
-  
   "entry_points": [
     {
       "type": "http_get_param",
@@ -85,7 +117,6 @@
       "context": "search_function"
     }
   ],
-  
   "mutation_axes": {
     "filters": {
       "basic": [
@@ -135,7 +166,6 @@
         }
       ]
     },
-    
     "contexts": [
       {
         "name": "login_form",
@@ -156,7 +186,6 @@
         "description": "User profile viewer"
       }
     ],
-    
     "sinks": [
       "mysqli_query",
       "mysqli_real_query",
@@ -164,7 +193,6 @@
       "PDO::query"
     ]
   },
-  
   "ai_generation_hints": {
     "code_structure": "Create PHP code that connects to MySQL, executes vulnerable query, displays results",
     "database_connection": "mysqli_connect('db', 'hackforge', 'hackforge123', 'hackforge')",
@@ -172,7 +200,6 @@
     "output_format": "Display query results in HTML table or error messages",
     "dockerfile_notes": "Include mysqli extension, mysql-client package"
   },
-  
   "exploit_examples": [
     {
       "payload": "' OR '1'='1",

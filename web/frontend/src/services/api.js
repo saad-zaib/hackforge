@@ -39,6 +39,7 @@ class APIService {
       method: 'DELETE',
     });
   }
+
   // Blueprints
   async getBlueprints() {
     return this.request('/api/blueprints');
@@ -51,22 +52,23 @@ class APIService {
   // Campaigns - ENHANCED
   async createCampaign(userId, campaignName, difficulty, count = null, selectedBlueprints = null) {
     const payload = {
-    user_id: userId,
-    campaign_name: campaignName,
-    difficulty: difficulty,
-    count: count
-  };
+      user_id: userId,
+      campaign_name: campaignName,
+      difficulty: difficulty,
+      count: count
+    };
 
-  // NEW: Add selected blueprints if provided
-  if (selectedBlueprints && selectedBlueprints.length > 0) {
-    payload.selected_blueprints = selectedBlueprints;
+    // NEW: Add selected blueprints if provided
+    if (selectedBlueprints && selectedBlueprints.length > 0) {
+      payload.selected_blueprints = selectedBlueprints;
+    }
+
+    return this.request('/api/campaigns', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
   }
 
-  return this.request('/api/campaigns', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-   });
- }
   // NEW: Get user's campaigns
   async getUserCampaigns(userId) {
     return this.request(`/api/users/${userId}/campaigns`);
@@ -145,7 +147,7 @@ class APIService {
     return this.request(`/api/docker/campaign/${campaignId}/containers`);
   }
 
-  // Docker Management - INDIVIDUAL CONTAINERS
+  // Docker Management - INDIVIDUAL CONTAINERS (Legacy - by container ID)
   async startContainer(containerId) {
     console.log('Starting container:', containerId);
     return this.request(`/api/docker/container/${containerId}/start`, {
@@ -177,6 +179,57 @@ class APIService {
   async getContainerLogs(containerId, tail = 100) {
     console.log('Getting logs for container:', containerId);
     return this.request(`/api/docker/container/${containerId}/logs?tail=${tail}`);
+  }
+
+  // ============================================================================
+  // INDIVIDUAL MACHINE DOCKER CONTROL - NEW (by machine ID)
+  // ============================================================================
+  async startMachineContainer(machineId) {
+    console.log('Starting machine container:', machineId);
+    return this.request(`/api/machines/${machineId}/docker/start`, {
+      method: 'POST',
+    });
+  }
+
+  async stopMachineContainer(machineId) {
+    console.log('Stopping machine container:', machineId);
+    return this.request(`/api/machines/${machineId}/docker/stop`, {
+      method: 'POST',
+    });
+  }
+
+  async restartMachineContainer(machineId) {
+    console.log('Restarting machine container:', machineId);
+    return this.request(`/api/machines/${machineId}/docker/restart`, {
+      method: 'POST',
+    });
+  }
+
+  async getMachineContainerStatus(machineId) {
+    console.log('Getting machine container status:', machineId);
+    return this.request(`/api/machines/${machineId}/docker/status`);
+  }
+
+  async getMachineContainerLogs(machineId, tail = 100) {
+    console.log('Getting machine container logs:', machineId);
+    return this.request(`/api/machines/${machineId}/docker/logs?tail=${tail}`);
+  }
+
+  // ============================================================================
+  // CAMPAIGN-LEVEL DOCKER CONTROL - NEW
+  // ============================================================================
+  async startCampaignContainers(campaignId) {
+    console.log('Starting all containers for campaign:', campaignId);
+    return this.request(`/api/campaigns/${campaignId}/docker/start`, {
+      method: 'POST',
+    });
+  }
+
+  async stopCampaignContainers(campaignId) {
+    console.log('Stopping all containers for campaign:', campaignId);
+    return this.request(`/api/campaigns/${campaignId}/docker/stop`, {
+      method: 'POST',
+    });
   }
 
   // Users
@@ -255,13 +308,6 @@ class APIService {
   // NEW: Generate complete machine from existing config (full pipeline)
   async generateMachineFromConfig(category) {
     return this.request(`/api/configs/${category}/generate-machine`, {
-      method: 'POST',
-    });
-  }
-
-  // EXISTING: Just generate blueprint (no machine)
-  async generateFromConfig(category) {
-    return this.request(`/api/configs/${category}/generate`, {
       method: 'POST',
     });
   }

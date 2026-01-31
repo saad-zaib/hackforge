@@ -2,9 +2,11 @@
   "vulnerability_id": "xss_001",
   "name": "xss",
   "category": "cross_site_scripting",
-  "difficulty_range": [1, 5],
+  "difficulty_range": [
+    1,
+    5
+  ],
   "description": "Cross-Site Scripting vulnerabilities allow attackers to inject malicious scripts into web pages viewed by other users. This can lead to session hijacking, credential theft, and defacement.",
-
   "infrastructure": {
     "needs_database": true,
     "database_type": "mysql",
@@ -12,11 +14,18 @@
     "needs_external_service": false,
     "docker_requirements": {
       "base_image": "php:8.0-apache",
-      "extensions": ["mysqli", "pdo", "pdo_mysql"],
-      "packages": ["curl", "vim", "net-tools"]
+      "extensions": [
+        "mysqli",
+        "pdo",
+        "pdo_mysql"
+      ],
+      "packages": [
+        "curl",
+        "vim",
+        "net-tools"
+      ]
     }
   },
-
   "database_schema": {
     "tables": [
       {
@@ -87,7 +96,6 @@
     },
     "flag_location": "users.secret_data WHERE username='admin'"
   },
-
   "variants": [
     {
       "name": "Reflected XSS",
@@ -118,7 +126,6 @@
       "difficulty_multiplier": 1.2
     }
   ],
-
   "entry_points": [
     {
       "type": "search_query",
@@ -141,7 +148,6 @@
       "parameter": "message"
     }
   ],
-
   "mutation_axes": {
     "contexts": [
       {
@@ -169,7 +175,6 @@
         "output_template": "echo '<div class=\"message\">' . $content . '</div>';"
       }
     ],
-
     "filters": {
       "basic": [
         {
@@ -242,7 +247,6 @@
         }
       ]
     },
-
     "payloads": [
       {
         "difficulty": 1,
@@ -286,11 +290,11 @@
       }
     ]
   },
-
   "ai_generation_hints": {
     "code_structure": "Generate vulnerable PHP code that takes user input and displays it without proper sanitization. Include both reflected and stored XSS scenarios.",
     "vulnerability_placement": "Place user input directly in HTML output, HTML attributes, or JavaScript contexts without encoding.",
     "database_connection": "$conn = mysqli_connect('db', 'hackforge', 'hackforge123', 'hackforge');",
     "dockerfile_notes": "Include standard Apache/PHP setup. No special XSS-specific requirements."
-  }
+  },
+  "exploit_examples": null
 }

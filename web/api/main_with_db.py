@@ -2,7 +2,6 @@
 Hackforge Web API with Database Integration
 FIXED VERSION - Correct paths for your project structure
 """
-
 import docker
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +15,8 @@ import time
 import uuid
 import logging
 import yaml
+import subprocess
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -176,14 +177,14 @@ async def get_user_campaigns_list(user_id: str):
         logger.info(f"Fetching campaigns for user: {user_id}")
         campaigns = db.get_user_campaigns(user_id)
         logger.info(f"Found {len(campaigns)} campaigns")
-        
+
         # Add progress info to each campaign
         for campaign in campaigns:
             try:
                 # Remove MongoDB _id field if present (not JSON serializable)
                 if '_id' in campaign:
                     del campaign['_id']
-                
+
                 progress_list = db.get_campaign_progress(user_id, campaign['campaign_id'])
                 solved = sum(1 for p in progress_list if p.get('solved', False))
                 campaign['machines_solved'] = solved
@@ -192,7 +193,7 @@ async def get_user_campaigns_list(user_id: str):
                 logger.error(f"Error processing campaign {campaign.get('campaign_id')}: {e}")
                 campaign['machines_solved'] = 0
                 campaign['progress_percentage'] = 0
-        
+
         logger.info(f"Successfully processed {len(campaigns)} campaigns")
         return campaigns
     except Exception as e:
@@ -212,15 +213,15 @@ def start_campaign_containers(campaign_path: Path):
     """
     try:
         import subprocess
-        
+
         compose_file = campaign_path / "docker-compose.yml"
-        
+
         if not compose_file.exists():
             logger.warning(f"No docker-compose.yml found in {campaign_path}")
             return False
-        
+
         logger.info(f"Starting containers for {campaign_path.name}...")
-        
+
         # Run docker-compose up -d --build
         result = subprocess.run(
             ["docker-compose", "up", "-d", "--build"],
@@ -229,14 +230,14 @@ def start_campaign_containers(campaign_path: Path):
             text=True,
             timeout=300  # 5 minute timeout
         )
-        
+
         if result.returncode == 0:
             logger.info(f"✓ Containers started successfully")
             return True
         else:
             logger.error(f"✗ Failed to start containers: {result.stderr}")
             return False
-            
+
     except Exception as e:
         logger.error(f"Error starting containers: {e}")
         return False
@@ -373,14 +374,14 @@ async def get_campaign_details(campaign_id: str):
     campaign = db.get_campaign(campaign_id)
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
-    
+
     # Get progress for this campaign
     progress_list = db.get_campaign_progress(campaign['user_id'], campaign_id)
-    
+
     # Add progress info to each machine
     for machine in campaign.get('machines', []):
         machine_progress = next(
-            (p for p in progress_list if p['machine_id'] == machine['machine_id']), 
+            (p for p in progress_list if p['machine_id'] == machine['machine_id']),
             None
         )
         if machine_progress:
@@ -391,19 +392,19 @@ async def get_campaign_details(campaign_id: str):
             machine['solved'] = False
             machine['attempts'] = 0
             machine['points_earned'] = 0
-    
+
     # Calculate overall progress
     total_machines = campaign['machine_count']
     solved = sum(1 for p in progress_list if p.get('solved', False))
     total_points = sum(p.get('points_earned', 0) for p in progress_list)
-    
+
     campaign['progress'] = {
         'solved': solved,
         'total': total_machines,
         'percentage': (solved / total_machines * 100) if total_machines > 0 else 0,
         'total_points': total_points
     }
-    
+
     return campaign
 
 @app.get("/api/campaigns/{campaign_id}/machines")
@@ -412,7 +413,7 @@ async def get_campaign_machines(campaign_id: str):
     campaign = db.get_campaign(campaign_id)
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
-    
+
     return {
         'campaign_id': campaign_id,
         'campaign_name': campaign.get('campaign_name', 'Unnamed Campaign'),
@@ -449,22 +450,22 @@ async def delete_campaign(campaign_id: str):
     try:
         import docker
         import shutil
-        
+
         logger.info(f"Deleting campaign: {campaign_id}")
-        
+
         # Get campaign from database
         campaign = db.get_campaign(campaign_id)
         if not campaign:
             raise HTTPException(status_code=404, detail="Campaign not found")
-        
+
         # Step 1: Stop and remove all Docker containers
         try:
             client = docker.from_env()
             containers = client.containers.list(all=True)
-            
+
             for machine in campaign.get('machines', []):
                 machine_id = machine['machine_id']
-                
+
                 # Find and remove container
                 for container in containers:
                     if machine_id[:12] in container.name or machine_id in container.name:
@@ -476,7 +477,7 @@ async def delete_campaign(campaign_id: str):
                         break
         except Exception as e:
             logger.error(f"Error removing containers: {e}")
-        
+
         # Step 2: Delete campaign directory from filesystem
         try:
             campaign_path = CORE_PATH / "campaigns" / campaign_id
@@ -485,29 +486,29 @@ async def delete_campaign(campaign_id: str):
                 shutil.rmtree(campaign_path)
         except Exception as e:
             logger.error(f"Error removing campaign directory: {e}")
-        
+
         # Step 3: Delete from database
         try:
             # Delete progress records
             db.progress.delete_many({'campaign_id': campaign_id})
-            
+
             # Delete submissions
             db.submissions.delete_many({'campaign_id': campaign_id})
-            
+
             # Delete campaign
             db.campaigns.delete_one({'campaign_id': campaign_id})
-            
+
             logger.info(f"✓ Campaign {campaign_id} deleted from database")
         except Exception as e:
             logger.error(f"Error deleting from database: {e}")
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-        
+
         return {
             'message': 'Campaign deleted successfully',
             'campaign_id': campaign_id,
             'deleted': True
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -625,19 +626,19 @@ async def validate_flag(request: FlagSubmitRequest, req: Request):
 def load_blueprints_directly(blueprints_dir: Path):
     """Load blueprints directly from YAML files"""
     blueprints = []
-    
+
     if not blueprints_dir.exists():
         logger.warning(f"Blueprints directory not found: {blueprints_dir}")
         return blueprints
-    
+
     yaml_files = list(blueprints_dir.glob("*_blueprint.yaml"))
     logger.info(f"Loading {len(yaml_files)} blueprint files from {blueprints_dir}")
-    
+
     for yaml_file in yaml_files:
         try:
             with open(yaml_file, 'r') as f:
                 data = yaml.safe_load(f)
-            
+
             # Create a simple blueprint object
             class BlueprintObj:
                 def __init__(self, data):
@@ -650,14 +651,14 @@ def load_blueprints_directly(blueprints_dir: Path):
                     self.technologies = data.get('technologies', [])
                     self.entry_points = data.get('entry_points', [])
                     self.mutation_axes = data.get('mutation_axes', {})
-            
+
             blueprint = BlueprintObj(data)
             blueprints.append(blueprint)
             logger.info(f"✓ Loaded blueprint: {blueprint.name} ({blueprint.blueprint_id})")
-            
+
         except Exception as e:
             logger.error(f"✗ Failed to load {yaml_file.name}: {e}")
-    
+
     return blueprints
 
 
@@ -678,11 +679,11 @@ async def list_blueprints():
             logger.warning(f"Generator failed: {gen_error}, using direct loading")
             blueprints_dir = CORE_PATH / "blueprints"
             blueprints = load_blueprints_directly(blueprints_dir)
-        
+
         if not blueprints:
             logger.error("No blueprints found!")
             return []
-        
+
         result = [
             {
                 "blueprint_id": bp.blueprint_id,
@@ -695,10 +696,10 @@ async def list_blueprints():
             }
             for bp in blueprints
         ]
-        
+
         logger.info(f"Returning {len(result)} blueprints to frontend")
         return result
-        
+
     except Exception as e:
         logger.error(f"Error in list_blueprints: {e}")
         import traceback
@@ -746,6 +747,501 @@ async def get_leaderboard(limit: int = 100, timeframe: str = 'all_time'):
     }
 
 
+"""
+UPDATED: Individual Machine Docker Control
+Add these endpoints to your main_with_db.py
+"""
+
+# Add these imports at the top
+import subprocess
+from pathlib import Path
+
+# ============================================================================
+# INDIVIDUAL MACHINE DOCKER CONTROL - NEW ENDPOINTS
+# ============================================================================
+
+@app.post("/api/machines/{machine_id}/docker/start")
+async def start_machine_container(machine_id: str):
+    """Start specific machine's docker-compose"""
+    try:
+        # Find machine directory
+        machine_dir = CORE_PATH / "generated_machines" / machine_id
+
+        if not machine_dir.exists():
+            # Try campaigns directory
+            campaigns_dir = CORE_PATH / "campaigns"
+            found = False
+            for campaign_dir in campaigns_dir.glob("campaign_*"):
+                test_dir = campaign_dir / machine_id
+                if test_dir.exists():
+                    machine_dir = test_dir
+                    found = True
+                    break
+
+            if not found:
+                raise HTTPException(status_code=404, detail=f"Machine directory not found: {machine_id}")
+
+        compose_file = machine_dir / "docker-compose.yml"
+        if not compose_file.exists():
+            raise HTTPException(status_code=404, detail="docker-compose.yml not found")
+
+        logger.info(f"Starting container for {machine_id} in {machine_dir}")
+
+        # Run docker-compose up
+        result = subprocess.run(
+            ["docker-compose", "up", "-d", "--build"],
+            cwd=str(machine_dir),
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+
+        if result.returncode == 0:
+            logger.info(f"✓ Container started: {machine_id}")
+
+            # Get port from docker-compose.yml
+            port = None
+            with open(compose_file, 'r') as f:
+                for line in f:
+                    if 'ports:' in line:
+                        continue
+                    if '"' in line and ':80"' in line:
+                        port = line.split('"')[1].split(':')[0]
+                        break
+
+            return {
+                "success": True,
+                "message": f"Container started successfully",
+                "machine_id": machine_id,
+                "url": f"http://4.231.90.52:{port}" if port else None,
+                "logs": result.stdout
+            }
+        else:
+            logger.error(f"Failed to start {machine_id}: {result.stderr}")
+            return {
+                "success": False,
+                "message": "Failed to start container",
+                "error": result.stderr
+            }
+
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=504, detail="Container start timeout")
+    except Exception as e:
+        logger.error(f"Error starting {machine_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/machines/{machine_id}/docker/stop")
+async def stop_machine_container(machine_id: str):
+    """Stop specific machine's docker-compose"""
+    try:
+        machine_dir = CORE_PATH / "generated_machines" / machine_id
+
+        if not machine_dir.exists():
+            campaigns_dir = CORE_PATH / "campaigns"
+            found = False
+            for campaign_dir in campaigns_dir.glob("campaign_*"):
+                test_dir = campaign_dir / machine_id
+                if test_dir.exists():
+                    machine_dir = test_dir
+                    found = True
+                    break
+
+            if not found:
+                raise HTTPException(status_code=404, detail=f"Machine directory not found: {machine_id}")
+
+        compose_file = machine_dir / "docker-compose.yml"
+        if not compose_file.exists():
+            raise HTTPException(status_code=404, detail="docker-compose.yml not found")
+
+        logger.info(f"Stopping container for {machine_id}")
+
+        result = subprocess.run(
+            ["docker-compose", "down"],
+            cwd=str(machine_dir),
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+
+        if result.returncode == 0:
+            logger.info(f"✓ Container stopped: {machine_id}")
+            return {
+                "success": True,
+                "message": "Container stopped successfully",
+                "machine_id": machine_id
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Failed to stop container",
+                "error": result.stderr
+            }
+
+    except Exception as e:
+        logger.error(f"Error stopping {machine_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/machines/{machine_id}/docker/restart")
+async def restart_machine_container(machine_id: str):
+    """Restart specific machine's docker-compose"""
+    try:
+        machine_dir = CORE_PATH / "generated_machines" / machine_id
+
+        if not machine_dir.exists():
+            campaigns_dir = CORE_PATH / "campaigns"
+            found = False
+            for campaign_dir in campaigns_dir.glob("campaign_*"):
+                test_dir = campaign_dir / machine_id
+                if test_dir.exists():
+                    machine_dir = test_dir
+                    found = True
+                    break
+
+            if not found:
+                raise HTTPException(status_code=404, detail=f"Machine directory not found: {machine_id}")
+
+        logger.info(f"Restarting container for {machine_id}")
+
+        # Stop
+        subprocess.run(
+            ["docker-compose", "down"],
+            cwd=str(machine_dir),
+            capture_output=True,
+            timeout=60
+        )
+
+        # Start
+        result = subprocess.run(
+            ["docker-compose", "up", "-d", "--build"],
+            cwd=str(machine_dir),
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+
+        if result.returncode == 0:
+            return {
+                "success": True,
+                "message": "Container restarted successfully",
+                "machine_id": machine_id
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Failed to restart container",
+                "error": result.stderr
+            }
+
+    except Exception as e:
+        logger.error(f"Error restarting {machine_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/machines/{machine_id}/docker/status")
+async def get_machine_container_status(machine_id: str):
+    """Get docker status for specific machine"""
+    try:
+        machine_dir = CORE_PATH / "generated_machines" / machine_id
+
+        if not machine_dir.exists():
+            campaigns_dir = CORE_PATH / "campaigns"
+            found = False
+            for campaign_dir in campaigns_dir.glob("campaign_*"):
+                test_dir = campaign_dir / machine_id
+                if test_dir.exists():
+                    machine_dir = test_dir
+                    found = True
+                    break
+
+            if not found:
+                raise HTTPException(status_code=404, detail=f"Machine directory not found: {machine_id}")
+
+        result = subprocess.run(
+            ["docker-compose", "ps", "--format", "json"],
+            cwd=str(machine_dir),
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        if result.returncode == 0 and result.stdout.strip():
+            containers = []
+            for line in result.stdout.strip().split('\n'):
+                if line:
+                    try:
+                        containers.append(json.loads(line))
+                    except:
+                        pass
+
+            return {
+                "machine_id": machine_id,
+                "containers": containers,
+                "running": any(c.get('State') == 'running' for c in containers)
+            }
+        else:
+            return {
+                "machine_id": machine_id,
+                "containers": [],
+                "running": False
+            }
+
+    except Exception as e:
+        logger.error(f"Error getting status for {machine_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/machines/{machine_id}/docker/logs")
+async def get_machine_container_logs(machine_id: str, tail: int = 100):
+    """Get logs from specific machine's containers"""
+    try:
+        machine_dir = CORE_PATH / "generated_machines" / machine_id
+
+        if not machine_dir.exists():
+            campaigns_dir = CORE_PATH / "campaigns"
+            found = False
+            for campaign_dir in campaigns_dir.glob("campaign_*"):
+                test_dir = campaign_dir / machine_id
+                if test_dir.exists():
+                    machine_dir = test_dir
+                    found = True
+                    break
+
+            if not found:
+                raise HTTPException(status_code=404, detail=f"Machine directory not found: {machine_id}")
+
+        result = subprocess.run(
+            ["docker-compose", "logs", f"--tail={tail}"],
+            cwd=str(machine_dir),
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        return {
+            "machine_id": machine_id,
+            "logs": result.stdout
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting logs for {machine_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# CAMPAIGN-LEVEL DOCKER CONTROL
+# ============================================================================
+
+@app.post("/api/campaigns/{campaign_id}/docker/start")
+async def start_campaign_containers(campaign_id: str):
+    """Start all containers in a campaign"""
+    try:
+        campaign = db.get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+
+        results = []
+        campaign_dir = CORE_PATH / "campaigns" / campaign_id
+
+        for machine in campaign.get('machines', []):
+            machine_id = machine['machine_id']
+            machine_dir = campaign_dir / machine_id
+
+            if machine_dir.exists():
+                try:
+                    result = subprocess.run(
+                        ["docker-compose", "up", "-d", "--build"],
+                        cwd=str(machine_dir),
+                        capture_output=True,
+                        text=True,
+                        timeout=300
+                    )
+
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": result.returncode == 0,
+                        "message": "Started" if result.returncode == 0 else result.stderr
+                    })
+                except Exception as e:
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": False,
+                        "message": str(e)
+                    })
+
+        success_count = sum(1 for r in results if r['success'])
+
+        return {
+            "campaign_id": campaign_id,
+            "total": len(results),
+            "started": success_count,
+            "results": results
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/campaigns/{campaign_id}/docker/stop")
+async def stop_campaign_containers(campaign_id: str):
+    """Stop all containers in a campaign"""
+    try:
+        campaign = db.get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+
+        results = []
+        campaign_dir = CORE_PATH / "campaigns" / campaign_id
+
+        for machine in campaign.get('machines', []):
+            machine_id = machine['machine_id']
+            machine_dir = campaign_dir / machine_id
+
+            if machine_dir.exists():
+                try:
+                    result = subprocess.run(
+                        ["docker-compose", "down"],
+                        cwd=str(machine_dir),
+                        capture_output=True,
+                        text=True,
+                        timeout=60
+                    )
+
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": result.returncode == 0
+                    })
+                except Exception as e:
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": False,
+                        "message": str(e)
+                    })
+
+        success_count = sum(1 for r in results if r['success'])
+
+        return {
+            "campaign_id": campaign_id,
+            "total": len(results),
+            "stopped": success_count,
+            "results": results
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ============================================================================
+# CAMPAIGN-LEVEL DOCKER CONTROL
+# ============================================================================
+
+@app.post("/api/campaigns/{campaign_id}/docker/start")
+async def start_campaign_containers(campaign_id: str):
+    """Start all containers in a campaign"""
+    try:
+        campaign = db.get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+
+        results = []
+        campaign_dir = CORE_PATH / "campaigns" / campaign_id
+
+        for machine in campaign.get('machines', []):
+            machine_id = machine['machine_id']
+            machine_dir = campaign_dir / machine_id
+
+            if machine_dir.exists():
+                try:
+                    result = subprocess.run(
+                        ["docker-compose", "up", "-d", "--build"],
+                        cwd=str(machine_dir),
+                        capture_output=True,
+                        text=True,
+                        timeout=300
+                    )
+
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": result.returncode == 0,
+                        "message": "Started" if result.returncode == 0 else result.stderr
+                    })
+                except Exception as e:
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": False,
+                        "message": str(e)
+                    })
+
+        success_count = sum(1 for r in results if r['success'])
+
+        return {
+            "campaign_id": campaign_id,
+            "total": len(results),
+            "started": success_count,
+            "results": results
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/campaigns/{campaign_id}/docker/stop")
+async def stop_campaign_containers(campaign_id: str):
+    """Stop all containers in a campaign"""
+    try:
+        campaign = db.get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+
+        results = []
+        campaign_dir = CORE_PATH / "campaigns" / campaign_id
+
+        for machine in campaign.get('machines', []):
+            machine_id = machine['machine_id']
+            machine_dir = campaign_dir / machine_id
+
+            if machine_dir.exists():
+                try:
+                    result = subprocess.run(
+                        ["docker-compose", "down"],
+                        cwd=str(machine_dir),
+                        capture_output=True,
+                        text=True,
+                        timeout=60
+                    )
+
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": result.returncode == 0
+                    })
+                except Exception as e:
+                    results.append({
+                        "machine_id": machine_id,
+                        "success": False,
+                        "message": str(e)
+                    })
+
+        success_count = sum(1 for r in results if r['success'])
+
+        return {
+            "campaign_id": campaign_id,
+            "total": len(results),
+            "stopped": success_count,
+            "results": results
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============================================================================
 # Statistics
 # ============================================================================
@@ -763,7 +1259,7 @@ async def get_statistics():
         except Exception:
             blueprints_dir = CORE_PATH / "blueprints"
             blueprints = load_blueprints_directly(blueprints_dir)
-        
+
         platform_stats['total_blueprints'] = len(blueprints)
         logger.info(f"✓ Blueprints count: {len(blueprints)}")
     except Exception as e:
@@ -791,48 +1287,99 @@ async def get_statistics():
 async def list_machines():
     """
     List all machines with enhanced metadata
-    Combines Docker container info + Database campaign info
+    FIXED: Proper docker-py import handling
     """
     try:
         # Get machines from filesystem
         machines = orchestrator.list_machines()
         
+        logger.info(f"Found {len(machines)} machines from orchestrator")
+
+        # Import docker properly
+        try:
+            import docker as docker_module
+            client = docker_module.from_env()
+            all_containers = client.containers.list(all=True)
+            logger.info(f"Found {len(all_containers)} Docker containers")
+        except AttributeError as e:
+            logger.error(f"Docker import error: {e}")
+            # Try alternative import
+            try:
+                from docker import DockerClient
+                client = DockerClient.from_env()
+                all_containers = client.containers.list(all=True)
+                logger.info(f"Found {len(all_containers)} Docker containers (alternative method)")
+            except Exception as e2:
+                logger.error(f"Alternative Docker import also failed: {e2}")
+                # Fallback: no container info
+                all_containers = []
+                logger.warning("Continuing without Docker container info")
+
         # Enrich with database information
         enriched_machines = []
-        
+
         for machine in machines:
             machine_id = machine['machine_id']
-            
+            logger.info(f"\nProcessing machine: {machine_id}")
+
             # Try to find campaign this machine belongs to
             campaign = db.campaigns.find_one({
                 'machines.machine_id': machine_id
             })
-            
+
             # Get progress if exists
             progress = db.progress.find_one({
                 'machine_id': machine_id
             })
+
+            # Find Docker container - IMPROVED MATCHING
+            container_info = None
             
-            # Find Docker container
-            try:
-                import docker
-                client = docker.from_env()
-                containers = client.containers.list(all=True)
-                
-                container_info = None
-                for container in containers:
-                    if machine_id[:12] in container.name or machine_id in container.name:
+            if all_containers:
+                # Try multiple matching strategies
+                for container in all_containers:
+                    container_name = container.name
+                    container_id = container.id
+                    
+                    # Strategy 1: Match by full machine_id in name
+                    if machine_id in container_name:
+                        logger.info(f"  ✓ Found container by full ID: {container_name}")
                         container_info = {
-                            'container_id': container.id,
-                            'container_name': container.name,
+                            'container_id': container_id,
+                            'container_name': container_name,
                             'status': container.status,
                             'ports': container.ports
                         }
                         break
-            except Exception as e:
-                logger.warning(f"Could not get Docker info for {machine_id}: {e}")
-                container_info = None
+                    
+                    # Strategy 2: Match by machine_id prefix (first 12 chars)
+                    if machine_id[:12] in container_name:
+                        logger.info(f"  ✓ Found container by prefix: {container_name}")
+                        container_info = {
+                            'container_id': container_id,
+                            'container_name': container_name,
+                            'status': container.status,
+                            'ports': container.ports
+                        }
+                        break
+                    
+                    # Strategy 3: Match by hackforge_ prefix with machine_id
+                    expected_name = f"hackforge_{machine_id}"
+                    if container_name == expected_name:
+                        logger.info(f"  ✓ Found container by expected name: {container_name}")
+                        container_info = {
+                            'container_id': container_id,
+                            'container_name': container_name,
+                            'status': container.status,
+                            'ports': container.ports
+                        }
+                        break
             
+            if not container_info:
+                logger.warning(f"  ✗ No container found for machine {machine_id}")
+                if all_containers:
+                    logger.warning(f"    Available containers: {[c.name for c in all_containers]}")
+
             enriched_machine = {
                 'machine_id': machine['machine_id'],
                 'variant': machine['variant'],
@@ -852,21 +1399,27 @@ async def list_machines():
                 'is_running': container_info['status'] == 'running' if container_info else False,
                 'url': None  # Will be populated if running
             }
-            
-            # Extract URL from container ports
+
+            # Extract URL from container ports - IMPROVED
             if container_info and container_info['status'] == 'running':
                 ports = container_info.get('ports', {})
+                logger.info(f"  Container ports: {ports}")
+                
+                # Parse ports more reliably
                 for container_port, host_bindings in ports.items():
-                    if host_bindings:
-                        host_port = host_bindings[0]['HostPort']
-                        enriched_machine['url'] = f"http://4.231.90.52:{host_port}"
-                        break
-            
+                    if host_bindings and isinstance(host_bindings, list) and len(host_bindings) > 0:
+                        host_port = host_bindings[0].get('HostPort')
+                        if host_port:
+                            enriched_machine['url'] = f"http://4.231.90.52:{host_port}"
+                            logger.info(f"  ✓ URL: {enriched_machine['url']}")
+                            break
+
             enriched_machines.append(enriched_machine)
-        
-        logger.info(f"Returning {len(enriched_machines)} machines")
+            logger.info(f"  Machine enriched: container={bool(container_info)}, url={enriched_machine['url']}")
+
+        logger.info(f"\n✓ Returning {len(enriched_machines)} enriched machines")
         return enriched_machines
-        
+
     except Exception as e:
         logger.error(f"Error listing machines: {e}")
         import traceback
@@ -874,38 +1427,38 @@ async def list_machines():
         raise HTTPException(status_code=500, detail=f"Failed to list machines: {str(e)}")
 
 
-@app.get("/api/machines/{machine_id}")
+@app.get("/api/machines/{machine_id}") 
 async def get_machine(machine_id: str):
     """Get specific machine details with full context"""
     try:
         # Get from orchestrator
         machines = orchestrator.list_machines()
         machine = next((m for m in machines if m['machine_id'] == machine_id), None)
-        
+
         if not machine:
             raise HTTPException(status_code=404, detail="Machine not found")
-        
+
         # Load full config
         config_file = Path(machine['directory']) / "config.json"
         with open(config_file, 'r') as f:
             config = json.load(f)
-        
+
         # Get campaign info
         campaign = db.campaigns.find_one({
             'machines.machine_id': machine_id
         })
-        
+
         # Get progress
         progress = db.progress.find_one({
             'machine_id': machine_id
         })
-        
+
         # Get Docker status
         try:
             import docker
             client = docker.from_env()
             containers = client.containers.list(all=True)
-            
+
             container_info = None
             for container in containers:
                 if machine_id[:12] in container.name or machine_id in container.name:
@@ -921,7 +1474,7 @@ async def get_machine(machine_id: str):
         except Exception as e:
             logger.warning(f"Could not get Docker info: {e}")
             container_info = None
-        
+
         return {
             **config,
             'campaign_id': campaign['campaign_id'] if campaign else None,
@@ -929,7 +1482,7 @@ async def get_machine(machine_id: str):
             'progress': progress,
             'container': container_info
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -957,22 +1510,29 @@ class VulnerabilityConfig(BaseModel):
     category: str
     difficulty_range: List[int]
     description: str
-    variants: List[str]
-    entry_points: List[str]
+    infrastructure: Dict[str, Any]
+    database_schema: Optional[Dict[str, Any]] = None
+    variants: List[Dict[str, Any]]
+    entry_points: List[Dict[str, Any]]
     mutation_axes: Dict[str, Any]
-    variant_configs: Optional[List[Dict[str, Any]]] = []
+    ai_generation_hints: Optional[Dict[str, Any]] = None
+    exploit_examples: Optional[List[Dict[str, Any]]] = None
+
+# ============================================================================
+# Config & Blueprint Management Endpoints - FIXED PORT ISSUE
+# ============================================================================
+
 @app.post("/api/configs/{category}/generate-machine")
 async def generate_machine_from_config(category: str, background_tasks: BackgroundTasks):
     """
     FULLY AUTOMATED SINGLE MACHINE: Config → Blueprint → ONE Machine → Docker App
-    
-    This generates ONLY ONE machine for the specified category
+    FIXED: Proper port parameter handling for template engine
     """
     import sys
     import importlib
     import subprocess
     import time
-    
+
     try:
         logger.info("="*60)
         logger.info(f"SINGLE MACHINE PIPELINE: {category}")
@@ -981,15 +1541,23 @@ async def generate_machine_from_config(category: str, background_tasks: Backgrou
         # STEP 1: Generate Blueprint Components (blueprint/mutation/template)
         logger.info("STEP 1: Generating blueprint components...")
         configs_dir = CORE_PATH / "configs"
-        config_path = configs_dir / f"{category}_config.json"
+        config_path = configs_dir / f"{category}.json"
 
         if not config_path.exists():
             raise HTTPException(status_code=404, detail=f"Config not found: {category}")
 
+        # Load and validate config
+        with open(config_path, 'r') as f:
+            config_data = json.load(f)
+
+        logger.info(f"Config loaded: {config_data.get('name', 'Unknown')}")
+        logger.info(f"Infrastructure: {config_data.get('infrastructure', {})}")
+        logger.info(f"Database schema: {'Present' if config_data.get('database_schema') else 'Not required'}")
+
         # Ensure CORE_PATH is in sys.path
         if str(CORE_PATH) not in sys.path:
             sys.path.insert(0, str(CORE_PATH))
-        
+
         from vuln_generator import VulnerabilityGenerator
 
         generator_vuln = VulnerabilityGenerator(str(config_path))
@@ -999,16 +1567,16 @@ async def generate_machine_from_config(category: str, background_tasks: Backgrou
 
         # STEP 2: Reload generator to pick up new blueprint
         logger.info("\nSTEP 2: Reloading generator with new blueprint...")
-        
+
         # Remove cached modules to force reload
         modules_to_reload = ['generator', 'base']
         for mod in modules_to_reload:
             if mod in sys.modules:
                 del sys.modules[mod]
-        
+
         # Reimport generator
         from generator import DynamicHackforgeGenerator
-        
+
         # Create new generator instance (will auto-discover new blueprint)
         gen = DynamicHackforgeGenerator(core_dir=str(CORE_PATH))
 
@@ -1021,7 +1589,6 @@ async def generate_machine_from_config(category: str, background_tasks: Backgrou
                 break
 
         if not blueprint_id:
-            # List what blueprints were found for debugging
             logger.error(f"Available blueprints: {list(gen.blueprints.keys())}")
             logger.error(f"Looking for category: {category}")
             raise HTTPException(
@@ -1031,9 +1598,7 @@ async def generate_machine_from_config(category: str, background_tasks: Backgrou
 
         # STEP 3: Generate ONLY ONE machine using generate_single_machine()
         logger.info(f"\nSTEP 3: Generating single machine for {category}...")
-        
-        # Use the existing generate_single_machine() function
-        # This already exports to generated_machines directory
+
         machine = gen.generate_single_machine(
             blueprint_id=blueprint_id,
             difficulty=2,  # Default medium difficulty
@@ -1054,28 +1619,130 @@ async def generate_machine_from_config(category: str, background_tasks: Backgrou
         # Remove cached template_engine module
         if 'template_engine' in sys.modules:
             del sys.modules['template_engine']
-            
+
         from template_engine import TemplateEngine
+        import inspect
 
         template_engine_instance = TemplateEngine(
             machines_dir=str(CORE_PATH / "generated_machines")
         )
 
         machine_dir = CORE_PATH / "generated_machines" / machine.machine_id
-        
-        # Generate the Docker app for this specific machine
-        result = template_engine_instance.generate_machine_app(machine, machine_dir)
 
+        # Find available port starting from 8080
+        import socket
+        
+        def find_available_port(start_port=8080, max_attempts=100):
+            """Find an available port starting from start_port"""
+            for port in range(start_port, start_port + max_attempts):
+                try:
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                        s.bind(('', port))
+                        return port
+                except OSError:
+                    continue
+            return start_port
+        
+        port = find_available_port()
+        logger.info(f"Using port: {port}")
+
+        # Inspect the method signature to determine how to call it
+        try:
+            sig = inspect.signature(template_engine_instance.generate_machine_app)
+            params = list(sig.parameters.keys())
+            logger.info(f"Template engine signature: generate_machine_app({', '.join(params)})")
+        except Exception as e:
+            logger.warning(f"Could not inspect signature: {e}")
+            params = []
+
+        # Try different calling conventions based on the signature
+        result = None
+        last_error = None
+
+        # Strategy 1: All positional arguments (most common)
         if not result:
+            try:
+                logger.info("Attempting: generate_machine_app(machine, machine_dir, port) - all positional")
+                result = template_engine_instance.generate_machine_app(machine, machine_dir, port)
+                logger.info(f"✓ SUCCESS with all positional arguments")
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Strategy 1 failed: {e}")
+
+        # Strategy 2: Machine positional, rest keyword
+        if not result:
+            try:
+                logger.info("Attempting: generate_machine_app(machine, machine_dir=..., port=...)")
+                result = template_engine_instance.generate_machine_app(machine, machine_dir=machine_dir, port=port)
+                logger.info(f"✓ SUCCESS with machine positional, rest keyword")
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Strategy 2 failed: {e}")
+
+        # Strategy 3: All keyword arguments
+        if not result:
+            try:
+                logger.info("Attempting: generate_machine_app(machine=..., machine_dir=..., port=...)")
+                result = template_engine_instance.generate_machine_app(machine=machine, machine_dir=machine_dir, port=port)
+                logger.info(f"✓ SUCCESS with all keyword arguments")
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Strategy 3 failed: {e}")
+
+        # Strategy 4: Only machine and machine_dir (no port) - OLD SIGNATURE
+        if not result:
+            try:
+                logger.info("Attempting: generate_machine_app(machine, machine_dir) - no port (old signature)")
+                result = template_engine_instance.generate_machine_app(machine, machine_dir)
+                logger.info(f"✓ SUCCESS with old signature (no port)")
+                logger.warning("Note: Template engine doesn't use port parameter - you may need to update it")
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Strategy 4 failed: {e}")
+
+        # Strategy 5: Try with dictionary unpacking
+        if not result:
+            try:
+                logger.info("Attempting: generate_machine_app(**kwargs)")
+                kwargs = {'machine': machine, 'machine_dir': machine_dir, 'port': port}
+                result = template_engine_instance.generate_machine_app(**kwargs)
+                logger.info(f"✓ SUCCESS with dictionary unpacking")
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Strategy 5 failed: {e}")
+
+        # If all strategies failed, raise detailed error
+        if not result:
+            error_details = f"""
+Failed to call template_engine.generate_machine_app() with all strategies.
+
+Last error: {last_error}
+
+Attempted strategies:
+1. All positional: generate_machine_app(machine, machine_dir, port)
+2. Mixed: generate_machine_app(machine, machine_dir=..., port=...)
+3. All keyword: generate_machine_app(machine=..., machine_dir=..., port=...)
+4. Old signature: generate_machine_app(machine, machine_dir)
+5. Dictionary unpacking: generate_machine_app(**kwargs)
+
+Please check your template_engine.py file and verify the generate_machine_app() method signature.
+Expected: def generate_machine_app(self, machine, machine_dir, port)
+"""
+            logger.error(error_details)
             raise HTTPException(
                 status_code=500,
-                detail="Failed to generate Docker application"
+                detail=f"Template engine compatibility error: {str(last_error)}"
             )
 
-        logger.info(f"✓ Generated Docker app")
+        logger.info(f"✓ Generated Docker app successfully")
+
 
         # STEP 5: Generate docker-compose.yml for this single machine
         logger.info("\nSTEP 5: Generating docker-compose.yml...")
+
+        # Get infrastructure requirements from config
+        needs_database = config_data.get('infrastructure', {}).get('needs_database', False)
+        database_type = config_data.get('infrastructure', {}).get('database_type', 'mysql')
 
         # Get flag location from config
         flag_location = machine.flag.get('location', '/var/www/html/flag.txt')
@@ -1083,14 +1750,55 @@ async def generate_machine_from_config(category: str, background_tasks: Backgrou
         if not flag_location.startswith('/'):
             flag_location = '/' + flag_location
 
-        compose_content = f"""version: '3.8'
+        # Build docker-compose based on infrastructure needs
+        if needs_database:
+            compose_content = f"""version: '3.8'
 
 services:
   {machine.machine_id}:
     build: .
     container_name: hackforge_{machine.machine_id}
     ports:
-      - "8080:80"
+      - "{port}:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./flag.txt:{flag_location}:ro
+    environment:
+      - MACHINE_ID={machine.machine_id}
+      - FLAG_LOCATION={flag_location}
+      - DB_HOST=db
+      - DB_USER=hackforge
+      - DB_PASSWORD=hackforge123
+      - DB_NAME=hackforge
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: {database_type}:latest
+    container_name: hackforge_{machine.machine_id}_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root123
+      - MYSQL_DATABASE=hackforge
+      - MYSQL_USER=hackforge
+      - MYSQL_PASSWORD=hackforge123
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+
+volumes:
+  db_data:
+"""
+        else:
+            compose_content = f"""version: '3.8'
+
+services:
+  {machine.machine_id}:
+    build: .
+    container_name: hackforge_{machine.machine_id}
+    ports:
+      - "{port}:80"
     volumes:
       - ./app:/var/www/html
       - ./flag.txt:{flag_location}:ro
@@ -1106,12 +1814,49 @@ services:
 
         logger.info(f"✓ Generated: {compose_file}")
 
+        # STEP 5.5: Generate init.sql if database is needed
+        if needs_database and config_data.get('database_schema'):
+            logger.info("\nSTEP 5.5: Generating database initialization script...")
+
+            db_schema = config_data['database_schema']
+            init_sql_content = "-- Auto-generated database initialization\n\n"
+
+            # Create tables
+            for table in db_schema.get('tables', []):
+                table_name = table['name']
+                columns = ', '.join(table['columns'])
+                init_sql_content += f"CREATE TABLE IF NOT EXISTS {table_name} ({columns});\n\n"
+
+            # Insert seed data
+            seed_data = db_schema.get('seed_data', {})
+            for table_name, rows in seed_data.items():
+                for row in rows:
+                    columns = ', '.join(row.keys())
+                    values = []
+                    for value in row.values():
+                        if value == 'NOW()':
+                            values.append('NOW()')
+                        elif value == '{{FLAG}}':
+                            values.append(f"'{machine.flag['content']}'")
+                        else:
+                            # Escape single quotes in values
+                            escaped_value = str(value).replace("'", "\\'")
+                            values.append(f"'{escaped_value}'")
+                    values_str = ', '.join(values)
+                    init_sql_content += f"INSERT INTO {table_name} ({columns}) VALUES ({values_str});\n"
+
+            init_sql_file = machine_dir / "init.sql"
+            with open(init_sql_file, 'w') as f:
+                f.write(init_sql_content)
+
+            logger.info(f"✓ Generated: {init_sql_file}")
+
         # STEP 6: Start Docker container automatically
         logger.info("\nSTEP 6: Starting Docker container...")
-        
+
         container_started = False
         container_url = None
-        
+
         try:
             result = subprocess.run(
                 ["docker-compose", "up", "-d", "--build"],
@@ -1120,17 +1865,17 @@ services:
                 text=True,
                 timeout=300
             )
-            
+
             if result.returncode == 0:
                 logger.info("✓ Docker container started successfully")
                 container_started = True
-                container_url = "http://4.231.90.52:8080"
-                
+                container_url = f"http://4.231.90.52:{port}"
+
                 # Wait a moment for container to fully start
                 time.sleep(2)
             else:
                 logger.warning(f"Container start failed: {result.stderr}")
-                
+
         except Exception as e:
             logger.warning(f"Could not start container: {e}")
 
@@ -1147,6 +1892,9 @@ services:
             "difficulty": machine.difficulty,
             "flag": machine.flag['content'],
             "directory": str(machine_dir),
+            "port": port,
+            "infrastructure": config_data.get('infrastructure'),
+            "has_database": needs_database,
             "files_generated": {
                 "blueprint": f"blueprints/{category}_blueprint.yaml",
                 "mutation": f"mutations/{category}_mutation.py",
@@ -1154,7 +1902,8 @@ services:
                 "machine_config": f"generated_machines/{machine.machine_id}/config.json",
                 "docker_app": f"generated_machines/{machine.machine_id}/app/index.php",
                 "dockerfile": f"generated_machines/{machine.machine_id}/Dockerfile",
-                "compose": f"generated_machines/{machine.machine_id}/docker-compose.yml"
+                "compose": f"generated_machines/{machine.machine_id}/docker-compose.yml",
+                "init_sql": f"generated_machines/{machine.machine_id}/init.sql" if needs_database else None
             },
             "container_started": container_started,
             "url": container_url,
@@ -1173,26 +1922,25 @@ services:
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Pipeline failed: {str(e)}")
 
-
 @app.get("/api/configs")
 async def list_configs():
     """List all vulnerability configs"""
     try:
         configs_dir = CORE_PATH / "configs"
-        
+
         if not configs_dir.exists():
             logger.warning(f"Configs directory not found: {configs_dir}")
             return []
-        
-        config_files = list(configs_dir.glob("*_config.json"))
+
+        config_files = list(configs_dir.glob("*.json"))
         logger.info(f"Found {len(config_files)} config files in {configs_dir}")
-        
+
         configs = []
         for config_file in config_files:
             try:
                 with open(config_file, 'r') as f:
                     config_data = json.load(f)
-                
+
                 # Extract relevant info
                 configs.append({
                     'filename': config_file.name,
@@ -1205,15 +1953,15 @@ async def list_configs():
                     'variants_count': len(config_data.get('variants', [])),
                     'path': str(config_file)
                 })
-                
+
                 logger.info(f"✓ Loaded config: {config_data.get('name')}")
-                
+
             except Exception as e:
                 logger.error(f"✗ Failed to load {config_file.name}: {e}")
-        
+
         logger.info(f"Returning {len(configs)} configs to frontend")
         return configs
-        
+
     except Exception as e:
         logger.error(f"Error in list_configs: {e}")
         import traceback
@@ -1226,20 +1974,20 @@ async def get_config(category: str):
     """Get specific config details"""
     try:
         configs_dir = CORE_PATH / "configs"
-        config_path = configs_dir / f"{category}_config.json"
-        
+        config_path = configs_dir / f"{category}.json"
+
         if not config_path.exists():
             raise HTTPException(status_code=404, detail=f"Config not found: {category}")
-        
+
         with open(config_path, 'r') as f:
             config_data = json.load(f)
-        
+
         return {
             'filename': config_path.name,
             'path': str(config_path),
             'config': config_data
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -1247,62 +1995,66 @@ async def get_config(category: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
 @app.post("/api/configs")
 async def create_config_and_generate(config: VulnerabilityConfig, auto_generate: bool = True):
     """
     Create config and optionally auto-generate everything
-    
+    UPDATED: Handles new config format with infrastructure and database_schema
+
     Parameters:
-    - config: VulnerabilityConfig object
+    - config: VulnerabilityConfig object with new format
     - auto_generate: If True, runs full pipeline automatically (default: True)
     """
     try:
         # Create configs directory if needed
         configs_dir = CORE_PATH / "configs"
         configs_dir.mkdir(exist_ok=True)
-        
+
         # Save config file
-        config_filename = f"{config.category}_config.json"
+        config_filename = f"{config.category}.json"
         config_path = configs_dir / config_filename
-        
+
         config_data = config.dict()
-        
+
         with open(config_path, 'w') as f:
             json.dump(config_data, f, indent=2)
-        
+
         logger.info(f"✓ Created config: {config_path}")
-        
+        logger.info(f"  - Needs database: {config_data.get('infrastructure', {}).get('needs_database', False)}")
+        logger.info(f"  - Database type: {config_data.get('infrastructure', {}).get('database_type', 'N/A')}")
+
         response = {
             "message": "Config created successfully",
             "config_file": config_filename,
             "path": str(config_path),
-            "config": config_data
+            "config": config_data,
+            "infrastructure": config_data.get('infrastructure')
         }
-        
+
         # If auto_generate is True, run the full pipeline
         if auto_generate:
             logger.info("\n🚀 Auto-generating machine from config...")
-            
+
             try:
                 # Run the full pipeline
                 pipeline_result = await generate_machine_from_config(config.category, BackgroundTasks())
-                
+
                 response["auto_generated"] = True
                 response["machine"] = pipeline_result
                 response["message"] = "Config created and machine generated successfully!"
-                
+
             except Exception as e:
                 logger.error(f"Auto-generation failed: {e}")
                 response["auto_generated"] = False
                 response["auto_generate_error"] = str(e)
                 response["message"] = "Config created, but auto-generation failed. You can generate manually."
-        
+
         return response
-    
+
     except Exception as e:
         logger.error(f"Failed to create config: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create config: {str(e)}")
-
 
 # Keep the original simple generate endpoint for backward compatibility
 @app.post("/api/configs/{category}/generate")
@@ -1313,21 +2065,21 @@ async def generate_from_config(category: str, background_tasks: BackgroundTasks)
     """
     try:
         configs_dir = CORE_PATH / "configs"
-        config_path = configs_dir / f"{category}_config.json"
-        
+        config_path = configs_dir / f"{category}.json"
+
         if not config_path.exists():
             raise HTTPException(status_code=404, detail=f"Config not found: {category}")
-        
+
         logger.info(f"Generating components from config: {category}")
-        
+
         sys.path.insert(0, str(CORE_PATH))
         from vuln_generator import VulnerabilityGenerator
-        
+
         generator = VulnerabilityGenerator(str(config_path))
         generator.generate_all(str(CORE_PATH))
-        
+
         logger.info(f"✓ Generated all components for {category}")
-        
+
         return {
             "message": "Blueprint, mutation, and template generated successfully",
             "category": category,
@@ -1338,7 +2090,7 @@ async def generate_from_config(category: str, background_tasks: BackgroundTasks)
             },
             "next_step": f"Generate machine with: POST /api/configs/{category}/generate-machine"
         }
-    
+
     except HTTPException:
         raise
     except Exception as e:
@@ -1495,14 +2247,14 @@ async def get_campaign_containers(campaign_id: str):
     try:
         import docker
         client = docker.from_env()
-        
+
         campaign = db.get_campaign(campaign_id)
         if not campaign:
             raise HTTPException(status_code=404, detail="Campaign not found")
-        
+
         all_containers = client.containers.list(all=True)
         campaign_machine_ids = [m['machine_id'] for m in campaign.get('machines', [])]
-        
+
         campaign_containers = []
         for container in all_containers:
             container_name = container.name
@@ -1517,7 +2269,7 @@ async def get_campaign_containers(campaign_id: str):
                         'machine_id': machine_id
                     })
                     break
-        
+
         return {
             'campaign_id': campaign_id,
             'campaign_name': campaign.get('campaign_name', 'Unknown'),
