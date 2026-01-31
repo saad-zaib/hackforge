@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Template Engine - INDIVIDUAL DOCKER-COMPOSE PER MACHINE
@@ -702,7 +703,7 @@ echo "✓ Machine stopped"
         content += f"\n## Flag\n\n`{config.flag['content']}`\n"
         return content
 
-    def process_all_machines(self, start_port: int = 8080) -> list:
+    def process_all_machines(self, start_port: int = 8081) -> list:
         """Process all machines with INDIVIDUAL docker-compose files"""
 
         print(f"\n{'='*60}")
@@ -834,7 +835,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description='Hackforge Template Engine - Individual Compose')
     parser.add_argument('--machines-dir', default='generated_machines')
-    parser.add_argument('--port', type=int, default=8080)
+    parser.add_argument('--port', type=int, default=8081)
     parser.add_argument('--no-ai', action='store_true')
     args = parser.parse_args()
 

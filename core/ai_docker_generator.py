@@ -249,7 +249,7 @@ CMD ["apache2-foreground"]
         # First pass: Add web services
         for machine in machines:
             machine_id = machine['machine_id']
-            port = machine.get('port', 8080)
+            port = machine.get('port', 8081)
             category = machine.get('category', '')
 
             # Find blueprint config
